@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title> تقرير حصر موافقات رفع أسعار</title>
+
+  <!-- أيقونات و Excel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background:#ffffff;
+      margin:0;
+      padding:16px;
+    }
+
+    /* ===== الهيدر أعلى الصفحة ===== */
+    .main-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      background:#ffffff;
+      border-radius: 12px;
+      padding: 16px 20px 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      position: relative;
+      text-align: center;  /* محاذاة الشعار والنصوص في الوسط */
+    }
+
+   .header-top {
+  display: flex;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  align-items: flex-start;  /* محاذاة العناصر في الأعلى */
+  gap: 20px;                /* المسافة بين الشعار والعناوين */
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  gap: 12px;
+}
+
+    .logo-box img {
+      width:100px;
+      height:auto;
+    }
+
+  .gov-info {
+  position: absolute;
+  right: 0;                /* العناوين على الجهة اليمنى */
+  text-align: right;       /* محاذاة النصوص لليمين */
+  line-height: 1.5;
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.gov-info h2,
+.gov-info h3,
+.gov-info h4 {
+  margin: 0;              /* إزالة الهوامش الافتراضية */
+  padding: 2px 0;         /* تقليل المسافة بين العناوين */
+  line-height: 1.2;       /* تقليل المسافة بين الأسطر */
+}
+
+   .main-title {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.main-title h1 {
+  font-size: 2.2rem;
+  color: #0a66c2;
+  font-weight: 700;
+}
+
+.main-title p {
+  margin-top: 4px;
+  font-size: 1.1rem;
+  color: #0a66c2;
+  opacity: 0.9;
+}
+
+    /* ===== نموذج الإدخال ===== */
+    #reportapproveForm {
+      max-width:1100px;
+      margin:0 auto 18px;
+      background:#f3f8ff;
+      border-radius:12px;
+      padding:18px 20px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+
+      display:grid;
+      grid-template-columns: 150px 1fr 150px 1fr;
+      column-gap:16px;
+      row-gap:10px;
+      align-items:center;
+    }
+    #reportapproveForm label {
+      font-weight:600;
+      justify-self:end;
+      color:#0a3d73;
+    }
+    #reportapproveForm input {
+      width:100%;
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #c7d8f0;
+      font-size:14px;
+    }
+
+    .form-actions {
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .form-actions button {
+      border:none;
+      border-radius:8px;
+      padding:9px 16px;
+      font-size:14px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .form-actions .save { background:#0b8c4a; }
+    .form-actions .cancel { background:#6c757d; display:none; }
+
+    /* ===== أدوات أعلى الجدول ===== */
+    .tools {
+      max-width:1100px;
+      margin:0 auto 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .tools-left, .tools-right{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .tools input[type="text"] {
+      padding:7px 10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      min-width:220px;
+    }
+    .tools button {
+      padding:8px 12px;
+      border:none;
+      border-radius:8px;
+      background:#0d6efd;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    /* ===== الجدول ===== */
+    table {
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      border-collapse:collapse;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+      background:#fff;
+    }
+    th, td {
+      border:1px solid #d0d7e2;
+      padding:6px 4px;
+      text-align:center;
+      font-size:13px;
+    }
+    th {
+      background:#0b5ed7;
+      color:#fff;
+      font-size:13px;
+    }
+    tbody tr:nth-child(even){ background:#f9fbff; }
+
+    .action-btn {
+      border:none;
+      border-radius:6px;
+      padding:4px 8px;
+      font-size:12px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .edit-btn{ background:#17a2b8; }
+    .delete-btn{ background:#dc3545; }
+
+    .export-buttons{
+      max-width:1100px;
+      margin:18px auto 8px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .export-buttons button{
+      padding:8px 13px;
+      border:none;
+      border-radius:8px;
+      background:#6f42c1;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .back-button{
+      display:block;
+      text-align:center;
+      margin:10px auto 0;
+      text-decoration:none;
+      color:#0d6efd;
+      font-size:14px;
+    }
+
+    /* رسالة علوية صغيرة */
+    #messageBox{
+      position:fixed;
+      top:20px;
+      right:20px;
+      background:#28a745;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:10px;
+      font-size:13px;
+      display:none;
+      z-index:9999;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+
+    /* إخفاء عمود الإجراء أثناء الطباعة */
+    @media print {
+      #reportapproveForm,
+      .tools,
+      .export-buttons,
+      .back-button {
+        display:none !important;
+      }
+      th.action-col, td.action-col {
+        display:none !important;
+      }
+    }
+
+    /* موبايل */
+    @media (max-width: 768px){
+      .header-top{
+        flex-direction:column-reverse;
+        align-items:flex-start;
+      }
+      .gov-info{ text-align:right; }
+      #reportapproveForm{
+        grid-template-columns: 130px 1fr;
+      }
+    }
+
+    .company-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .company-section label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    .company-section input, .company-section select {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      width: 48%;
+      margin-bottom: 10px;
+    }
+
+    .company-section input[type="number"] {
+      width: 48%;
+    }
+
+    .company-section select {
+      width: 48%;
+    }
+    .tools-center {
+  display: flex;
+  justify-content: center; /* محاذاة مربع البحث في المنتصف */
+  width: 100%; 
+  margin-bottom: 15px; /* إضافة بعض المسافة أسفل */
+}
+
+.tools-center input {
+  width: 30%; /* تخصيص العرض حسب الحاجة */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.export-buttons {
+  display: flex;
+  justify-content: center; /* محاذاة الأزرار في المنتصف */
+  gap: 20px; /* المسافة بين الأزرار */
+  margin: 20px 0;
+}
+
+.export-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6f42c1;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.export-buttons button i {
+  margin-left: 5px; /* إضافة مسافة صغيرة بين الأيقونة والنص */
+}
+
+.export-buttons button:hover {
+  background-color: #5a35a0;
+
+}
+.main-title {
+  text-align: center;       /* كل العناوين في الوسط */
+  margin: 20px 0;           /* مسافة فوق وتحت العناوين */
+}
+
+.main-title h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 5px 0;            /* تقليل المسافة بين h1 و h2 */
+  color: #0d47a1;           /* أزرق رسمي */
+}
+
+.main-title h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 3px 0;            /* تقليل المسافة بين h2 و h3 */
+  color: #1565c0;           /* أزرق متوسط */
+}
+
+.main-title h4{
+  font-size: 14px;
+  font-weight: 400;
+  margin: 2px 0;
+  color: #1976d2;           /* أزرق فاتح */
+  font-style: italic;        /* لتوضيح الترجمة */
+}
+
+/* تقليل الفراغات الرأسية لكل العناوين */
+.main-title h2, .main-title h3, .main-title h4 {
+  line-height: 1.2;
+}
+
+@media print {
+    .actions-column {
+      display: none;
+    }
+  }
+   @media print {
+  .edit-btn,
+  .delete-btn {
+    display: none !important;
+  }
+}
+.tools {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+}
+.tools input {
+  width: 300px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- ===== الهيدر ===== -->
+  <header class="main-header">
+  <div class="header-top">
+    <!-- الشعار في المنتصف في الأعلى -->
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان" class="logo">
+    </div>
+
+    <!-- عناوين الحكومة على الجهة اليمنى -->
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h4>قسم الدراسات والتطوير</h4>
+    </div>
+  </div>
+
+    <!-- عنوان التطبيق -->
+    <div class="main-title">
+  <h2>حصر موافقات رفع أسعار</h2>
+  
+</div>
+
+  </header>
+
+  <div id="messageBox"></div>
+
+  <!-- نموذج إدخال -->
+  <form id="reportapproveForm">
+
+  <label>اختر الربع:</label>
+  <select id="quarter">
+    <option value="">اختر</option>
+    <option value="الربع الأول (يناير-مارس)">الربع الأول (يناير-مارس)</option>
+    <option value="الربع الثاني (أبريل-يونيو)">الربع الثاني (أبريل-يونيو)</option>
+    <option value="الربع الثالث (يوليو -سبتمبر)">الربع الثالث (يوليو-سبتمبر)</option>
+    <option value="الربع الرابع (أكتوبر-ديسمبر)">الربع الرابع (أكتوبر-ديسمبر)</option>
+  </select>
+
+  <label>نوع الطلب</label>
+<select id="type">
+  <option value="">اختر</option>
+  <option value="أساسي">أساسي</option>
+  <option value="غير أساسي">غير أساسي</option>
+</select>
+
+  <label>عدد الطلبات المستلمة</label>
+  <input type="number" id="received" min="0">
+
+  <label>عدد الطلبات المنجزة</label>
+  <input type="number" id="done" min="0">
+
+  <div class="form-actions">
+    <button type="submit" class="save">
+      <i class="fa-solid fa-floppy-disk"></i> حفظ
+    </button>
+  </div>
+
+</form>
+
+
+<div class="tools">
+  <input type="text" id="searchInput" placeholder="🔍 بحث عام في الجدول">
+
+  <select id="typeFilter">
+    <option value="">كل الأنواع</option>
+    <option value="أساسي">أساسي</option>
+    <option value="غير أساسي">غير أساسي</option>
+  </select>
+
+  <button type="button" id="resetFiltersBtn">إعادة تعيين</button>
+</div>
+
+
+
+  <!-- جدول التقرير -->
+  <table id="reportapproveTable">
+  <thead>
+    <tr>
+      <th>م</th>
+      <th>الربع</th>
+      <th>نوع الطلب</th>
+      <th>عدد الطلبات المستلمة</th>
+      <th>عدد الطلبات المنجزة</th>
+      <th>إجمالي الطلبات المنجزة</th>
+      <th class="action-col">إجراء</th>
+    </tr>
+  </thead>
+
+  <tbody id="tbody"></tbody>
+
+  <tfoot>
+    <tr>
+      <td colspan="4">الإجمالي</td>
+      <td id="totalDone">0</td>
+      <td id="totalTotalDone">0</td>
+      <td class="action-col"></td>
+    </tr>
+  </tfoot>
+</table>
+
+
+
+  <!-- طباعة و Excel -->
+  <div class="export-buttons">
+    <button class="btn" type="button" onclick="window.print()">طباعة</button>
+    <button class="btn" type="button" onclick="exportToExcel()">Excel</button>
+  </div>
+<a href="javascript:history.back()" class="back-button">الرجوع</a>
+
+  <div class="footer-note">
+  الرمز : 02-103-SOP &nbsp;&nbsp;|&nbsp;&nbsp;
+   الإصدار: 03 &nbsp;&nbsp;|&nbsp;&nbsp;
+تاريخ الإصدار:سبتمبر 2024
+</div>
+</div>
+
+<script>
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxVlw1WuQjEGshQ7mj_VzWFcLdurjip7TZyhPmzgXvA7D4oN-HfK7ERW0-1AlfDNPPSsg/exec";
+
+let tableData = [];
+let editRowIndex = null;
+
+ document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("reportapproveForm");
+  const quarterEl = document.getElementById("quarter");
+  const typeEl = document.getElementById("type");
+  const receivedEl = document.getElementById("received");
+  const doneEl = document.getElementById("done");
+  const searchInput = document.getElementById("searchInput");
+  const cancelBtn = document.getElementById("cancelBtn");
+
+  if (!form || !quarterEl || !typeEl || !receivedEl || !doneEl || !searchInput) {
+    console.error("يوجد عنصر مفقود في HTML (راجع ids).");
+    return;
+  }
+
+  loadData();
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      action: editRowIndex ? "update" : "add",
+      rowIndex: editRowIndex || "",
+      quarter: quarterEl.value,
+      type: typeEl.value,
+      received: receivedEl.value,
+      done: doneEl.value,
+      totalDone: doneEl.value
+    };
+
+    try {
+      const res = await fetch(SHEET_API, {
+        method: "POST",
+        body: new URLSearchParams(payload)
+      });
+
+      const text = await res.text();
+      console.log("POST status:", res.status);
+      console.log("POST response:", text);
+
+      if (!res.ok) {
+        showMessage("فشل الحفظ (راجعي Console)", "error");
+        return;
+      }
+
+      showMessage("تم الحفظ بنجاح");
+      form.reset();
+      editRowIndex = null;
+      if (cancelBtn) cancelBtn.style.display = "none";
+      await loadData();
+
+    } catch (err) {
+      console.error(err);
+      showMessage("فشل الاتصال بالخادم", "error");
+    }
+  });
+
+  
+  async function loadData() {
+    const res = await fetch(SHEET_API + "?data=1");
+    const raw = await res.text();
+
+    console.log("GET status:", res.status);
+    console.log("GET raw:", raw);
+
+    tableData = JSON.parse(raw);
+    renderTable(tableData);
+  }
+
+  window.loadData = loadData;
+
+
+  // ====== تعديل ======
+  window.startEditByRowIndex = function (rowIndex) {
+    const row = tableData.find(r => Number(r.rowIndex) === Number(rowIndex));
+    if (!row) return;
+
+    editRowIndex = Number(row.rowIndex);
+
+    quarterEl.value = row.quarter || "";
+    typeEl.value = row.type || "";
+    receivedEl.value = Number(row.received || 0);
+    doneEl.value = Number(row.done || 0);
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // ====== حذف ======
+  window.deleteByRowIndex = async function (rowIndex) {
+    if (!confirm("هل تريد الحذف؟")) return;
+
+    try {
+      const res = await fetch(SHEET_API, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "delete",
+          rowIndex: String(rowIndex)
+        })
+      });
+
+      const text = await res.text();
+      console.log("DELETE status:", res.status);
+      console.log("DELETE response:", text);
+
+      if (!res.ok) {
+        showMessage("فشل الحذف (راجعي Console)", "error");
+        return;
+      }
+
+      showMessage("تم الحذف بنجاح");
+      await loadData();
+    } catch (e) {
+      console.error(e);
+      showMessage("فشل الاتصال بالخادم", "error");
+    }
+  };
+});
+
+// ====== رسم الجدول ======
+function renderTable(data) {
+  const tbody = document.getElementById("tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  let sumDone = 0;
+  let sumTotalDone = 0;
+
+  data.forEach((row, i) => {
+    const received = Number(row.received || 0);
+    const done = Number(row.done || 0);
+    const totalDone = Number(row.totalDone || done);
+
+    sumDone += done;
+    sumTotalDone += totalDone;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${row.quarter || ""}</td>
+        <td>${row.type || ""}</td>
+        <td>${received}</td>
+        <td>${done}</td>
+        <td>${totalDone}</td>
+        <td class="action-col">
+          <button class="action-btn edit-btn"
+            onclick="startEditByRowIndex('${row.rowIndex}')">
+            تعديل
+          </button>
+
+          <button class="action-btn delete-btn"
+            onclick="deleteByRowIndex('${row.rowIndex}')">
+            حذف
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  const totalDoneEl = document.getElementById("totalDone");
+  const totalTotalDoneEl = document.getElementById("totalTotalDone");
+  if (totalDoneEl) totalDoneEl.textContent = sumDone;
+  if (totalTotalDoneEl) totalTotalDoneEl.textContent = sumTotalDone;
+}
+
+// ====== رسالة واحدة فقط ======
+function showMessage(msg, type = "success") {
+  const box = document.getElementById("messageBox");
+  if (!box) return;
+
+  box.textContent = msg;
+  box.style.background = type === "error" ? "#dc3545" : "#28a745";
+  box.style.display = "block";
+  setTimeout(() => box.style.display = "none", 3000);
+}
+
+function normalizeText(text) {
+  return String(text || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function normalizeStrictText(text) {
+  return String(text || "")
+    .replace(/\s+/g, "")
+    .trim()
+    .toLowerCase();
+}
+
+function applyFilters() {
+  const searchValue = normalizeText(document.getElementById("searchInput")?.value || "");
+  const typeFilter = normalizeStrictText(document.getElementById("typeFilter")?.value || "");
+
+  const filtered = tableData.filter(row => {
+    // بحث عام في كل الصف
+    const rowText = normalizeText(Object.values(row).join(" "));
+    const matchSearch = !searchValue || rowText.includes(searchValue);
+
+    // فلترة دقيقة لعمود النوع فقط
+    const rowType = normalizeStrictText(row.type);
+    const matchType = !typeFilter || rowType === typeFilter;
+
+    return matchSearch && matchType;
+  });
+
+  renderTable(filtered);
+
+  const resultsCount = document.getElementById("resultsCount");
+  if (resultsCount) {
+    resultsCount.textContent = `عدد النتائج: ${filtered.length}`;
+  }
+}
+
+document.getElementById("searchInput")?.addEventListener("input", applyFilters);
+document.getElementById("typeFilter")?.addEventListener("change", applyFilters);
+
+document.getElementById("resetFiltersBtn")?.addEventListener("click", () => {
+  const searchInput = document.getElementById("searchInput");
+  const typeFilter = document.getElementById("typeFilter");
+
+  if (searchInput) searchInput.value = "";
+  if (typeFilter) typeFilter.value = "";
+
+  applyFilters();
+});
+
+// ====== تصدير Excel ======
+window.exportToExcel = function () {
+  const table = document.getElementById("reportapproveTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet: "تقرير موافقات الرفع" });
+  XLSX.writeFile(wb, "تقرير_موافقات_الرفع.xlsx");
+};
+</script>
+</body>
+</html>

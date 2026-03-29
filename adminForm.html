@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تقرير الشؤون الإدارية والمالية</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+    *{box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;margin:0;padding:16px;background:#fff}
+
+    .main-header{max-width:1100px;margin:0 auto 16px;padding:14px 18px;border:1px solid #e0e0e0;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.05);position:relative}
+    .header-top{display:flex;justify-content:center;gap:20px;position:relative;min-height:90px}
+    .logo-box img{width:92px;height:auto}
+    .gov-info{position:absolute;right:0;text-align:right;color:#0a66c2;font-weight:700;line-height:1.2}
+    .gov-info h2,.gov-info h3,.gov-info h4{margin:0;padding:2px 0}
+    .main-title{text-align:center;margin-top:6px;color:#0a66c2}
+    .main-title p{margin:0;font-size:18px;font-weight:800}
+
+    #messageBox{position:fixed;top:18px;right:18px;color:#fff;padding:8px 12px;border-radius:10px;font-size:13px;display:none;z-index:9999;box-shadow:0 0 10px rgba(0,0,0,0.2)}
+
+    form{max-width:1100px;margin:0 auto 12px;background:#f3f8ff;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+    .grid{display:grid;grid-template-columns:260px 1fr 260px 1fr;gap:10px;align-items:center}
+    label{font-weight:800;color:#0a3d73}
+    input{width:100%;height:38px;border-radius:10px;border:1px solid #c7d8f0;padding:8px 10px;font-size:14px;outline:none}
+    input[type="number"]{direction:ltr;text-align:center;background:#eef8ff;font-weight:800}
+
+    .actions{grid-column:1/-1;display:flex;justify-content:center;gap:10px;margin-top:6px}
+    .actions button{border:0;border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer;color:#fff;font-weight:800}
+    .save{background:#0b8c4a}
+    .cancel{background:#6c757d;display:none}
+
+    .tools{max-width:1100px;margin:0 auto 10px;display:flex;justify-content:center}
+    .tools input{min-width:320px;padding:9px 10px;border-radius:10px;border:1px solid #ccc}
+
+    table{width:100%;max-width:1100px;margin:0 auto;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff}
+    th,td{border:1px solid #d0d7e2;padding:8px 6px;text-align:center;font-size:13px}
+    th{background:#0b5ed7;color:#fff}
+    tbody tr:nth-child(even){background:#f9fbff}
+    .action-col{white-space:nowrap}
+
+    .action-btn{border:0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;color:#fff;font-weight:800}
+    .edit-btn{background:#17a2b8}
+    .delete-btn{background:#dc3545}
+
+    .export-buttons{max-width:1100px;margin:16px auto 0;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .export-buttons button{padding:10px 14px;border:0;border-radius:10px;background:#6f42c1;color:#fff;cursor:pointer;font-size:14px;font-weight:800}
+    .export-buttons i{margin-left:6px}
+
+    /* ===== التوقيعات ===== */
+    .signatures-line {
+      max-width: 1100px;
+      margin: 30px auto 10px;
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+    .sig-item { display:flex; align-items:center; gap:10px; flex:1; }
+    .sig-item.wide { flex:2; }
+    .sig-title { font-weight:700; color:#0a3d73; white-space:nowrap; font-size:15px; }
+    .sig-input {
+      flex: 1;
+      border: none;
+      border-bottom: 2px solid #000;
+      background: transparent;
+      outline: none;
+      font-size: 15px;
+      padding: 4px 2px;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .row-highlight{ outline:3px solid #38bdf8; outline-offset:-3px; }
+
+    @media print{
+      form,.tools,.export-buttons,#messageBox{display:none !important}
+      th.action-col, td.action-col{display:none !important}
+      body{padding:0;margin:0}
+      table{box-shadow:none}
+      .sig-input{border-bottom:none !important}
+      .sig-input::placeholder{color:transparent}
+    }
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .gov-info{position:static;margin-top:8px}
+      .header-top{flex-direction:column;align-items:center}
+      .signatures-line{flex-direction:column;align-items:stretch}
+      .sig-item, .sig-item.wide{flex:1}
+    }
+
+    /* شبكة مخصصة لتقرير الشؤون الإدارية */
+.violation-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;  /* عمودين */
+  gap: 12px 16px;
+  align-items:end;
+}
+
+/* كل حقل */
+.violation-grid .field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+/* عناصر بعرض كامل */
+.violation-grid .full{
+  grid-column: 1 / -1;
+}
+
+/* تنسيق الليبل */
+.violation-grid label{
+  font-weight: 800;
+  color: #0a3d73;
+  font-size: 15px;
+}
+
+/* تنسيق الحقول */
+.violation-grid select,
+.violation-grid input{
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid #c7d8f0;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+/* تنسيق الأرقام */
+.violation-grid input[type="number"]{
+  direction:ltr;
+  text-align:center;
+  background:#eef8ff;
+  font-weight:800;
+}
+
+/* الأزرار */
+.violation-grid .actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin-top: 4px;
+}
+
+.violation-grid .actions button{
+  border:0;
+  border-radius:10px;
+  padding:10px 16px;
+  font-size:14px;
+  cursor:pointer;
+  color:#fff;
+  font-weight:800;
+}
+
+.violation-grid .save{ background:#0b8c4a; }
+.violation-grid .cancel{ background:#6c757d; display:none; }
+
+/* موبايل */
+@media (max-width: 800px){
+  .violation-grid{
+    grid-template-columns: 1fr; /* عمود واحد */
+  }
+}
+/* ===== فلترة التاريخ ===== */
+.filters{
+  max-width:1100px;
+  margin: 10px auto 20px;
+  display:flex;
+  align-items:flex-end;
+  gap:16px;
+  background:#f5f9ff;
+  padding:12px 16px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+}
+
+.filter-item{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.filter-item label{
+  font-size:13px;
+  font-weight:700;
+  color:#0a3d73;
+}
+
+.filter-item input[type="date"]{
+  width:160px;           /* 🔹 تصغير الحقل */
+  height:34px;
+  font-size:13px;
+  border-radius:8px;
+  border:1px solid #c7d8f0;
+  padding:4px 8px;
+}
+
+#filterBtn{
+  height:34px;
+  padding:0 14px;
+  border:0;
+  border-radius:8px;
+  background:#0b5ed7;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+#filterBtn:hover{
+  background:#0949a6;
+}
+
+/* 📱 للجوال */
+@media (max-width:600px){
+  .filters{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .filter-item input[type="date"]{
+    width:100%;
+  }
+}
+
+@media print {
+
+  /* إخفاء الفلترة */
+  .filters {
+    display: none !important;
+  }
+
+  /* (اختياري) إخفاء البحث أيضًا */
+  .tools {
+    display: none !important;
+  }
+
+  /* إخفاء أزرار التصدير والطباعة */
+  .export-buttons {
+    display: none !important;
+  }
+
+  /* إخفاء عمود الإجراء */
+  th.action-col,
+  td.action-col {
+    display: none !important;
+  }
+
+}
+@media print {
+  .signatures-line {
+    page-break-before: always;
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+  }
+}
+@media print {
+  .report-title,
+  #adminTitleYear {
+    font-size: 22px !important;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+}
+@media print {
+  .back-button {
+    display: none !important;
+  }
+}
+
+#clearFilterBtn{
+  height:34px;
+  padding:0 14px;
+  border-radius:8px;
+  border:1px solid #f3c1c1;
+  background:#fff5f5;
+  color:#b02a37;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+/* أيقونة المكنسة */
+#clearFilterBtn i{
+  font-size:13px;
+}
+
+/* تأثير المرور */
+#clearFilterBtn:hover{
+  background:#f8d7da;
+  border-color:#dc3545;
+  color:#842029;
+}
+
+.summary-table{
+  width:80%;                 /* أصغر قليلًا */
+  margin:20px auto;          /* 🔹 في المنتصف */
+  border-collapse:collapse;
+}
+
+.summary-table th,
+.summary-table td{
+  border:1px solid #6ea8fe;  /* أزرق فاتح للحدود */
+  padding:12px;
+  text-align:center;
+  font-size:15px;
+  color:#083a73;
+}
+
+.summary-table th{
+  background:#e7f1ff;        /* 🔹 أزرق فاتح */
+  font-weight:800;
+}
+
+.summary-table td{
+  background:#f8fbff;        /* خلفية خفيفة جدًا */
+}
+
+
+  @media print {
+
+  /* التوقيعات تظهر مرة واحدة فقط في النهاية */
+  .signatures-line{
+    position: static !important;   /* مهم: يلغي التثبيت */
+    page-break-inside: avoid;      /* لا تقطع التوقيعات بين صفحتين */
+    break-inside: avoid;
+    margin-top: 25px;
+  }
+
+  /* إذا تريدينها تبدأ في صفحة جديدة دائمًا (اختياري) */
+  /* .signatures-line{ page-break-before: always; } */
+}
+
+
+  </style>
+</head>
+
+<body>
+<header class="main-header">
+  <div class="header-top">
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان">
+    </div>
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h4>قسم الدراسات والتطوير</h4>
+    </div>
+  </div>
+  <div class="main-title">
+    <p>تقرير قسم الشؤون الإدارية والمالية</p>
+  </div>
+</header>
+
+<div id="messageBox"></div>
+   <h4>عدد المخالفات  (الإيرادات ) وقيمتها حسب نوع القطاع وهي كالأتي:-</h4>
+
+  <form id="adminForm">
+  <div class="grid violation-grid">
+
+     <div class="field">
+     <label>تاريخ</label>
+     <input type="date" id="vDate" required>
+    </div>
+
+    <!-- نوع المخالفة (سطر كامل) -->
+    <div class="field full">
+      <label>نوع المخالفة</label>
+      <select id="type" required>
+        <option value="" disabled selected>اختر نوع المخالفة</option>
+        <option value="اختلاف السعر المعروض عن المفوتر">اختلاف السعر المعروض عن المفوتر</option>
+        <option value="البيانات الإيضاحية وسلامة الأغذية">البيانات الإيضاحية وسلامة الأغذية</option>
+        <option value="التبغ الممضوع والغبر مدخن بأنواعه">التبغ الممضوع والغبر مدخن بأنواعه</option>
+        <option value="التعدي على حرية الإختيار والمساواة والمعاملة العادلة">التعدي على حرية الإختيار والمساواة والمعاملة العادلة</option>
+        <option value="التخفيضات والعروض الترويجية المضلله والغير مرخصة">التخفيضات والعروض الترويجية المضلله والغير مرخصة</option>
+        <option value="الإعلانات التجارية المضللة">الإعلانات التجارية المضللة</option>
+        <option value="الغش والتلقليد في السلع والخدمات">الغش والتلقليد في السلع والخدمات</option>
+        <option value="ترويج وبيع الأجهزة الكهربائية والإكترونية للمنازل">ترويج وبيع الأجهزة الكهربائية والإكترونية للمنازل</option>
+        <option value="التخفيض في كمبة المنتج (التلاعب بالأوزان">التخفيض في كمبة المنتج (التلاعب بالأوزان</option>
+        <option value="التسوق والإعلان عن الأعشاب الطبيعية والمصنعة والمستخلصات النباتية والأجهزة الطبية غير المرخصة">التسوق والإعلان عن الأعشاب الطبيعية والمصنعة والمستخلصات النباتية والأجهزة الطبية غير المرخصة</option>
+        <option value="بيع واستيراد وتداول المنتجات المخلة بالأداب والنظام العام">بيع واستيراد وتداول المنتجات المخلة بالأداب والنظام العام</option>
+        <option value="رفع الأسعار دون موافقة الهيئة">رفع الأسعار دون موافقة الهيئة</option>
+        <option value="بيع السجائر المخالفة للمواصفات">بيع السجائر المخالفة للمواصفات</option>
+        <option value="بيع سلع منتهية الصلاحية">بيع سلع منتهية الصلاحية</option>
+        <option value="اتخاذ شروط مجحفة في حق المستهلك">اتخاذ شروط مجحفة في حق المستهلك</option>
+        <option value="عدم اصدار فواتير الشراء">عدم اصدار فواتير الشراء</option>
+        <option value="عدم وضع الأسعار الخاصة بالسلع والخدمات">عدم وضع الأسعار الخاصة بالسلع والخدمات</option>
+        <option value="المخالفات الخاصة بإسطوانات  الغاز">المخالفات الخاصة بإسطوانات  الغاز</option>
+        <option value="طلب رفع أسعار خدمات">طلب رفع أسعار خدمات</option>
+        <option value="أخرى">أخرى</option>
+      </select>
+    </div>
+
+    <!-- العدد -->
+    <div class="field">
+      <label>العدد</label>
+      <input type="number" id="count" min="0" step="1" value="0">
+    </div>
+
+    <!-- قيمة المخالفة -->
+    <div class="field">
+      <label>قيمة المخالفة</label>
+      <input type="text" id="value" min="0" step="0.001" value="0">
+    </div>
+
+    <!-- الأزرار -->
+    <div class="actions full">
+      <button type="submit" class="save"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+      <button type="button" class="cancel" id="cancelEdit">إلغاء التعديل</button>
+    </div>
+
+  </div>
+</form>
+
+
+<div class="tools">
+  <input type="text" id="searchInput" placeholder="🔍 بحث في جميع الحقول">
+</div>
+
+<div class="filters">
+  <div>
+    <label>من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+
+  <div>
+    <label>إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+
+  <button type="button" id="filterBtn">تطبيق الفلترة</button>
+  <button type="button" id="clearFilterBtn"> <i class="fa-solid fa-broom"></i> مسح</button>
+</div>
+
+
+
+<table id="adminTable">
+  <thead>
+    <tr>
+      <th colspan="5">عدد المخالفات (الإيرادات) <span id="adminTitleYear"></span>م</th>
+      <th rowspan="2" class="action-col">إجراء</th>
+    </tr>
+    <tr>
+      <th>م</th>
+      <th>التاريخ</th>
+      <th>نوع المخالفة</th>
+      <th>العدد</th>
+      <th>قيمة المخالفة</th>
+    </tr>
+  </thead>
+
+  <tbody id="tbody"></tbody>
+
+  <tfoot>
+    <tr>
+      <td colspan="3"><b>الإجمالي</b></td>
+      <td id="sumCount">0</td>
+      <td id="sumValue">0</td>
+      <td class="action-col"></td>
+    </tr>
+  </tfoot>
+</table>
+<h4>إجمالي قيمة المخالفات (الإيرادات ) وهي كالأتي:-</h4>
+<table id="summaryTable" class="summary-table">
+  <thead>
+    <tr>
+      <th>البيان <span id="adminTitleYear"></th>
+      <th>الإجمالي</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>قيمة المخالفات المالية</td>
+      <td id="totalViolationsValue">0</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+<!-- التوقيعات -->
+<div class="signatures-line">
+  <div class="sig-item">
+    <label class="sig-title">أعد التقرير:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item">
+    <label class="sig-title">راجعه:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item wide">
+    <label class="sig-title">اعتماد رئيسة قسم الشؤون الإدارية والمالية:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+</div>
+
+<div class="export-buttons">
+  <button type="button" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة</button>
+  <button type="button" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+</div>
+<a href="javascript:history.back()" class="back-button">
+  <i class="fa-solid fa-arrow-right"></i> الرجوع
+</a>
+
+
+<script>
+/* ========= CONFIG ========= */
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxmvVNw0Nf71KpqllB6WSikN-LircH41f30PnIk0_jsdEp7DWezXkuju79yIuxCGoWs/exec";
+const $ = (id) => document.getElementById(id);
+
+let rowsData = [];
+let editRowIndex = null;
+let pendingScrollRow = null;
+
+/* ========= HELPERS ========= */
+function showMessage(text, type="success"){
+  const box = $("messageBox");
+  if(!box) return;
+  box.textContent = text;
+  box.style.display = "block";
+  box.style.backgroundColor = (type==="error") ? "#dc3545" : "#28a745";
+  setTimeout(()=> box.style.display="none", 3000);
+}
+
+function scrollToRow(rowIndex){
+  const rowEl = document.querySelector(`tr[data-rowindex="${rowIndex}"]`);
+  if(!rowEl) return;
+  rowEl.scrollIntoView({ behavior:"smooth", block:"center" });
+  rowEl.classList.add("row-highlight");
+  setTimeout(()=> rowEl.classList.remove("row-highlight"), 1500);
+}
+
+// توحيد أي تاريخ إلى YYYY-MM-DD
+
+// ✅ دالة للمتصفح فقط: توحيد أي تاريخ إلى YYYY-MM-DD بدون Utilities/TZ
+function normalizeDate(d){
+  if(!d) return "";
+
+  // إذا جاء من input type="date" فهو جاهز
+  if (typeof d === "string") {
+    const s = d.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+    // ISO أو نص طويل -> خذي أول 10 أحرف لو كانت YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+
+    // محاولة تحويل عام
+    const dt = new Date(s);
+    if (!isNaN(dt.getTime())) {
+      const y = dt.getFullYear();
+      const m = String(dt.getMonth()+1).padStart(2,"0");
+      const day = String(dt.getDate()).padStart(2,"0");
+      return `${y}-${m}-${day}`;
+    }
+    return "";
+  }
+
+  // لو جاء Date object
+  if (Object.prototype.toString.call(d) === "[object Date]") {
+    if (isNaN(d.getTime())) return "";
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+
+  return "";
+}
+
+
+// تحويل الأرقام العربية/الهندية إلى إنجليزية
+function toEnglishDigits(str){
+  return String(str ?? "")
+    .replace(/[٠-٩]/g, d => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)])
+    .replace(/[۰-۹]/g, d => "0123456789"["۰۱۲۳۴۵۶۷۸۹".indexOf(d)]);
+}
+
+// حماية نصوص الجدول
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+// تنظيف رقم القيمة (لو المستخدم كتب فواصل/نص)
+function num_(v){
+  const s = String(v ?? "").replace(/,/g,"").replace(/[^\d.]/g,"");
+  const n = Number(s);
+  return isNaN(n) ? 0 : n;
+}
+
+/* ========= TITLE ========= */
+function updateTitleText(from, to){
+  const el = $("adminTitleYear");
+  if(!el) return;
+
+  if(from || to){
+    el.textContent = `${toEnglishDigits(from || "…")} إلى ${toEnglishDigits(to || "…")}`;
+  }else{
+    el.textContent = toEnglishDigits(new Date().getFullYear());
+  }
+}
+
+/* ========= RENDER ========= */
+function renderRows(data){
+  const tbody = $("tbody");
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+
+  let sCount = 0;
+  let sValue = 0;
+
+  data.forEach((r, i) => {
+    const count = Number(r.Count || 0);
+    const value = Number(r.Value || 0);
+
+    sCount += count;
+    sValue += value;
+
+    const dateTxt = toEnglishDigits(normalizeDate(r.Date || ""));
+
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-rowindex", r.rowIndex);
+
+    tr.innerHTML = `
+      <td>${i+1}</td>
+      <td style="direction:ltr">${dateTxt}</td>
+      <td style="text-align:right">${escapeHtml(r.Type || "")}</td>
+      <td>${count}</td>
+      <td>${value}</td>
+      <td class="action-col">
+        <button type="button" class="action-btn edit-btn" onclick="startEdit(${r.rowIndex})">تعديل</button>
+        <button type="button" class="action-btn delete-btn" onclick="deleteRow(${r.rowIndex})">حذف</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // ✅ تحديث الإجماليات
+  $("sumCount").textContent = sCount;
+  $("sumValue").textContent = sValue;
+
+  // ✅ تحديث جدول الملخص
+  const totalEl = document.getElementById("totalViolationsValue");
+  if (totalEl) {
+    totalEl.textContent = toEnglishDigits(sValue);
+  }
+}
+
+/* ========= FILTER ========= */
+function applyDateFilter(){
+  const from = normalizeDate($("fromDate")?.value || "");
+  const to   = normalizeDate($("toDate")?.value || "");
+
+  if(!from && !to){
+    renderRows(rowsData);
+    updateTitleText("", "");
+    return;
+  }
+
+  const filtered = rowsData.filter(r => {
+    const d = normalizeDate(r.Date);
+    if(!d) return false;
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    return true;
+  });
+
+  renderRows(filtered);
+  updateTitleText(from, to);
+}
+
+/* ========= LOAD ========= */
+async function loadData(){
+  const res = await fetch(`${SHEET_API}?action=list`);
+  const json = await res.json();
+
+  if(!json.ok){
+    showMessage(json.msg || "فشل تحميل البيانات", "error");
+    return;
+  }
+
+  rowsData = json.rows || [];
+
+  // ✅ خلي الأقدم فوق والأحدث تحت
+  rowsData.sort((a,b)=> String(a.Date||"").localeCompare(String(b.Date||"")));
+
+  applyDateFilter();
+
+  if (pendingScrollRow) {
+    scrollToRow(pendingScrollRow);
+    pendingScrollRow = null;
+  }
+}
+
+/* ========= SAVE / UPDATE ========= */
+async function saveOrUpdate(e){
+  e.preventDefault();
+
+  const date = normalizeDate($("vDate")?.value || "");
+
+  if(!date){
+    showMessage("التاريخ مطلوب", "error");
+    return;
+  }
+
+  const payload = new URLSearchParams({
+    action: editRowIndex ? "update" : "add",
+    rowIndex: editRowIndex ? String(editRowIndex) : "",
+    vDate: date,
+    type: ($("type")?.value || "").trim(),
+    count: $("count")?.value || 0,
+    value: String(num_($("value")?.value || 0))
+  });
+
+  const res = await fetch(SHEET_API, { method:"POST", body: payload });
+  const json = await res.json();
+
+  if(!json.ok){
+    showMessage(json.msg || "فشل الحفظ", "error");
+    return;
+  }
+
+  showMessage(editRowIndex ? "تم التعديل ✅" : "تم الحفظ ✅");
+  pendingScrollRow = editRowIndex;
+
+  editRowIndex = null;
+  $("cancelEdit").style.display = "none";
+  $("adminForm").reset();
+  $("count").value = 0;
+  $("value").value = 0;
+
+  await loadData();
+}
+
+/* ========= EDIT / DELETE ========= */
+window.startEdit = function(rowIndex){
+  const r = rowsData.find(x => Number(x.rowIndex) === Number(rowIndex));
+  if(!r) return;
+
+  editRowIndex = Number(r.rowIndex);
+
+  $("vDate").value  = normalizeDate(r.Date || "");
+  $("type").value   = r.Type || "";
+  $("count").value  = Number(r.Count || 0);
+  $("value").value  = Number(r.Value || 0);
+
+  $("cancelEdit").style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior:"smooth" });
+};
+
+window.deleteRow = async function(rowIndex){
+  if(!confirm("هل تريد حذف السطر؟")) return;
+
+  const payload = new URLSearchParams({ action:"delete", rowIndex:String(rowIndex) });
+  const res = await fetch(SHEET_API, { method:"POST", body: payload });
+  const json = await res.json();
+
+  if(!json.ok){
+    showMessage(json.msg || "فشل الحذف", "error");
+    return;
+  }
+
+  showMessage("تم الحذف ✅");
+  await loadData();
+};
+
+/* ========= EXPORT ========= */
+window.exportToExcel = function(){
+  const wb = XLSX.utils.table_to_book(document.getElementById("adminTable"), { sheet:"تقرير الشؤون الإدارية" });
+  XLSX.writeFile(wb, "تقرير_الشؤون_الإدارية.xlsx");
+};
+
+function clearDateFilter(){
+  if ($("fromDate")) $("fromDate").value = "";
+  if ($("toDate")) $("toDate").value = "";
+
+  renderRows(rowsData);     // عرض كل البيانات
+  updateTitleText("", ""); // إعادة عنوان التقرير
+}
+
+
+/* ========= EVENTS ========= */
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".sig-input").forEach(i => i.readOnly = false);
+
+
+  $("adminForm")?.addEventListener("submit", saveOrUpdate);
+
+  $("cancelEdit")?.addEventListener("click", ()=> {
+    editRowIndex = null;
+    $("cancelEdit").style.display = "none";
+    $("adminForm").reset();
+    $("count").value = 0;
+    $("value").value = 0;
+  });
+
+   $("filterBtn")?.addEventListener("click", applyDateFilter);
+  $("clearFilterBtn")?.addEventListener("click", clearDateFilter);
+
+  $("fromDate")?.addEventListener("change", applyDateFilter);
+  $("toDate")?.addEventListener("change", applyDateFilter);
+
+
+  $("searchInput")?.addEventListener("input", ()=> {
+    const q = $("searchInput").value.toLowerCase().trim();
+    if(!q) return applyDateFilter();
+
+    const filtered = rowsData.filter(r =>
+      Object.values(r).some(v => String(v ?? "").toLowerCase().includes(q))
+    );
+    renderRows(filtered);
+  });
+
+  updateTitleText("", "");
+  loadData();
+});
+</script>
+</body>
+</html>

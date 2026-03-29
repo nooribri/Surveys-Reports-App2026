@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تقرير قسم التنظيم ومراقبة الأسواق</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+    *{box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;margin:0;padding:16px;background:#fff}
+
+    .main-header{max-width:1100px;margin:0 auto 16px;padding:14px 18px;border:1px solid #e0e0e0;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.05);position:relative}
+    .header-top{display:flex;justify-content:center;gap:20px;position:relative;min-height:90px}
+    .logo-box img{width:92px;height:auto}
+    .gov-info{position:absolute;right:0;text-align:right;color:#0a66c2;font-weight:700;line-height:1.2}
+    .gov-info h2,.gov-info h3,.gov-info h4{margin:0;padding:2px 0}
+    .main-title{text-align:center;margin-top:6px;color:#0a66c2}
+    .main-title p{margin:0;font-size:18px;font-weight:800}
+
+    #messageBox{position:fixed;top:18px;right:18px;color:#fff;padding:8px 12px;border-radius:10px;font-size:13px;display:none;z-index:9999;box-shadow:0 0 10px rgba(0,0,0,0.2)}
+
+    form{max-width:1100px;margin:0 auto 12px;background:#f3f8ff;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+    .grid{display:grid;grid-template-columns:260px 1fr 260px 1fr;gap:10px;align-items:center}
+    label{font-weight:800;color:#0a3d73}
+    input,select{width:100%;height:38px;border-radius:10px;border:1px solid #c7d8f0;padding:8px 10px;font-size:14px;outline:none}
+    input[type="number"]{direction:ltr;text-align:center;background:#eef8ff;font-weight:800}
+
+    .actions{grid-column:1/-1;display:flex;justify-content:center;gap:10px;margin-top:6px}
+    .actions button{border:0;border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer;color:#fff;font-weight:800}
+    .save{background:#0b8c4a}
+    .cancel{background:#6c757d;display:none}
+
+    .tools{max-width:1100px;margin:0 auto 10px;display:flex;justify-content:center}
+    .tools input{min-width:320px;padding:9px 10px;border-radius:10px;border:1px solid #ccc}
+
+    table{width:100%;max-width:1100px;margin:0 auto;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff}
+    th,td{border:1px solid #d0d7e2;padding:6px 4px;text-align:center;font-size:13px}
+    th{background:#0b5ed7;color:#fff}
+    tbody tr:nth-child(even){background:#f9fbff}
+    .action-col{white-space:nowrap}
+
+    .action-btn{border:0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;color:#fff;font-weight:800}
+    .edit-btn{background:#17a2b8}
+    .delete-btn{background:#dc3545}
+
+    .export-buttons{max-width:1100px;margin:16px auto 0;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .export-buttons button{padding:10px 14px;border:0;border-radius:10px;background:#6f42c1;color:#fff;cursor:pointer;font-size:14px;font-weight:800}
+    .export-buttons i{margin-left:6px}
+
+    @media print{
+      form,.tools,.export-buttons,#messageBox{display:none !important}
+      th.action-col, td.action-col{display:none !important}
+      body{padding:0;margin:0}
+      table{box-shadow:none}
+    }
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .gov-info{position:static;margin-top:8px}
+      .header-top{flex-direction:column;align-items:center}
+    }
+    /* ===== التوقيعات ===== */
+   /* ===== التوقيعات (إدخال عادي) ===== */
+.signatures-line {
+  max-width: 1100px;
+  margin: 30px auto 10px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.sig-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.sig-item.wide {
+  flex: 2;
+}
+
+.sig-title {
+  font-weight: 700;
+  color: #0a3d73;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+/* input يظهر كخط */
+.sig-input {
+  flex: 1;
+  border: none;
+  border-bottom: 2px solid #000;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  padding: 4px 2px;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* ===== عند الطباعة ===== */
+@media print {
+
+  /* إزالة الخط */
+  .sig-input {
+    border-bottom: none !important;
+    padding-bottom: 0;
+  }
+
+  /* إخفاء placeholder */
+  .sig-input::placeholder {
+    color: transparent;
+  }
+
+  /* منع التعديل أثناء الطباعة */
+  .sig-input {
+    pointer-events: none;
+  }
+}
+
+.row-highlight{
+  outline: 3px solid #38bdf8;
+  outline-offset: -3px;
+}
+
+.report-title{
+  max-width:1100px;
+  margin: 10px auto 18px;
+  text-align:center;
+  color:#0a66c2;
+  font-weight:800;
+  font-size:20px;
+}
+.date-cell{
+  direction:ltr;
+  unicode-bidi:bidi-override;
+  font-variant-numeric: lining-nums;
+}
+
+.filters{
+  max-width:1100px;
+  margin:10px auto 12px;
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.filters .f-item{display:flex; flex-direction:column; gap:6px;}
+.filters label{font-weight:700; color:#0a3d73; font-size:13px;}
+.filters input[type="date"]{
+  width:170px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid #c7d8f0;
+  padding:6px 10px;
+  font-size:13px;
+}
+.filters button{
+  height:34px;
+  border:0;
+  border-radius:10px;
+  padding:0 14px;
+  cursor:pointer;
+  color:#fff;
+  background:#0d6efd;
+  font-weight:800;
+  font-size:13px;
+}
+.filters button.ghost{
+  background:#6c757d;
+}
+@media print{
+  #filtersBox{display:none !important;} /* إخفاء الفلترة عند الطباعة */
+}
+
+@media (max-width:600px){
+  .training-grid{
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  .back-button {
+    display: none !important;
+  }
+}
+
+
+  </style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <div class="header-top">
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان">
+    </div>
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h4>قسم الدراسات والتطوير</h4>
+    </div>
+  </div>
+  <div class="main-title">
+    <p>تقرير قسم التنظيم ومراقبة الأسواق</p>
+  </div>
+</header>
+<h2 id="reportTitle" class="report-title"></h2>
+
+
+<div id="messageBox"></div>
+
+<h4>إجمالي المؤشرات الإحصائية حسب الولايات وهي كالأتي:-</h4>
+
+<form id="marketIndicatorsForm">
+  <div class="grid marketIndicators-grid">
+
+    <div class="field">
+      <label for="reportDate">التاريخ</label>
+      <input type="date" id="reportDate" name="reportDate" required>
+    </div>
+
+
+    <div class="field">
+  <label for="indicatorSelect">المؤشرات</label>
+  <select id="indicatorSelect">
+    <option value="">-- اختر المؤشر --</option>
+    <option value="fieldVisits">عدد الزيارات الميدانية</option>
+    <option value="violationsCount">عدد المخالفات</option>
+    <option value="pledgesCount">عدد التعهدات</option>
+    <option value="assignmentOrdersCount">عدد أوامر التكليف</option>
+    <option value="seizuresCount">عدد الضبطيات</option>
+    <option value="seizedGoodsCount">عدد السلع المضبوطة</option>
+    <option value="reportsCount">عدد البلاغات</option>
+  </select>
+</div>
+
+    
+    <div class="field">
+      <label for="ibri">ولاية عبري</label>
+      <input type="number" id="ibri" name="ibri" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="yanqul">ولاية ينقل</label>
+      <input type="number" id="yanqul" name="yanqul" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="dank">ولاية ضنك</label>
+      <input type="number" id="dank" name="dank" min="0" step="1" value="0">
+    </div>
+
+    <div class="field">
+      <label for="hamraAlDuru">حمراء الدروع (مناطق الإمتياز)</label>
+      <input type="number" id="hamraAlDuru" name="hamraAlDuru" min="0" step="1" value="0">
+    </div>
+
+    
+
+    <div class="actions full">
+      <button type="submit" class="save">
+        <i class="fa-solid fa-floppy-disk"></i> حفظ
+      </button>
+
+      <button type="button" class="cancel" id="cancelEdit" style="display:none">
+        إلغاء التعديل
+      </button>
+    </div>
+
+  </div>
+</form>
+
+
+
+<div class="tools">
+  <input type="text" id="searchInput" placeholder="🔍 بحث في جميع الحقول">
+</div>
+
+<div class="filters" id="filtersBox">
+  <div class="f-item">
+    <label>من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+
+  <div class="f-item">
+    <label>إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+
+  <button type="button" id="filterBtn">تطبيق الفلترة</button>
+  <button type="button" id="clearFilterBtn" class="ghost">مسح</button>
+</div>
+
+
+<table id="marketIndicatorsTable">
+  <thead>
+    <tr>
+      <th>م</th>
+      <th>التاريخ</th>
+      <th>المؤشر</th>
+
+      <th>ولاية عبري</th>
+      <th>ولاية ينقل</th>
+      <th>ولاية ضنك</th>
+      <th>ولاية حمراء الدروع ( مناطق الأمتياز)</th>
+
+      <th class="action-col">إجراء</th>
+    </tr>
+  </thead>
+
+  <tbody id="marketIndicatorsTbody"></tbody>
+
+  <tfoot>
+    <tr>
+      <td colspan="3"><b>الإجمالي</b></td>
+
+      <td id="sumIbri">0</td>
+      <td id="sumYanqul">0</td>
+      <td id="sumDank">0</td>
+      <td id="sumHamra">0</td>
+
+
+      <td class="action-col"></td>
+    </tr>
+  </tfoot>
+</table>
+
+
+<!-- التوقيعات -->
+<div class="signatures-line">
+  <div class="sig-item">
+    <label class="sig-title">أعد التقرير:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item">
+    <label class="sig-title">راجعه:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item wide">
+    <label class="sig-title">اعتماد رئيس  قسم التنطيم ومراقبة الاسواق</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+</div>
+
+
+
+<div class="export-buttons">
+  <button type="button" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة</button>
+  <button type="button" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+</div>
+
+<a href="javascript:history.back()" class="back-button">
+  <i class="fa-solid fa-arrow-right"></i> الرجوع
+</a>
+
+
+<script>
+// 🔴 رابط Web App (market indicators)
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxTFvSEabKcfNO64CvpW2UQrfYtQeH3ifcC8F8yhCPkG7P72t4pYG8PhWwh45gcK3A2/exec";
+
+const $ = (id) => document.getElementById(id);
+
+let rowsData = [];
+let editRowIndex = null;
+let pendingScrollRow = null;
+
+/* ===================== Helpers ===================== */
+function toEnglishDigits(input){
+  return String(input ?? "")
+    .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+    .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d));
+}
+
+function escapeHtml(s){
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+// توحيد أي تاريخ إلى YYYY-MM-DD
+function normalizeDate(v){
+  if(!v) return "";
+  const s = String(v).trim();
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // ISO: 2026-02-05T...
+  const iso = s.slice(0,10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+
+  // محاولة أخيرة
+  const dt = new Date(s);
+  if (!isNaN(dt.getTime())) {
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth()+1).padStart(2,"0");
+    const d = String(dt.getDate()).padStart(2,"0");
+    return `${y}-${m}-${d}`;
+  }
+  return "";
+}
+
+function showMessage(text, type="success"){
+  const box = $("messageBox");
+  if(!box) return;
+  box.textContent = text;
+  box.style.display = "block";
+  box.style.backgroundColor = (type==="error") ? "#dc3545" : "#28a745";
+  setTimeout(()=> box.style.display="none", 3000);
+}
+
+function scrollToRow(rowIndex){
+  const rowEl = document.querySelector(`tr[data-rowindex="${rowIndex}"]`);
+  if(!rowEl) return;
+  rowEl.scrollIntoView({ behavior:"smooth", block:"center" });
+  rowEl.classList.add("row-highlight");
+  setTimeout(()=> rowEl.classList.remove("row-highlight"), 1500);
+}
+
+function updateReportTitle(){
+  const el = $("reportTitle");
+  if(!el) return;
+
+  const from = normalizeDate($("fromDate")?.value || "");
+  const to   = normalizeDate($("toDate")?.value || "");
+
+  if(from || to){
+    el.textContent = `التقرير الإحصائي للفترة: ${toEnglishDigits(from || "…")} إلى ${toEnglishDigits(to || "…")}`;
+  }else{
+    el.textContent = `التقرير الإحصائي لسنة ${toEnglishDigits(new Date().getFullYear())}`;
+  }
+}
+
+
+/* ===================== Rendering ===================== */
+
+function rendermarketIndicatorsRows(data) {
+  const tbody = document.getElementById("marketIndicatorsTbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  let sIbri = 0, sYanqul = 0, sDank = 0, sHamra = 0, sIndicatorValue = 0;
+
+  (data || []).forEach((r, i) => {
+    const rowIndex = Number(r.rowIndex || 0);
+
+    const dateTxt = toEnglishDigits(normalizeDate(r.Date || r.reportDate || ""));
+
+    // الولايات
+    const ibri   = Number(r.Ibri || r.ibri || 0);
+    const yanqul = Number(r.Yanqul || r.yanqul || 0);
+    const dank   = Number(r.Dank || r.dank || 0);
+    const hamra  = Number(r.Hamra || r.hamraAlDuru || r.hamra || 0);
+
+    // المؤشر (جديد)
+    let indicatorKey   = r.IndicatorKey || r.indicatorKey || "";
+    let indicatorLabel = r.IndicatorLabel || r.indicatorLabel || "";
+    
+
+    // دعم بيانات قديمة (لو كان مخزن كأعمدة متعددة)
+    if (!indicatorKey) {
+      const map = [
+        ["fieldVisits", "عدد الزيارات الميدانية", r.Visitors || r.fieldVisits || r.visits],
+        ["violationsCount", "عدد المخالفات", r.Violations || r.violationsCount || r.violations],
+        ["pledgesCount", "عدد التعهدات", r.Pledges || r.pledgesCount || r.pledges],
+        ["assignmentOrdersCount", "عدد أوامر التكليف", r.Assignments || r.assignmentOrdersCount || r.assignmentOrders],
+        ["seizuresCount", "عدد الضبطيات", r.Seizures || r.seizuresCount || r.seizures],
+        ["seizedGoodsCount", "عدد السلع المضبوطة", r.Goods || r.seizedGoodsCount || r.seizedGoods],
+        ["reportsCount", "عدد البلاغات", r.Reports || r.reportsCount || r.reports],
+      ];
+
+      const found = map.find(x => Number(x[2] || 0) !== 0);
+      if (found) {
+        indicatorKey = found[0];
+        indicatorLabel = found[1];
+        
+      }
+    }
+
+    // إذا لا يوجد اسم للمؤشر، خله افتراضي
+    if (!indicatorLabel) indicatorLabel = "—";
+
+    // تجميع الإجماليات
+    sIbri += ibri;
+    sYanqul += yanqul;
+    sDank += dank;
+    sHamra += hamra;
+    
+
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-rowindex", rowIndex);
+
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td style="direction:ltr">${dateTxt}</td>
+      <td>${indicatorLabel}</td>
+
+      <td>${ibri}</td>
+      <td>${yanqul}</td>
+      <td>${dank}</td>
+      <td>${hamra}</td>
+
+      <td class="action-col">
+        <button type="button" class="action-btn edit-btn" onclick="startEdit(${rowIndex})">تعديل</button>
+        <button type="button" class="action-btn delete-btn" onclick="deleteRow(${rowIndex})">حذف</button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+
+  // إجمالي التذييل (tfoot) للجدول الجديد
+  if ($("sumIbri")) $("sumIbri").textContent = sIbri;
+  if ($("sumYanqul")) $("sumYanqul").textContent = sYanqul;
+  if ($("sumDank")) $("sumDank").textContent = sDank;
+  if ($("sumHamra")) $("sumHamra").textContent = sHamra;
+  if ($("sumIndicatorValue")) $("sumIndicatorValue").textContent = sIndicatorValue;
+}
+
+/* ========= تعديل ========= */
+window.startEdit = function (rowIndex) {
+  // عندك في render: data-rowindex و startEdit(${rowIndex})
+  const r = (rowsData || []).find(x => Number(x.rowIndex) === Number(rowIndex));
+  if (!r) return;
+
+  editRowIndex = Number(r.rowIndex || rowIndex);
+
+  // التاريخ (يدعم Date / reportDate)
+  if ($("reportDate")) $("reportDate").value = normalizeDate(r.Date || r.reportDate || "");
+
+  // المؤشر
+  const key = r.indicatorKey || r.IndicatorKey || "";
+  if ($("indicatorSelect")) $("indicatorSelect").value = key;
+
+  // الولايات (يدعم أسماء مختلفة)
+  if ($("ibri")) $("ibri").value = Number(r.ibri ?? r.Ibri ?? 0);
+  if ($("yanqul")) $("yanqul").value = Number(r.yanqul ?? r.Yanqul ?? 0);
+  if ($("dank")) $("dank").value = Number(r.dank ?? r.Dank ?? 0);
+  if ($("hamraAlDuru")) $("hamraAlDuru").value = Number(r.hamraAlDuru ?? r.Hamra ?? r.hamra ?? 0);
+
+  // إظهار زر الإلغاء
+  if ($("cancelEdit")) $("cancelEdit").style.display = "inline-block";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+/* ========= إلغاء التعديل ========= */
+document.addEventListener("DOMContentLoaded", () => {
+  const cancelBtn = $("cancelEdit");
+  if (!cancelBtn) return;
+
+  cancelBtn.addEventListener("click", () => {
+    editRowIndex = null;
+    cancelBtn.style.display = "none";
+
+    // إعادة ضبط الفورم الصحيح
+    $("marketIndicatorsForm")?.reset();
+
+    // إرجاع التاريخ لليوم (اختياري)
+    if ($("reportDate")) $("reportDate").value = new Date().toISOString().slice(0, 10);
+
+    // إرجاع الاختيار الافتراضي (اختياري)
+    if ($("indicatorSelect")) $("indicatorSelect").value = "";
+  });
+});
+
+
+/* ===================== Filtering ===================== */
+function applyDateFilter(){
+  const from = normalizeDate($("fromDate")?.value || "");
+  const to   = normalizeDate($("toDate")?.value || "");
+
+  let data = rowsData;
+
+  if(from || to){
+    data = rowsData.filter(r => {
+      const d = normalizeDate(r.Date || r.date || "");
+      if(!d) return false;
+      if(from && d < from) return false;
+      if(to   && d > to) return false;
+      return true;
+    });
+  }
+
+  rendermarketIndicatorsRows(data);
+  updateReportTitle();
+}
+
+function clearDateFilter(){
+  if($("fromDate")) $("fromDate").value = "";
+  if($("toDate")) $("toDate").value = "";
+  rendermarketIndicatorsRows(rowsData);
+  updateReportTitle();
+}
+
+function fetchJSONP(url) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    window[cb] = (data) => { resolve(data); cleanup(); };
+
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = () => { reject(new Error("JSONP load failed")); cleanup(); };
+
+    function cleanup() {
+      delete window[cb];
+      script.remove();
+    }
+
+    document.body.appendChild(script);
+  });
+}
+
+/* ===================== Load ===================== */
+function getRowDate(r) {
+  // يدعم Date / date / reportDate
+  return normalizeDate(r?.Date || r?.date || r?.reportDate || "");
+}
+
+async function loadData() {
+  try {
+    const url = new URL(SHEET_API);
+    url.searchParams.set("action", "list");
+
+    // ✅ جلب البيانات عبر JSONP لتجاوز CORS
+    const json = await fetchJSONP(url.toString());
+
+    if (!json?.ok) {
+      showMessage(json?.msg || "فشل تحميل البيانات", "error");
+      rowsData = [];
+      applyDateFilter();
+      return;
+    }
+
+    // ✅ البيانات تأتي من Apps Script باسم rows
+    rowsData = json.rows || [];
+
+    // ✅ فرز بعد تعبئة rowsData
+    rowsData.sort((a, b) => {
+      const da = normalizeDate(a?.reportDate || a?.Date || a?.date || "");
+      const db = normalizeDate(b?.reportDate || b?.Date || b?.date || "");
+      if (!da && !db) return 0;
+      if (!da) return 1;
+      if (!db) return -1;
+      const c = da.localeCompare(db);
+      if (c !== 0) return c;
+      return Number(a.rowIndex || 0) - Number(b.rowIndex || 0);
+    });
+
+    applyDateFilter();
+
+    if (pendingScrollRow) {
+      scrollToRow(pendingScrollRow);
+      pendingScrollRow = null;
+    }
+
+  } catch (err) {
+    console.error(err);
+    showMessage("تعذر الاتصال بقاعدة البيانات (تحقق من النشر أو طريقة فتح الصفحة).", "error");
+  }
+}
+
+/* ===================== Save / Update ===================== */
+async function saveOrUpdate(e) {
+  e.preventDefault();
+
+  const date = normalizeDate($("reportDate")?.value || "");
+
+  const ibri   = Number($("ibri")?.value || 0);
+  const yanqul = Number($("yanqul")?.value || 0);
+  const dank   = Number($("dank")?.value || 0);
+  const hamra  = Number($("hamraAlDuru")?.value || 0);
+
+  const indicatorKey = $("indicatorSelect")?.value || "";
+  const indicatorLabel =
+    $("indicatorSelect")?.selectedOptions?.[0]?.textContent?.trim() || "";
+
+  if (!date) {
+    showMessage("التاريخ مطلوب", "error");
+    return;
+  }
+
+  if (!indicatorKey) {
+    showMessage("اختر المؤشر", "error");
+    return;
+  }
+
+  const payload = new URLSearchParams({
+    action: editRowIndex ? "update" : "add",
+    rowIndex: editRowIndex ? String(editRowIndex) : "",
+
+    reportDate: date,
+    indicatorKey,
+    indicatorLabel,
+
+    ibri: String(isNaN(ibri) ? 0 : ibri),
+    yanqul: String(isNaN(yanqul) ? 0 : yanqul),
+    dank: String(isNaN(dank) ? 0 : dank),
+    hamraAlDuru: String(isNaN(hamra) ? 0 : hamra),
+  });
+
+  try {
+    const res = await fetch(SHEET_API, { method: "POST", body: payload });
+    const json = await res.json();
+
+    if (!json.ok) {
+      showMessage(json.msg || "فشل الحفظ", "error");
+      return;
+    }
+
+    showMessage(editRowIndex ? "تم التعديل ✅" : "تم الحفظ ✅");
+
+    pendingScrollRow = editRowIndex;
+    editRowIndex = null;
+
+    if ($("cancelEdit")) $("cancelEdit").style.display = "none";
+
+    $("marketIndicatorsForm")?.reset();
+
+    if ($("reportDate")) $("reportDate").value = new Date().toISOString().slice(0, 10);
+
+    await loadData();
+
+  } catch (err) {
+    console.error(err);
+    showMessage("تعذر الاتصال بالخادم أثناء الحفظ.", "error");
+  }
+}
+
+/* ========= تعديل ========= */
+window.startEdit = function (rowIndex) {
+  // عندك في render: data-rowindex و startEdit(${rowIndex})
+  const r = (rowsData || []).find(x => Number(x.rowIndex) === Number(rowIndex));
+  if (!r) return;
+
+  editRowIndex = Number(r.rowIndex || rowIndex);
+
+  // التاريخ (يدعم Date / reportDate)
+  if ($("reportDate")) $("reportDate").value = normalizeDate(r.Date || r.reportDate || "");
+
+  // المؤشر
+  const key = r.indicatorKey || r.IndicatorKey || "";
+  if ($("indicatorSelect")) $("indicatorSelect").value = key;
+
+  // الولايات (يدعم أسماء مختلفة)
+  if ($("ibri")) $("ibri").value = Number(r.ibri ?? r.Ibri ?? 0);
+  if ($("yanqul")) $("yanqul").value = Number(r.yanqul ?? r.Yanqul ?? 0);
+  if ($("dank")) $("dank").value = Number(r.dank ?? r.Dank ?? 0);
+  if ($("hamraAlDuru")) $("hamraAlDuru").value = Number(r.hamraAlDuru ?? r.Hamra ?? r.hamra ?? 0);
+
+  // إظهار زر الإلغاء
+  if ($("cancelEdit")) $("cancelEdit").style.display = "inline-block";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+/* ========= إلغاء التعديل ========= */
+document.addEventListener("DOMContentLoaded", () => {
+  const cancelBtn = $("cancelEdit");
+  if (!cancelBtn) return;
+
+  cancelBtn.addEventListener("click", () => {
+    editRowIndex = null;
+    cancelBtn.style.display = "none";
+
+    // إعادة ضبط الفورم الصحيح
+    $("marketIndicatorsForm")?.reset();
+
+    // إرجاع التاريخ لليوم (اختياري)
+    if ($("reportDate")) $("reportDate").value = new Date().toISOString().slice(0, 10);
+
+    // إرجاع الاختيار الافتراضي (اختياري)
+    if ($("indicatorSelect")) $("indicatorSelect").value = "";
+  });
+});
+window.deleteRow = async function (rowIndex) {
+  const id = Number(rowIndex || 0);
+  if (!id) return;
+
+  const ok = confirm("هل تريد حذف هذا السجل؟");
+  if (!ok) return;
+
+  try {
+    const payload = new URLSearchParams({
+      action: "delete",
+      rowIndex: String(id),
+    });
+
+    const res = await fetch(SHEET_API, { method: "POST", body: payload });
+    const json = await res.json();
+
+    if (!json.ok) {
+      showMessage(json.msg || "فشل الحذف", "error");
+      return;
+    }
+
+    showMessage("تم الحذف ✅");
+
+    // لو كنت تعدّل نفس السجل المحذوف، ألغِ التعديل
+    if (Number(editRowIndex || 0) === id) {
+      editRowIndex = null;
+      if ($("cancelEdit")) $("cancelEdit").style.display = "none";
+      $("marketIndicatorsForm")?.reset();
+      if ($("reportDate")) $("reportDate").value = new Date().toISOString().slice(0, 10);
+      if ($("indicatorSelect")) $("indicatorSelect").value = "";
+    }
+
+    await loadData(); // يعيد التحميل + يعيد الحسابات والإجماليات عبر render
+
+  } catch (err) {
+    console.error(err);
+    showMessage("تعذر الاتصال بالخادم أثناء الحذف.", "error");
+  }
+};
+
+
+/* ===================== Events ===================== */
+document.addEventListener("DOMContentLoaded", () => {
+  // 1) تاريخ افتراضي: اليوم
+  const today = new Date().toISOString().slice(0, 10);
+  if ($("reportDate")) $("reportDate").value = today;
+
+  // 2) حفظ (submit)
+  const form = $("marketIndicatorsForm"); // ✅ تم التعديل
+  if (form) form.addEventListener("submit", saveOrUpdate);
+
+  // 3) إلغاء تعديل
+  const cancelBtn = $("cancelEdit");
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      editRowIndex = null;
+      cancelBtn.style.display = "none";
+
+      if (form) form.reset();
+      if ($("reportDate")) $("reportDate").value = today;
+
+      // إعادة عرض البيانات
+      if (typeof applyDateFilter === "function") applyDateFilter();
+      else if (typeof rendermarketIndicatorsRows === "function") rendermarketIndicatorsRows(rowsData);
+    });
+  }
+
+  // 4) فلترة + مسح
+  if ($("filterBtn")) $("filterBtn").addEventListener("click", applyDateFilter);
+  if ($("clearFilterBtn")) $("clearFilterBtn").addEventListener("click", clearDateFilter);
+  if ($("fromDate")) $("fromDate").addEventListener("change", applyDateFilter);
+  if ($("toDate")) $("toDate").addEventListener("change", applyDateFilter);
+
+  // 5) بحث
+  const search = $("searchInput");
+  if (search) {
+    search.addEventListener("input", () => {
+      const q = (search.value || "").toLowerCase().trim();
+
+      // لو فاضي يرجع لعرض الفلترة المعتادة
+      if (!q) {
+        if (typeof applyDateFilter === "function") return applyDateFilter();
+        return rendermarketIndicatorsRows(rowsData);
+      }
+
+      const filtered = (rowsData || []).filter(r =>
+        Object.values(r).some(v => String(v ?? "").toLowerCase().includes(q))
+      );
+
+      // ✅ تم التعديل: اسم دالة الرسم الجديدة
+      if (typeof rendermarketIndicatorsRows === "function") {
+        rendermarketIndicatorsRows(filtered);
+      }
+    });
+  }
+
+  // 6) عنوان التقرير + تحميل البيانات
+  if (typeof updateReportTitle === "function") updateReportTitle();
+  if (typeof loadData === "function") loadData();
+});
+
+
+/* ===================== Export ===================== */
+window.exportToExcel = function(){
+  const wb = XLSX.utils.table_to_book(document.getElementById("marketIndicatorsTable"), { sheet:"تقرير مؤشرات الولايات" });
+  XLSX.writeFile(wb, "تقرير_مؤشرات_الولايات.xlsx");
+};
+
+</script>
+</body>
+</html>

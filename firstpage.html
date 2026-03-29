@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>تطبيق المسوحات والتقارير</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+        }
+        header {
+            background-color: #0059b3;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        header h1 { font-size: 1.6rem; }
+        header p { font-size: 1rem; opacity: 0.8; }
+
+        /* البطاقات */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: white; /* تغيير اللون الافتراضي إلى اللون الأبيض */
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+        }
+        .card-subtitle {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        /* الألوان الخاصة بكل بطاقة */
+        .materials-card { background-color: #c2d3dc; border-left: 5px solid #0059b3; }
+        .materials-card .card-icon { color: #0059b3; } /* تغيير لون الأيقونة إلى اللون الأزرق الفاتح */
+        
+        .vegetables-card { background-color: #e9f7ed; border-left: 5px solid #28a745; }
+        .vegetables-card .card-icon { color: #28a745; } /* تغيير لون الأيقونة إلى اللون الأخضر */
+
+        .consumer-card { background-color: #ede8b8; border-left: 5px solid #ffc107; }
+        .consumer-card .card-icon { color: #ffc107; } /* تغيير لون الأيقونة إلى اللون الأصفر */
+
+        .eggs-card { background-color: #fff3e0; border-left: 5px solid #ff9800; }
+        .eggs-card .card-icon { color: #ff9800; } /* تغيير لون الأيقونة إلى اللون البرتقالي */
+
+        .livestock-card { background-color: #fdf2e9; border-left: 5px solid #a0522d;} /* لون الشريط الجانبي (بني) */
+        .livestock-card .card-icon { color: #a0522d;} /* لون أيقونة المواشي */
+
+
+        .requests-card { background-color: #fff8e1; border-left: 5px solid #ff5722; }
+        .requests-card .card-icon { color: #ff5722; } /* تغيير لون الأيقونة إلى اللون الأحمر البرتقالي */
+
+         .price-monitor-card { background-color: #e3f2fd; border-left: 5px solid #2196f3; }
+        .price-monitor-card .card-icon { color: #2196f3; } /* تغيير لون الأيقونة إلى اللون الأزرق السماوي */
+
+        .lessons-card { background-color: #c2e7e5; border-left: 5px solid #4caf50; }
+        .lessons-card .card-icon { color: #4caf50; } /* تغيير لون الأيقونة إلى اللون الأخضر */
+
+        .achievements-card { background-color: #fce4ec; border-left: 5px solid #9c27b0; }
+        .achievements-card .card-icon { color: #9c27b0; } /* تغيير لون الأيقونة إلى اللون الوردي */
+
+       .fish-card { background-color: #e0f2f1; border-left: 5px solid #009688;} /* لون الشريط الجانبي */
+       .fish-card .card-icon { color: #009688; }/* لون أيقونة الأسماك */
+
+        .feed-card { background-color: #f0f7e9; border-left: 5px solid #6c9a1f;} /* لون الشريط الجانبي */
+        .feed-card .card-icon { color: #6c9a1f;} /* لون أيقونة الأعلاف */
+
+         .reports-card { background-color: #eef2f7; border-left: 5px solid #3f51b5; }/* لون الشريط الجانبي (أزرق إداري) */
+         .reports-card .card-icon { color: #3f51b5;} /* لون أيقونة التقارير */
+
+
+
+
+        /* القوائم المنسدلة */
+        .submenu {
+            display: none;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            padding: 1rem;
+            margin-top: 10px;
+        }
+        .submenu.open {
+            display: block;
+        }
+        .submenu-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.8rem;
+        }
+        .submenu-buttons button {
+            background-color: #f4f7fc;
+            border: 1px solid #ccc;
+            color: #333;
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .submenu-buttons button:hover {
+            background-color: #e3edff;
+        }
+        
+        /* التنسيق للنموذج */
+        #forms-container {
+            margin-top: 2rem;
+            background-color: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        label { font-size: 0.9rem; margin-bottom: 0.3rem; display: block; }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        .form-actions button {
+            padding: 0.7rem 1.2rem;
+            background-color: #0059b3;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .form-actions button:hover {
+            background-color: #003f7f;
+        }
+
+        /* التنسيق لزر إغلاق القوائم */
+        .chevron {
+            font-size: 1.2rem;
+            color: #0059b3;
+            cursor: pointer;
+        }
+       
+     * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f5f7fb;
+            color: #333;
+        }
+
+       
+
+        .card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+.card-link:hover {
+    opacity: 0.9;
+}
+
+   .submenu-link {
+    display: inline-block;
+    background-color: #f4f7fc;
+    border: 1px solid #ccc;
+    color: #333;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin: 0.5rem;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.submenu-link:hover {
+    background-color: #e3edff;
+}
+    /* خلفية الصفحة */
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: #f0f4f8; /* رمادي سماوي خفيف */
+    margin: 0;
+}
+
+/* الحاوية العليا */
+.main-header {
+    background-color: #ffffff;
+    padding: 15px 15px;
+    border-bottom: 4px solid #0a66c2;
+    position: relative;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: center; /* الشعار في المنتصف */
+    align-items: center;
+    position: relative;
+}
+
+.logo-box img {
+    width: 140px;
+}
+
+.gov-info {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    text-align: right;
+}
+
+.gov-info h2,
+.gov-info h3,
+.gov-info h4 {
+    margin: 0;
+    line-height: 1.4;
+    color: #0a66c2;
+    font-weight: 600;
+}
+
+.main-title {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.main-title h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0a66c2;
+}
+
+.main-title p {
+    color: #0a66c2;
+    font-size: 1.2rem;
+}
+
+.reports-card.open .chevron i{
+  transform: rotate(180deg);
+  transition: transform .2s ease;
+}
+.submenu-item .submenu-dropdown{ display:none; }
+.submenu-item.open .submenu-dropdown{ display:block; }
+.submenu-item .submenu-toggle i{
+  transition: transform .2s ease;
+}
+
+.submenu-item.open .submenu-toggle i{
+  transform: rotate(180deg);
+}
+.submenu-item { margin-bottom: 16px; }
+
+/* زر القسم */
+.submenu-toggle{
+  width:100%;
+  background:#fff;
+  border:1px solid #dbe7ff;
+  border-radius:16px;
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:800;
+  font-size:16px;
+  color:#0a66c2;
+  cursor:pointer;
+}
+
+.submenu-toggle i{
+  transition:transform .25s ease;
+}
+
+.submenu-item.open .submenu-toggle i{
+  transform:rotate(180deg);
+}
+
+/* القائمة */
+.submenu-dropdown{
+  display:none;
+  margin-top:14px;
+}
+
+.submenu-item.open .submenu-dropdown{
+  display:block;
+}
+
+/* شبكة الكروت */
+.cards-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap:14px;
+}
+
+/* كرت التقرير */
+.report-card{
+  background:#ffffff;
+  border:1px solid #dbe7ff;
+  border-radius:16px;
+  padding:18px 14px;
+  text-align:center;
+  font-weight:800;
+  color:#0a66c2;
+  cursor:pointer;
+  transition: all .2s ease;
+  box-shadow:0 3px 10px rgba(0,0,0,0.05);
+}
+
+.report-card:hover{
+  background:#eef6ff;
+  transform:translateY(-4px);
+  box-shadow:0 8px 18px rgba(0,0,0,0.12);
+}
+
+.submenu-dropdown{
+  display:none;
+  margin-top:12px;
+}
+
+.submenu-dropdown.open{
+  display:grid;
+}
+
+.submenu-toggle{
+  width:100%;
+  background:#0b5ed7;
+  color:#fff;
+  border:none;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.submenu-toggle i{
+  transition:transform .3s;
+}
+
+.submenu-toggle.active i{
+  transform:rotate(180deg);
+}
+
+.report-card{
+  background:#f5f9ff;
+  padding:12px;
+  border-radius:10px;
+  cursor:pointer;
+  text-align:center;
+  font-weight:600;
+  transition:.2s;
+}
+
+.report-card:hover{
+  background:#e2edff;
+  transform:translateY(-3px);
+}
+.submenu-dropdown {
+  display: none;
+}
+
+.submenu-dropdown.show {
+  display: grid;
+}
+
+
+    </style>
+</head>
+<body>
+
+<!-- ======================  HEADER ====================== -->
+<header class="main-header">
+
+    <div class="top-bar">
+
+        <!-- الشعار في الوسط -->
+        <div class="logo-box">
+            <img src="image.png" alt="شعار سلطنة عمان">
+        </div>
+
+        <!-- النصوص الحكومية أقصى اليمين -->
+        <div class="gov-info">
+            <h2>سلطنة عُمان</h2>
+            <h3>هيئة حماية المستهلك</h3>
+            <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+        </div>
+
+    </div>
+
+    <!-- العنوان الرئيسي -->
+    <div class="main-title">
+        <h1>تطبيق المسوحات والتقارير</h1>
+        <p>قسم الدراسات والتطوير</p>
+    </div>
+
+</header>
+
+
+<main>
+    <section class="cards-grid">
+       <!-- بطاقة مسوحات مواد البناء -->
+<article class="card materials-card" data-target="materials-menu">
+    <div class="card-icon"><i class="fa-solid fa-building"></i></div>
+    <h2 class="card-title">مسوحات مواد البناء</h2>
+    <p class="card-subtitle">حديد، إسمنت، رمل، طابوق، انترلوك...</p>
+    <span class="chevron"><i class="fa-solid fa-angle-down"></i></span>
+</article>
+
+<!-- القائمة المنسدلة -->
+<section class="submenu" id="materials-menu">
+    <h3 class="submenu-title">اختر نوع المسح:</h3>
+    <div class="submenu-buttons">
+
+        <a href="ironForm.html" class="submenu-link">مسوحات الحديد</a>
+        <a href="cementForm.html" class="submenu-link">مسوحات الإسمنت</a>
+        <a href="sandForm.html" class="submenu-link">مسوحات الرمل والكنكري</a>
+        <a href="brickForm.html" class="submenu-link">مسوحات الطابوق</a>
+        <a href="interlockForm.html" class="submenu-link">مسوحات الانترلوك</a>
+
+    </div>
+</section>
+
+       <!-- مرصد الأسعار -->
+    
+         <article class="card consumer-card">
+        <a href="goodsForm.html" class="card-link">
+            <div class="card-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+            <h2 class="card-title">مرصد أسعار السلع الأساسية الإستهلاكية</h2>
+            <p class="card-subtitle">تطور الأسعار ومقارنتها زمنياً</p>
+        </a>
+    </article>
+
+          <!-- مسوحات الخضروات والفواكه -->
+<article class="card vegetables-card">
+    <a href="vegetablesForm.html" class="card-link">
+        <div class="card-icon"><i class="fa-solid fa-carrot"></i></div>
+        <h2 class="card-title">مسوحات الخضروات والفواكه</h2>
+        <p class="card-subtitle">أسعار وأسواق الخضار والفواكه</p>
+    </a>
+</article>
+
+        
+        <!-- مسوحات البيض -->
+    <article class="card eggs-card">
+        <a href="eggsForm.html" class="card-link">
+            <div class="card-icon"><i class="fa-solid fa-egg"></i></div>
+            <h2 class="card-title">مسوحات البيض</h2>
+            <p class="card-subtitle">أسعار البيض بأنواعه</p>
+        </a>
+    </article>
+        <!-- مسوحات الأسماك -->
+         <article class="card fish-card">
+  <a href="fishForm.html" class="card-link">
+    <div class="card-icon">
+      <i class="fa-solid fa-fish"></i>
+    </div>
+    <h2 class="card-title">مسوحات الأسماك</h2>
+    <p class="card-subtitle">أنواع وأصناف الأسماك</p>
+  </a>
+</article>
+
+
+       <!-- مسوحات المواشي -->
+    <article class="card livestock-card">
+  <a href="animalsForm.html" class="card-link">
+    <div class="card-icon">
+      <i class="fa-solid fa-cow"></i>
+    </div>
+    <h2 class="card-title">مسوحات المواشي</h2>
+    <p class="card-subtitle">الأبقار، الأغنام، الإبل</p>
+  </a>
+</article>
+
+
+    <!-- مسوحات الأعلاف الحيوانية -->
+<article class="card feed-card">
+  <a href="feedSurveyForm.html" class="card-link">
+    <div class="card-icon">
+      <i class="fa-solid fa-paw"></i>
+    </div>
+    <h2 class="card-title">مسوحات الأعلاف الحيوانية</h2>
+    <p class="card-subtitle">أسعار الأنواع والكميات المتوفرة</p>
+  </a>
+</article>
+
+<article class="card reports-card" data-target="reports-menu" role="button" tabindex="0">
+  <div class="card-icon"><i class="fa-solid fa-chart-column"></i></div>
+  <h2 class="card-title">تقارير الأقسام</h2>
+  <p class="card-subtitle">عرض وتحليل بيانات وإحصائيات</p>
+  <span class="chevron"><i class="fa-solid fa-angle-down"></i></span>
+</article>
+
+
+<section class="submenu" id="reports-menu" style="display:none;">
+  <h3 class="submenu-title">اختر تقارير الأقسام</h3>
+
+  <div class="submenu-buttons">
+
+   <div class="submenu-item" id="adminItem">
+  <button type="button" class="submenu-toggle" id="adminMenuBtn">
+    تقارير قسم الشؤون الإدارية والمالية
+    <i class="fa-solid fa-chevron-down"></i>
+  </button>
+
+  <div class="submenu-dropdown cards-grid">
+
+    <div class="report-card" onclick="location.href='adminForm.html'">
+      تقرير عدد المخالفات (الإيرادات)
+    </div>
+
+    <div class="report-card" onclick="location.href='DistanceForm.html'">
+      تقرير المسافة المقطوعة (كم)
+    </div>
+
+    <div class="report-card" onclick="location.href='TraningForm.html'">
+      تقرير عدد البرامج التدريبية للموظفين
+    </div>
+
+    <div class="report-card" onclick="location.href='TraineesForm.html'">
+      تقرير عدد الطلبة المتدربين
+    </div>
+
+  </div>
+</div>
+
+   <div class="submenu-item" id="complainItem">
+  <button type="button" class="submenu-toggle" id="complainMenuBtn">
+    تقارير قسم الشكاوي
+    <i class="fa-solid fa-chevron-down"></i>
+  </button>
+
+  <div class="submenu-dropdown cards-grid" id="complainDropdown">
+
+    <div class="report-card" onclick="location.href='complainIndicatorsForm.html'">
+      تقرير إجمالي مؤشرات الشكاوي حسب الولاية
+    </div>
+
+    <div class="report-card" onclick="location.href='totalStaticForm.html'">
+      تقرير إجمالي الشكاوي الواردة
+    </div>
+
+    <div class="report-card" onclick="location.href='sectorComplainForm.html'">
+      تقرير الشكاوي الواردة حسب القطاعات
+    </div>
+
+    <div class="report-card" onclick="location.href='subsectorForm.html'">
+       تقرير الشكاوي الواردة حسب نوع القطاع السلع والخدمات
+    </div>
+
+    <div class="report-card" onclick="location.href='refundsForm.html'">
+      تقرير المبالغ المسترجعة
+    </div>
+
+    <div class="report-card" onclick="location.href='lastStatic.html'">
+      تقرير حسب الإجراء المتخذ
+    </div>
+
+  </div>
+</div>
+
+
+<div class="submenu-item" id="marketItem">
+  <button type="button" class="submenu-toggle" id="marketMenuBtn">
+    تقارير قسم التنظيم ومراقبة الأسواق
+    <i class="fa-solid fa-chevron-down"></i>
+  </button>
+
+  <div class="submenu-dropdown cards-grid" id="marketDropdown">
+
+    <div class="report-card" onclick="location.href='marketIndicatorsForm.html'">
+      تقرير إجمالي المؤشرات الإحصائية
+    </div>
+
+    <div class="report-card" onclick="location.href='marketReportsForm.html'">
+      تقرير إحصائية البلاغات الواردة للإدارة
+    </div>
+
+    <div class="report-card" onclick="location.href='marketSectorForm.html'">
+      تقرير عدد البلاغات الواردة حسب القطاع
+    </div>
+
+    <div class="report-card" onclick="location.href='seizedGoodsForm.html'">
+      تقرير أنواع السلع المضبوطة
+    </div>
+
+    <div class="report-card" onclick="location.href='refundCasesForm.html'">
+      تقرير عدد البلاغات التي بها مبالغ مسترجعة
+    </div>
+
+    <div class="report-card" onclick="location.href='marketActionForm.html'">
+      تقرير إحصائية البلاغات حسب الإجراء المتخذ
+    </div>
+
+    <div class="report-card" onclick="location.href='marketViolationsForm.html'">
+      تقرير إحصائية المخالفات حسب القطاع
+    </div>
+
+  </div>
+</div>
+
+    <a href="mediaForm.html" class="submenu-link">تقرير قسم التواصل والإعلام</a>
+    <a href="legalForm.html" class="submenu-link">تقرير قسم الشؤون القانونية</a>
+
+  </div>
+</section>
+
+
+
+
+      <!-- بطاقة طلبات -->
+<article class="card requests-card" data-target="requests-menu">
+    <div class="card-icon"><i class="fa-solid fa-file-circle-exclamation"></i></div>
+    <h2 class="card-title">طلبات</h2>
+    <p class="card-subtitle">رفع أسعار واعتماد وموافقات</p>
+    <span class="chevron"><i class="fa-solid fa-angle-down"></i></span>
+</article>
+
+<!-- القائمة المنسدلة لطلبات -->
+<section class="submenu" id="requests-menu">
+    <h3 class="submenu-title">اختر نوع الطلب:</h3>
+    <div class="submenu-buttons">
+
+        <a href="requestForm.html" class="submenu-link">طلب رفع أسعار</a>
+        <a href="approveForm.html" class="submenu-link">اعتماد رفع أسعار</a>
+        <a href="reportapproveForm.html" class="submenu-link">موافقات رفع أسعار</a>
+
+    </div>
+</section>
+
+     
+
+    <!-- دراسات مستفادة -->
+    <article class="card lessons-card">
+        <a href="lessonsForm.html" class="card-link">
+            <div class="card-icon"><i class="fa-solid fa-book-open-reader"></i></div>
+            <h2 class="card-title">دراسات مستفادة</h2>
+            <p class="card-subtitle">خلاصات وتحليلات الدراسات</p>
+        </a>
+    </article>
+
+    <!-- إنجازات القسم -->
+    <article class="card achievements-card">
+        <a href="achievement-form.html" class="card-link">
+            <div class="card-icon"><i class="fa-solid fa-trophy"></i></div>
+            <h2 class="card-title">إنجازات القسم</h2>
+            <p class="card-subtitle">مشاريع، تقارير، مبادرات</p>
+        </a>
+    </article>
+
+       
+    <!-- القوائم المنسدلة لكل بطاقة -->
+    <!-- يمكن إضافة نفس القوائم لبقية البطاقات هنا، مع تعديل معرّف القائمة المناسب -->
+</main>
+
+<script>
+
+
+    const cards = document.querySelectorAll(".card");
+    const submenus = document.querySelectorAll(".submenu");
+    const forms = document.querySelectorAll(".survey-form");
+    const formTitle = document.getElementById("current-form-title");
+    const formDesc = document.getElementById("current-form-desc");
+
+    // فتح / إغلاق القوائم المنسدلة
+    cards.forEach(card => {
+        card.addEventListener("click", () => {
+            const targetId = card.getAttribute("data-target");
+            submenus.forEach(menu => {
+                if (menu.id === targetId) {
+                    menu.classList.toggle("open");
+                } else {
+                    menu.classList.remove("open");
+                }
+            });
+        });
+    });
+
+    // إظهار النموذج المناسب عند اختيار زر من القائمة المنسدلة
+    submenus.forEach(menu => {
+        menu.addEventListener("click", (e) => {
+            if (e.target.tagName.toLowerCase() === "button") {
+                const formId = e.target.getAttribute("data-form");
+                showForm(formId);
+                document.getElementById("forms-container").scrollIntoView({ behavior: "smooth" });
+            }
+        });
+    });
+
+    function showForm(formId) {
+        forms.forEach(f => f.classList.remove("active"));
+        const targetForm = document.getElementById(formId);
+        if (targetForm) {
+            targetForm.classList.add("active");
+            const catInput = targetForm.querySelector('input[name="category"]');
+            formTitle.textContent = catInput ? catInput.value : "نموذج";
+            formDesc.textContent = "املأ الحقول التالية ثم اضغط إرسال ليتم حفظ البيانات في جوجل شيت.";
+        }
+    }
+
+    document.getElementById("adminMenuBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.currentTarget.closest(".submenu")?.classList.toggle("open");
+  });
+
+   // فتح/إغلاق قائمة "تقارير الأقسام" عبر الكارد
+  document.querySelectorAll(".card[data-target]").forEach(card => {
+    card.addEventListener("click", () => {
+      const id = card.getAttribute("data-target");
+      const box = document.getElementById(id);
+      if (!box) return;
+
+      const isOpen = box.style.display !== "none";
+      box.style.display = isOpen ? "none" : "block";
+
+      // تدوير السهم في الكارد
+      card.classList.toggle("open", !isOpen);
+    });
+
+    // دعم Enter من الكيبورد
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") card.click();
+    });
+  });
+
+  // فتح/إغلاق قائمة قسم الشؤون الإدارية والمالية
+document.addEventListener("DOMContentLoaded", () => {
+  const btn  = document.getElementById("adminMenuBtn");
+  const item = document.getElementById("adminItem");
+
+  if(!btn || !item) return;
+
+  btn.addEventListener("click", () => {
+    item.classList.toggle("open");
+  });
+});
+
+
+document.getElementById("complainMenuBtn").addEventListener("click", () => {
+  const dropdown = document.getElementById("complainDropdown");
+  const btn = document.getElementById("complainMenuBtn");
+
+  dropdown.classList.toggle("open");
+  btn.classList.toggle("active");
+});
+
+document.getElementById("marketMenuBtn").addEventListener("click", function () {
+  document.getElementById("marketDropdown").classList.toggle("show");
+});
+
+</script>
+
+</body>
+</html>

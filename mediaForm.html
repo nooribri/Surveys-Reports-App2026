@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>التقرير الإحصائي الشهري</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+    *{box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;margin:0;padding:16px;background:#fff}
+
+    .main-header{max-width:1100px;margin:0 auto 16px;padding:14px 18px;border:1px solid #e0e0e0;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.05);position:relative}
+    .header-top{display:flex;justify-content:center;gap:20px;position:relative;min-height:90px}
+    .logo-box img{width:92px;height:auto}
+    .gov-info{position:absolute;right:0;text-align:right;color:#0a66c2;font-weight:700;line-height:1.2}
+    .gov-info h2,.gov-info h3,.gov-info h4{margin:0;padding:2px 0}
+    .main-title{text-align:center;margin-top:6px;color:#0a66c2}
+    .main-title p{margin:0;font-size:18px;font-weight:800}
+
+    #messageBox{position:fixed;top:18px;right:18px;color:#fff;padding:8px 12px;border-radius:10px;font-size:13px;display:none;z-index:9999;box-shadow:0 0 10px rgba(0,0,0,0.2)}
+
+    form{max-width:1100px;margin:0 auto 12px;background:#f3f8ff;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+    .grid{display:grid;grid-template-columns:260px 1fr 260px 1fr;gap:10px;align-items:center}
+    label{font-weight:800;color:#0a3d73}
+    input,select{width:100%;height:38px;border-radius:10px;border:1px solid #c7d8f0;padding:8px 10px;font-size:14px;outline:none}
+    input[type="number"]{direction:ltr;text-align:center;background:#eef8ff;font-weight:800}
+
+    .actions{grid-column:1/-1;display:flex;justify-content:center;gap:10px;margin-top:6px}
+    .actions button{border:0;border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer;color:#fff;font-weight:800}
+    .save{background:#0b8c4a}
+    .cancel{background:#6c757d;display:none}
+
+    .tools{max-width:1100px;margin:0 auto 10px;display:flex;justify-content:center}
+    .tools input{min-width:320px;padding:9px 10px;border-radius:10px;border:1px solid #ccc}
+
+    table{width:100%;max-width:1100px;margin:0 auto;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff}
+    th,td{border:1px solid #d0d7e2;padding:6px 4px;text-align:center;font-size:13px}
+    th{background:#0b5ed7;color:#fff}
+    tbody tr:nth-child(even){background:#f9fbff}
+    .action-col{white-space:nowrap}
+
+    .action-btn{border:0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;color:#fff;font-weight:800}
+    .edit-btn{background:#17a2b8}
+    .delete-btn{background:#dc3545}
+
+    .export-buttons{max-width:1100px;margin:16px auto 0;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .export-buttons button{padding:10px 14px;border:0;border-radius:10px;background:#6f42c1;color:#fff;cursor:pointer;font-size:14px;font-weight:800}
+    .export-buttons i{margin-left:6px}
+
+    @media print{
+      form,.tools,.export-buttons,#messageBox{display:none !important}
+      th.action-col, td.action-col{display:none !important}
+      body{padding:0;margin:0}
+      table{box-shadow:none}
+    }
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .gov-info{position:static;margin-top:8px}
+      .header-top{flex-direction:column;align-items:center}
+    }
+    /* ===== التوقيعات ===== */
+   /* ===== التوقيعات (إدخال عادي) ===== */
+.signatures-line {
+  max-width: 1100px;
+  margin: 30px auto 10px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.sig-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.sig-item.wide {
+  flex: 2;
+}
+
+.sig-title {
+  font-weight: 700;
+  color: #0a3d73;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+/* input يظهر كخط */
+.sig-input {
+  flex: 1;
+  border: none;
+  border-bottom: 2px solid #000;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  padding: 4px 2px;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* ===== عند الطباعة ===== */
+@media print {
+
+  /* إزالة الخط */
+  .sig-input {
+    border-bottom: none !important;
+    padding-bottom: 0;
+  }
+
+  /* إخفاء placeholder */
+  .sig-input::placeholder {
+    color: transparent;
+  }
+
+  /* منع التعديل أثناء الطباعة */
+  .sig-input {
+    pointer-events: none;
+  }
+}
+
+.row-highlight{
+  outline: 3px solid #38bdf8;
+  outline-offset: -3px;
+}
+
+.report-title{
+  max-width:1100px;
+  margin: 10px auto 18px;
+  text-align:center;
+  color:#0a66c2;
+  font-weight:800;
+  font-size:20px;
+}
+
+@media print {
+  .back-button {
+    display: none;
+  }
+}
+
+  </style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <div class="header-top">
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان">
+    </div>
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h4>قسم التواصل والإعلام/h4>
+    </div>
+  </div>
+  <div class="main-title">
+    <p>التقرير الإحصائي الشهري الخاص بالإدارة</p>
+  </div>
+</header>
+<h2 id="reportTitle" class="report-title"></h2>
+
+
+<div id="messageBox"></div>
+
+<form id="mediaForm">
+  <div class="grid">
+   <label>الشهر</label>
+<select id="month">
+  <option value="01">يناير</option>
+  <option value="02">فبراير</option>
+  <option value="03">مارس</option>
+  <option value="04">أبريل</option>
+  <option value="05">مايو</option>
+  <option value="06">يونيو</option>
+  <option value="07">يوليو</option>
+  <option value="08">أغسطس</option>
+  <option value="09">سبتمبر</option>
+  <option value="10">أكتوبر</option>
+  <option value="11">نوفمبر</option>
+  <option value="12">ديسمبر</option>
+</select>
+
+    <label>السنة</label>
+    <input type="number" id="year" min="2000" max="2100">
+
+    <label>المسافة المقطوعة (كم)</label>
+    <input type="number" id="distanceKm" min="0" step="0.1" value="0">
+
+    <label>مهرجانات / معارض</label>
+    <input type="number" id="fest" min="0" step="1" value="0">
+
+    <label>مؤتمرات / حلقات عمل</label>
+    <input type="number" id="conf" min="0" step="1" value="0">
+
+    <label>محاضرات توعوية</label>
+    <input type="number" id="aware" min="0" step="1" value="0">
+
+    <label>تقارير إخبارية</label>
+    <input type="number" id="news" min="0" step="1" value="0">
+
+    <label>أنشطة عامة</label>
+    <input type="number" id="general" min="0" step="1" value="0">
+
+    <div class="actions">
+      <button type="submit" class="save"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+      <button type="button" class="cancel" id="cancelEdit">إلغاء التعديل</button>
+    </div>
+  </div>
+</form>
+
+<div class="tools">
+  <input type="text" id="searchInput" placeholder="🔍 بحث في جميع الحقول">
+</div>
+
+<table id="mediaTable">
+  <thead>
+    <tr>
+      <th>م</th>
+      <th>الشهر</th>
+      <th>السنة</th>
+      <th>المسافة (كم)</th>
+      <th>مهرجانات / معارض</th>
+      <th>مؤتمرات / حلقات عمل</th>
+      <th>محاضرات توعوية</th>
+      <th>تقارير إخبارية</th>
+      <th>أنشطة عامة</th>
+      <th class="action-col">إجراء</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+  <tfoot>
+    <tr>
+      <td colspan="3"><b>الإجمالي</b></td>
+      <td id="sumDistance">0</td>
+      <td id="sumFest">0</td>
+      <td id="sumConf">0</td>
+      <td id="sumAware">0</td>
+      <td id="sumNews">0</td>
+      <td id="sumGeneral">0</td>
+      <td class="action-col"></td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- التوقيعات -->
+<div class="signatures-line">
+  <div class="sig-item">
+    <label class="sig-title">أعد التقرير:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item">
+    <label class="sig-title">راجعه:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item wide">
+    <label class="sig-title">اعتماد مدير الإدارة:</label>
+    <input type="text" class="sig-input" placeholder="الاسم">
+  </div>
+</div>
+
+
+
+<div class="export-buttons">
+  <button type="button" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة</button>
+  <button type="button" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+</div>
+
+<a href="javascript:history.back()" class="back-button">
+  <i class="fa-solid fa-arrow-right"></i> الرجوع
+</a>
+
+<script>
+  // 🔴 غيّري هذا الرابط إلى رابط Web App عندك
+  const SHEET_API = "https://script.google.com/macros/s/AKfycbyO5TW0VlwNwP_gaJO-73ABvP-Nyow5-U6exDIX5hizl89hu6-zkjwV6UZ7Ojtxu99afA/exec";
+
+  // ✅ تأكدي أن هذه الدالة موجودة
+const $ = (id) => document.getElementById(id);
+
+let rowsData = [];
+let editRowIndex = null;
+let pendingScrollRow = null;
+
+// ✅ تمييز والرجوع لنفس الصف بعد التحديث
+function scrollToRow(rowIndex){
+  const rowEl = document.querySelector(`tr[data-rowindex="${rowIndex}"]`);
+  if(!rowEl) return;
+
+  rowEl.scrollIntoView({ behavior:"smooth", block:"center" });
+  rowEl.classList.add("row-highlight");
+  setTimeout(()=> rowEl.classList.remove("row-highlight"), 1500);
+}
+
+const MONTH_NAMES = {
+  "01":"يناير","02":"فبراير","03":"مارس","04":"أبريل","05":"مايو","06":"يونيو",
+  "07":"يوليو","08":"أغسطس","09":"سبتمبر","10":"أكتوبر","11":"نوفمبر","12":"ديسمبر"
+};
+
+function monthLabel(m){
+  const mm = String(m || "").padStart(2, "0");
+   return MONTH_NAMES[mm] || mm;
+
+}
+
+function updateReportTitle(){
+  const month = $("month")?.value;
+  const year  = $("year")?.value;
+
+  if(!month || !year) return;
+
+  const title = `التقرير الإحصائي لشهر ${monthLabel(month)} ${year}`;
+  const el = document.getElementById("reportTitle");
+  if(el) el.textContent = title;
+}
+
+async function loadData(){
+  const monthEl = $("month");
+  const yearEl  = $("year");
+
+  // حماية
+  if(!monthEl || !yearEl) return;
+
+  const month = monthEl.value;
+  const year  = yearEl.value;
+
+  const url = `${SHEET_API}?action=list&month=${encodeURIComponent(month)}&year=${encodeURIComponent(year)}`;
+
+  const res = await fetch(url);
+  const json = await res.json();
+
+  rowsData = json.rows || [];
+  renderRows(rowsData);
+
+  if (pendingScrollRow) {
+    scrollToRow(pendingScrollRow);
+    pendingScrollRow = null;
+  }
+}
+
+function renderRows(data){
+  const tbody = $("tbody");
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+
+  let sDistance=0,sFest=0,sConf=0,sAware=0,sNews=0,sGeneral=0;
+
+  data.forEach((r, i) => {
+    const distance = Number(r.DistanceKm||0);
+    const fest     = Number(r.Fest||0);
+    const conf     = Number(r.Conf||0);
+    const aware    = Number(r.Aware||0);
+    const news     = Number(r.News||0);
+    const general  = Number(r.General||0);
+
+    sDistance += distance; sFest += fest; sConf += conf; sAware += aware; sNews += news; sGeneral += general;
+
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-rowindex", r.rowIndex);
+
+    tr.innerHTML = `
+  <td>${i+1}</td>
+  <td>${monthLabel(r.Month)}</td>
+  <td>${r.Year || ""}</td>
+  <td>${distance}</td>
+  <td>${fest}</td>
+  <td>${conf}</td>
+  <td>${aware}</td>
+  <td>${news}</td>
+  <td>${general}</td>
+  <td class="action-col">
+    <button type="button" class="action-btn edit-btn" onclick="startEdit(${r.rowIndex})">تعديل</button>
+    <button type="button" class="action-btn delete-btn" onclick="deleteRow(${r.rowIndex})">حذف</button>
+  </td>
+`;
+
+    tbody.appendChild(tr);
+  });
+
+  // إجماليات (إذا موجودة)
+  if($("sumDistance")) $("sumDistance").textContent = sDistance;
+  if($("sumFest"))     $("sumFest").textContent     = sFest;
+  if($("sumConf"))     $("sumConf").textContent     = sConf;
+  if($("sumAware"))    $("sumAware").textContent    = sAware;
+  if($("sumNews"))     $("sumNews").textContent     = sNews;
+  if($("sumGeneral"))  $("sumGeneral").textContent  = sGeneral;
+}
+
+
+
+async function saveOrUpdate(e){
+  e.preventDefault();
+
+  const editedRow = editRowIndex;
+
+  const payload = new URLSearchParams({
+    action: editRowIndex ? "update" : "add",
+    rowIndex: editRowIndex ? String(editRowIndex) : "",
+    month: $("month")?.value || "",
+    year: $("year")?.value || "",
+    distanceKm: $("distanceKm")?.value || 0,
+    fest: $("fest")?.value || 0,
+    conf: $("conf")?.value || 0,
+    aware: $("aware")?.value || 0,
+    news: $("news")?.value || 0,
+    general: $("general")?.value || 0
+  });
+
+  const res = await fetch(SHEET_API, { method:"POST", body: payload });
+  const json = await res.json();
+
+  if(!json.ok){
+    showMessage(json.msg || "فشل الحفظ", "error");
+    return;
+  }
+
+  
+
+  showMessage(editRowIndex ? "تم التعديل ✅" : "تم الحفظ ✅");
+
+  if (editedRow) pendingScrollRow = editedRow;
+
+  editRowIndex = null;
+  if($("cancelEdit")) $("cancelEdit").style.display = "none";
+
+  await loadData();
+}
+
+window.startEdit = function(rowIndex){
+  const r = rowsData.find(x => Number(x.rowIndex) === Number(rowIndex));
+  if(!r) return;
+
+  editRowIndex = Number(r.rowIndex);
+
+  const m = String(r.Month || "01").padStart(2, "0");
+  if($("month")) $("month").value = m;
+  if($("year"))  $("year").value  = r.Year || new Date().getFullYear();
+
+  if($("distanceKm")) $("distanceKm").value = Number(r.DistanceKm || 0);
+  if($("fest"))       $("fest").value       = Number(r.Fest || 0);
+  if($("conf"))       $("conf").value       = Number(r.Conf || 0);
+  if($("aware"))      $("aware").value      = Number(r.Aware || 0);
+  if($("news"))       $("news").value       = Number(r.News || 0);
+  if($("general"))    $("general").value    = Number(r.General || 0);
+
+  if($("cancelEdit")) $("cancelEdit").style.display = "inline-block";
+  window.scrollTo({top:0, behavior:"smooth"});
+};
+
+window.deleteRow = async function(rowIndex){
+  if(!confirm("هل تريد حذف السطر؟")) return;
+
+  const payload = new URLSearchParams({
+    action: "delete",
+    rowIndex: String(rowIndex)
+  });
+
+  const res = await fetch(SHEET_API, { method:"POST", body: payload });
+  const json = await res.json();
+
+  if(!json.ok){
+    showMessage(json.msg || "فشل الحذف", "error");
+    return;
+  }
+
+  showMessage("تم الحذف ✅");
+  await loadData();
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  if($("year")) $("year").value = new Date().getFullYear();
+
+  if($("mediaForm")) $("mediaForm").addEventListener("submit", saveOrUpdate);
+
+  if($("cancelEdit")){
+    $("cancelEdit").addEventListener("click", ()=>{
+      editRowIndex = null;
+      $("cancelEdit").style.display = "none";
+      $("mediaForm")?.reset();
+      if($("year")) $("year").value = new Date().getFullYear();
+
+      document.querySelectorAll(".sig-input").forEach(i => i.readOnly = false);
+    });
+  }
+
+  $("month")?.addEventListener("change", updateReportTitle);
+  $("year")?.addEventListener("input", updateReportTitle);
+
+  updateReportTitle();
+
+  if($("searchInput")){
+    $("searchInput").addEventListener("input", ()=>{
+      const q = $("searchInput").value.toLowerCase().trim();
+      if(!q) return renderRows(rowsData);
+
+      const filtered = rowsData.filter(r =>
+        Object.values(r).some(v => String(v ?? "").toLowerCase().includes(q))
+      );
+      renderRows(filtered);
+    });
+  }
+
+  loadData();
+});
+
+function showMessage(text, type = "success") {
+  const box = document.getElementById("messageBox");
+  if (!box) return;
+
+  box.textContent = text;
+  box.style.display = "block";
+  box.style.backgroundColor =
+    type === "error" ? "#dc3545" : "#28a745";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
+
+
+  window.exportToExcel = function(){
+    const wb = XLSX.utils.table_to_book($("mediaTable"), { sheet:"تقرير الإعلام" });
+    XLSX.writeFile(wb, "التقرير_الاحصائي.xlsx");
+  };
+
+  (function init(){
+    $("year").value = new Date().getFullYear();
+    loadData();
+  })();
+</script>
+
+</body>
+</html>

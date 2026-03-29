@@ -1,0 +1,686 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مسوحات الاسمنت</title>
+
+  <!-- أيقونات و Excel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background:#ffffff;
+      margin:0;
+      padding:16px;
+    }
+
+    /* ===== الهيدر أعلى الصفحة ===== */
+    .main-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      background:#ffffff;
+      border-radius: 12px;
+      padding: 16px 20px 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      position: relative;
+      text-align: center;  /* محاذاة الشعار والنصوص في الوسط */
+    }
+
+   .header-top {
+  display: flex;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  align-items: flex-start;  /* محاذاة العناصر في الأعلى */
+  gap: 20px;                /* المسافة بين الشعار والعناوين */
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  gap: 12px;
+}
+
+    .logo-box img {
+      width:100px;
+      height:auto;
+    }
+
+  .gov-info {
+  position: absolute;
+  right: 0;                /* العناوين على الجهة اليمنى */
+  text-align: right;       /* محاذاة النصوص لليمين */
+  line-height: 1.5;
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.gov-info h2,
+.gov-info h3,
+.gov-info h4 {
+  margin: 0;              /* إزالة الهوامش الافتراضية */
+  padding: 2px 0;         /* تقليل المسافة بين العناوين */
+  line-height: 1.2;       /* تقليل المسافة بين الأسطر */
+}
+
+   .main-title {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.main-title h1 {
+  font-size: 2.2rem;
+  color: #0a66c2;
+  font-weight: 700;
+}
+
+.main-title p {
+  margin-top: 4px;
+  font-size: 1.1rem;
+  color: #0a66c2;
+  opacity: 0.9;
+}
+
+    /* ===== نموذج الإدخال ===== */
+    #cementForm {
+      max-width:1100px;
+      margin:0 auto 18px;
+      background:#f3f8ff;
+      border-radius:12px;
+      padding:18px 20px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+
+      display:grid;
+      grid-template-columns: 150px 1fr 150px 1fr;
+      column-gap:16px;
+      row-gap:10px;
+      align-items:center;
+    }
+    #cementForm label {
+      font-weight:600;
+      justify-self:end;
+      color:#0a3d73;
+    }
+    #cementForm input {
+      width:100%;
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #c7d8f0;
+      font-size:14px;
+    }
+
+    .form-actions {
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .form-actions button {
+      border:none;
+      border-radius:8px;
+      padding:9px 16px;
+      font-size:14px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .form-actions .save { background:#0b8c4a; }
+    .form-actions .cancel { background:#6c757d; display:none; }
+
+    /* ===== أدوات أعلى الجدول ===== */
+    .tools {
+      max-width:1100px;
+      margin:0 auto 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .tools-left, .tools-right{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .tools input[type="text"] {
+      padding:7px 10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      min-width:220px;
+    }
+    .tools button {
+      padding:8px 12px;
+      border:none;
+      border-radius:8px;
+      background:#0d6efd;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    /* ===== الجدول ===== */
+    table {
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      border-collapse:collapse;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+      background:#fff;
+    }
+    th, td {
+      border:1px solid #d0d7e2;
+      padding:6px 4px;
+      text-align:center;
+      font-size:13px;
+    }
+    th {
+      background:#0b5ed7;
+      color:#fff;
+      font-size:13px;
+    }
+    tbody tr:nth-child(even){ background:#f9fbff; }
+
+    .action-btn {
+      border:none;
+      border-radius:6px;
+      padding:4px 8px;
+      font-size:12px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .edit-btn{ background:#17a2b8; }
+    .delete-btn{ background:#dc3545; }
+
+    .export-buttons{
+      max-width:1100px;
+      margin:18px auto 8px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .export-buttons button{
+      padding:8px 13px;
+      border:none;
+      border-radius:8px;
+      background:#6f42c1;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .back-button{
+      display:block;
+      text-align:center;
+      margin:10px auto 0;
+      text-decoration:none;
+      color:#0d6efd;
+      font-size:14px;
+    }
+
+    /* رسالة علوية صغيرة */
+    #messageBox{
+      position:fixed;
+      top:20px;
+      right:20px;
+      background:#28a745;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:10px;
+      font-size:13px;
+      display:none;
+      z-index:9999;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+
+    /* إخفاء عمود الإجراء أثناء الطباعة */
+    @media print {
+      #cementForm,
+      .tools,
+      .export-buttons,
+      .back-button {
+        display:none !important;
+      }
+      th.action-col, td.action-col {
+        display:none !important;
+      }
+    }
+
+    /* موبايل */
+    @media (max-width: 768px){
+      .header-top{
+        flex-direction:column-reverse;
+        align-items:flex-start;
+      }
+      .gov-info{ text-align:right; }
+      #cementForm{
+        grid-template-columns: 130px 1fr;
+      }
+    }
+
+    .company-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .company-section label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    .company-section input, .company-section select {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      width: 48%;
+      margin-bottom: 10px;
+    }
+
+    .company-section input[type="number"] {
+      width: 48%;
+    }
+
+    .company-section select {
+      width: 48%;
+    }
+    .tools-center {
+  display: flex;
+  justify-content: center; /* محاذاة مربع البحث في المنتصف */
+  width: 100%; 
+  margin-bottom: 15px; /* إضافة بعض المسافة أسفل */
+}
+
+.tools-center input {
+  width: 30%; /* تخصيص العرض حسب الحاجة */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.export-buttons {
+  display: flex;
+  justify-content: center; /* محاذاة الأزرار في المنتصف */
+  gap: 20px; /* المسافة بين الأزرار */
+  margin: 20px 0;
+}
+
+.export-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6f42c1;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.export-buttons button i {
+  margin-left: 5px; /* إضافة مسافة صغيرة بين الأيقونة والنص */
+}
+
+.export-buttons button:hover {
+  background-color: #5a35a0;
+}
+
+@media print {
+  .action-col {
+    display: none !important;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <!-- ===== الهيدر ===== -->
+  <header class="main-header">
+  <div class="header-top">
+    <!-- الشعار في المنتصف في الأعلى -->
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان" class="logo">
+    </div>
+
+    <!-- عناوين الحكومة على الجهة اليمنى -->
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+       <h4>قسم الدراسات والتطوير</h4>
+    </div>
+  </div>
+
+    <!-- عنوان التطبيق -->
+    <div class="main-title">
+      <h1>مسوحات أسعار موادالبناء</h1>
+      <p>مسح أسعار الإسمنت</p>
+    </div>
+  </header>
+
+  <!-- ===== نموذج إدخال بيانات مسوحات الاسمنت ===== -->
+  <form id="cementForm">
+
+    <!-- رقم السلعة -->
+    <label for="itemNumber">رقم السلعة</label>
+    <input id="itemNumber" name="itemNumber" type="text">
+
+    <!-- اسم الشركة/المصنع -->
+    <label for="companyName">اسم الشركة/المصنع</label>
+    <input id="companyName" name="companyName" type="text">
+
+    <!-- رقم الهاتف -->
+    <label for="phone">رقم الهاتف</label>
+    <input id="phone" name="phone" type="text">
+
+    <!-- التاريخ -->
+    <label for="date">التاريخ</label>
+    <input id="date" name="date" type="date">
+
+    <!-- نوع السلعة -->
+    <label for="itemType">نوع السلعة</label>
+    <input id="itemType" name="itemType" type="text">
+
+    <!-- تفاصيل السلعة -->
+    <label for="itemDetails">تفاصيل السلعة</label>
+    <input id="itemDetails" name="itemDetails" type="text">
+
+    <!-- الحجم/كجم -->
+    <label for="size">الحجم (كجم)</label>
+    <input id="size" name="size" type="text">
+
+    <!-- بلد المنشأ -->
+    <label for="countryOfOrigin">بلد المنشأ</label>
+    <input id="countryOfOrigin" name="countryOfOrigin" type="text">
+
+    <!-- سعر الشراء -->
+    <label for="purchasePrice">سعر الشراء</label>
+    <input id="purchasePrice" name="purchasePrice" type="text" step="0.01">
+
+    <!-- سعر البيع -->
+    <label for="salePrice">سعر البيع</label>
+    <input id="salePrice" name="salePrice" type="text" step="0.01">
+
+    <!-- الملاحظات -->
+    <label for="notes">الملاحظات</label>
+    <input id="notes" name="notes" type="text">
+
+    <!-- الأزرار -->
+    <div class="form-actions">
+      <button type="submit" class="save">
+        <i class="fa-solid fa-floppy-disk"></i> حفظ
+      </button>
+      <button type="button" class="cancel" id="cancelEdit">
+        <i class="fa-solid fa-ban"></i> إلغاء التعديل
+      </button>
+    </div>
+  </form>
+
+  <!-- ===== أدوات أعلى الجدول ===== -->
+ <div class="tools">
+    <div class="tools-center">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث في الرقم، الشركة، السعر ...">
+    </div>
+</div>
+
+   
+  <!-- ===== جدول مسوحات الاسمنت ===== -->
+  <table id="cementTable">
+    <thead>
+      <tr>
+        <th>رقم السلعة</th>
+        <th>اسم الشركة/المصنع</th>
+        <th>رقم الهاتف</th>
+        <th>التاريخ</th>
+        <th>نوع السلعة</th>
+        <th>تفاصيل السلعة</th>
+        <th>الحجم/كجم</th>
+        <th>بلد المنشأ</th>
+        <th>سعر الشراء</th>
+        <th>سعر البيع</th>
+        <th>الملاحظات</th>
+        <th class="action-col">إجراء</th>
+      </tr>
+    </thead>
+    <tbody id="cementTableBody"></tbody>
+  </table>
+
+   <!-- أزرار الطباعة والتصدير -->
+<div class="export-buttons">
+  <!-- زر الطباعة -->
+  <button type="button" onclick="window.print()">
+    <i class="fa-solid fa-print"></i> طباعة
+  </button>
+
+  <!-- زر التصدير إلى Excel -->
+  <button type="button" onclick="exportToExcel()">
+    <i class="fa-solid fa-file-excel"></i> Excel
+  </button>
+</div>
+
+
+  <a href="javascript:history.back()" class="back-button">
+    <i class="fa-solid fa-arrow-right"></i> الرجوع
+  </a>
+
+  <div class="footer-note">
+  الرمز : 01-107-SOP &nbsp;&nbsp;|&nbsp;&nbsp;
+   الإصدار: 02 &nbsp;&nbsp;|&nbsp;&nbsp;
+    التاريخ: سبتمبر 2024
+</div>
+
+
+  <div id="messageBox"></div>
+
+<script>
+/* =========================
+   الإعدادات العامة
+========================= */
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxxhYrKwCBNJDJihitJigiY1ayVQFC9EI1vBU-z6b25tivyno0KubG26asbuySCrQANtw/exec";
+
+let cementData = [];
+let editRowNumber = null;
+
+
+/* =========================
+   تحميل البيانات
+========================= */
+async function loadData(){
+  const res = await fetch(SHEET_API);
+  cementData = await res.json();
+  renderRows(cementData);
+}
+
+document.addEventListener("DOMContentLoaded", loadData);
+
+/* =========================
+   الرسائل
+========================= */
+function showMessage(msg, type="success"){
+  const box = document.getElementById("messageBox");
+  box.textContent = msg;
+  box.style.backgroundColor = (type==="error") ? "#dc3545" : "#28a745";
+  box.style.display = "block";
+  setTimeout(()=> box.style.display="none", 3000);
+}
+
+/* =========================
+   عرض الجدول
+========================= */
+function renderRows(data){
+  const tbody = document.getElementById("cementTableBody");
+  tbody.innerHTML = "";
+
+  data.forEach((row, idx) => {
+
+    // 🔹 تنسيق التاريخ للعرض فقط
+    const displayDate = row.date
+      ? row.date.toString().split("T")[0]
+      : "";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${row.itemNumber || ""}</td>
+      <td>${row.companyName || ""}</td>
+      <td>${row.phone || ""}</td>
+      <td>${displayDate}</td>
+      <td>${row.itemType || ""}</td>
+      <td>${row.itemDetails || ""}</td>
+      <td>${row.size || ""}</td>
+      <td>${row.countryOfOrigin || ""}</td>
+      <td>${row.purchasePrice || ""}</td>
+      <td>${row.salePrice || ""}</td>
+      <td>${row.notes || ""}</td>
+    <td class="action-col">
+  <button class="action-btn edit-btn"
+    onclick="startEditByRowNumber('${row.rowNumber}')">
+    تعديل
+  </button>
+
+  <button class="action-btn delete-btn"
+    onclick="deleteRowByRowNumber('${row.rowNumber}')">
+    حذف
+  </button>
+</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+/* =========================
+   إضافة / تعديل
+========================= */
+document.getElementById("cementForm").addEventListener("submit", async e=>{
+  e.preventDefault();
+
+  const row = {
+   action: editRowNumber ? "update" : "add",
+    rowNumber: editRowNumber || "",
+    itemNumber: itemNumber.value.trim(),
+    companyName: companyName.value.trim(),
+    phone: phone.value.trim(),
+    date: date.value.trim(),
+    itemType: itemType.value.trim(),
+    itemDetails: itemDetails.value.trim(),
+    size: size.value.trim(),
+    countryOfOrigin: countryOfOrigin.value.trim(),
+    purchasePrice: purchasePrice.value.trim(),
+    salePrice: salePrice.value.trim(),
+    notes: notes.value.trim()
+  };
+
+  try {
+    const res = await fetch(SHEET_API, {
+      method: "POST",
+      body: new URLSearchParams(row)
+    });
+
+    if (!res.ok) throw new Error("فشل الاتصال");
+
+   editRowNumber = row.rowNumber;
+    cementForm.reset();
+    loadData();
+    showMessage("تم الحفظ بنجاح");
+
+  } catch (err) {
+    console.error(err);
+    showMessage("حدث خطأ أثناء الحفظ", "error");
+  }
+});
+
+/* =========================
+   بدء التعديل
+========================= */
+function startEditByRowNumber(rowNumber) {
+  const row = cementData.find(r => String(r.rowNumber) === String(rowNumber));
+  if (!row) {
+    showMessage("تعذّر العثور على السطر", "error");
+    return;
+  }
+
+  editRowNumber = row.rowNumber;
+
+  Object.keys(row).forEach(k => {
+    const el = document.getElementById(k);
+    if (!el) return;
+
+    if (k === "date" && row[k]) {
+      el.value = row[k].toString().split("T")[0];
+    } else {
+      el.value = row[k] || "";
+    }
+  });
+
+  document.getElementById("cancelEdit").style.display = "inline-block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+/* =========================
+   حذف
+========================= */
+async function deleteRowByRowNumber(rowNumber) {
+  if (!confirm("هل تريد حذف السطر؟")) return;
+
+  const row = cementData.find(r => String(r.rowNumber) === String(rowNumber));
+  if (!row || !row.rowNumber) {
+    showMessage("تعذّر العثور على السطر", "error");
+    return;
+  }
+
+  try {
+    const res = await fetch(SHEET_API, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "delete",
+        rowNumber: row.rowNumber
+      })
+    });
+
+    if (!res.ok) throw new Error("فشل الحذف");
+
+    showMessage("تم حذف السطر بنجاح");
+    loadData();
+
+  } catch (err) {
+    console.error(err);
+    showMessage("حدث خطأ أثناء الحذف", "error");
+  }
+}
+
+/* =========================
+   بحث
+========================= */
+document.getElementById("searchInput").addEventListener("input", function(){
+  const q = this.value.toLowerCase().trim();
+  const filtered = cementData.filter(row =>
+    Object.values(row).some(v =>
+      String(v||"").toLowerCase().includes(q)
+    )
+  );
+  renderRows(filtered);
+});
+
+/* =========================
+   تصدير Excel
+========================= */
+function exportToExcel(){
+  const table = document.getElementById("cementTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet: "الإسمنت" });
+  XLSX.writeFile(wb, "مسوحات_الإسمنت.xlsx");
+}
+</script>
+
+</body>
+</html>

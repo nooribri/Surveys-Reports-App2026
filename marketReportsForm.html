@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تقرير قسم التنظيم ومراقبة الأسواق</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+    *{box-sizing:border-box}
+    body{font-family:'Cairo',sans-serif;margin:0;padding:16px;background:#fff}
+
+    .main-header{max-width:1100px;margin:0 auto 16px;padding:14px 18px;border:1px solid #e0e0e0;border-radius:12px;box-shadow:0 3px 12px rgba(0,0,0,.05);position:relative}
+    .header-top{display:flex;justify-content:center;gap:20px;position:relative;min-height:90px}
+    .logo-box img{width:92px;height:auto}
+    .gov-info{position:absolute;right:0;text-align:right;color:#0a66c2;font-weight:700;line-height:1.2}
+    .gov-info h2,.gov-info h3,.gov-info h4{margin:0;padding:2px 0}
+    .main-title{text-align:center;margin-top:6px;color:#0a66c2}
+    .main-title p{margin:0;font-size:18px;font-weight:800}
+
+    #messageBox{position:fixed;top:18px;right:18px;color:#fff;padding:8px 12px;border-radius:10px;font-size:13px;display:none;z-index:9999;box-shadow:0 0 10px rgba(0,0,0,0.2)}
+
+    form{max-width:1100px;margin:0 auto 12px;background:#f3f8ff;border-radius:12px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+    .grid{display:grid;grid-template-columns:260px 1fr 260px 1fr;gap:10px;align-items:center}
+    label{font-weight:800;color:#0a3d73}
+    input,select{width:100%;height:38px;border-radius:10px;border:1px solid #c7d8f0;padding:8px 10px;font-size:14px;outline:none}
+    input[type="number"]{direction:ltr;text-align:center;background:#eef8ff;font-weight:800}
+
+    .actions{grid-column:1/-1;display:flex;justify-content:center;gap:10px;margin-top:6px}
+    .actions button{border:0;border-radius:10px;padding:9px 14px;font-size:14px;cursor:pointer;color:#fff;font-weight:800}
+    .save{background:#0b8c4a}
+    .cancel{background:#6c757d;display:none}
+
+    .tools{max-width:1100px;margin:0 auto 10px;display:flex;justify-content:center}
+    .tools input{min-width:320px;padding:9px 10px;border-radius:10px;border:1px solid #ccc}
+
+    table{width:100%;max-width:1100px;margin:0 auto;border-collapse:collapse;box-shadow:0 2px 8px rgba(0,0,0,0.08);background:#fff}
+    th,td{border:1px solid #d0d7e2;padding:6px 4px;text-align:center;font-size:13px}
+    th{background:#0b5ed7;color:#fff}
+    tbody tr:nth-child(even){background:#f9fbff}
+    .action-col{white-space:nowrap}
+
+    .action-btn{border:0;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;color:#fff;font-weight:800}
+    .edit-btn{background:#17a2b8}
+    .delete-btn{background:#dc3545}
+
+    .export-buttons{max-width:1100px;margin:16px auto 0;display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+    .export-buttons button{padding:10px 14px;border:0;border-radius:10px;background:#6f42c1;color:#fff;cursor:pointer;font-size:14px;font-weight:800}
+    .export-buttons i{margin-left:6px}
+
+    @media print{
+      form,.tools,.export-buttons,#messageBox{display:none !important}
+      th.action-col, td.action-col{display:none !important}
+      body{padding:0;margin:0}
+      table{box-shadow:none}
+    }
+
+    @media (max-width:900px){
+      .grid{grid-template-columns:1fr}
+      .gov-info{position:static;margin-top:8px}
+      .header-top{flex-direction:column;align-items:center}
+    }
+    /* ===== التوقيعات ===== */
+   /* ===== التوقيعات (إدخال عادي) ===== */
+.signatures-line {
+  max-width: 1100px;
+  margin: 30px auto 10px;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+
+.sig-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.sig-item.wide {
+  flex: 2;
+}
+
+.sig-title {
+  font-weight: 700;
+  color: #0a3d73;
+  white-space: nowrap;
+  font-size: 15px;
+}
+
+/* input يظهر كخط */
+.sig-input {
+  flex: 1;
+  border: none;
+  border-bottom: 2px solid #000;
+  background: transparent;
+  outline: none;
+  font-size: 15px;
+  padding: 4px 2px;
+  font-family: 'Cairo', sans-serif;
+}
+
+/* ===== عند الطباعة ===== */
+@media print {
+
+  /* إزالة الخط */
+  .sig-input {
+    border-bottom: none !important;
+    padding-bottom: 0;
+  }
+
+  /* إخفاء placeholder */
+  .sig-input::placeholder {
+    color: transparent;
+  }
+
+  /* منع التعديل أثناء الطباعة */
+  .sig-input {
+    pointer-events: none;
+  }
+}
+
+.row-highlight{
+  outline: 3px solid #38bdf8;
+  outline-offset: -3px;
+}
+
+.report-title{
+  max-width:1100px;
+  margin: 10px auto 18px;
+  text-align:center;
+  color:#0a66c2;
+  font-weight:800;
+  font-size:20px;
+}
+.date-cell{
+  direction:ltr;
+  unicode-bidi:bidi-override;
+  font-variant-numeric: lining-nums;
+}
+
+.filters{
+  max-width:1100px;
+  margin:10px auto 12px;
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.filters .f-item{display:flex; flex-direction:column; gap:6px;}
+.filters label{font-weight:700; color:#0a3d73; font-size:13px;}
+.filters input[type="date"]{
+  width:170px;
+  height:34px;
+  border-radius:10px;
+  border:1px solid #c7d8f0;
+  padding:6px 10px;
+  font-size:13px;
+}
+.filters button{
+  height:34px;
+  border:0;
+  border-radius:10px;
+  padding:0 14px;
+  cursor:pointer;
+  color:#fff;
+  background:#0d6efd;
+  font-weight:800;
+  font-size:13px;
+}
+.filters button.ghost{
+  background:#6c757d;
+}
+@media print{
+  #filtersBox{display:none !important;} /* إخفاء الفلترة عند الطباعة */
+}
+
+@media (max-width:600px){
+  .training-grid{
+    grid-template-columns: 1fr;
+  }
+}
+@media print {
+  .back-button {
+    display: none !important;
+  }
+}
+/* ===== جدول الإحصائيات ===== */
+#totalStaticTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#totalStaticTable th,
+#totalStaticTable td {
+  border: 1px solid #5699d1;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ===== صف العناوين ===== */
+#totalStaticTable thead th {
+  background-color: #3d8bd9;
+  font-weight: bold;
+}
+
+/* ===== صف الإجمالي ===== */
+#totalStaticTable tfoot tr.sum-row {
+  background-color: #e9f5ff;      /* لون مميز */
+  font-weight: bold;              /* خط عريض */
+  color: #99c3ed;
+  position: sticky;               /* تثبيت */
+  bottom: 0;
+  z-index: 2;
+}
+
+/* ===== إبراز عمود الإجمالي ونسبة الإنجاز ===== */
+#totalStaticTable tfoot th,
+#totalStaticTable tfoot td {
+  border-top: 2px solid #82acda;
+}
+
+/* ===== أزرار الإجراءات داخل الجدول ===== */
+#totalStaticTable button {
+  padding: 4px 10px;
+  margin: 0 2px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+#totalStaticTable button:hover {
+  opacity: 0.85;
+}
+
+/* ===== تحسين العرض على الشاشات الصغيرة ===== */
+@media (max-width: 768px) {
+  #totalStaticTable th,
+  #totalStaticTable td {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+}
+
+/* ===== إخفاء عناصر عند الطباعة ===== */
+@media print {
+
+  /* إخفاء عمود الإجراءات (العمود الخامس) */
+  #marketReportsTable th:nth-child(5),
+  #marketReportsTable td:nth-child(5) {
+    display: none !important;
+  }
+
+  /* إخفاء أزرار التصدير والطباعة */
+  .export-buttons,
+  .back-button {
+    display: none !important;
+  }
+
+  /* إخفاء مربع الرسائل */
+  #totalMessageBox {
+    display: none !important;
+  }
+
+  /* إخفاء أدوات البحث والفلترة */
+  .tools,
+  .filters {
+    display: none !important;
+  }
+
+  /* إخفاء الأزرار داخل الجدول */
+  .action-col {
+    display: none !important;
+  }
+
+}
+@media print {
+  /* إخفاء عمود الإجراءات بالكامل */
+  th.action-col,
+  td.action-col {
+    display: none !important;
+  }
+
+  /* إخفاء الأزرار نفسها احتياطًا */
+  .edit-btn,
+  .delete-btn {
+    display: none !important;
+  }
+}
+
+
+
+  </style>
+</head>
+
+<body>
+
+<header class="main-header">
+  <div class="header-top">
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان">
+    </div>
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h4>قسم الدراسات والتطوير</h4>
+    </div>
+  </div>
+  <div class="main-title">
+    <p>تقرير قسم التنظيم ومراقبة الأسواق</p>
+  </div>
+</header>
+<h2 id="reportTitle" class="report-title"></h2>
+
+
+<div id="messageBox"></div>
+
+<h4>إحصائية البلاغات الواردة لإدارة حماية المستهلك بمحافظة الظاهرة وهي كالأتي:-</h4>
+
+<form id="marketReportsForm">
+  <div class="grid totalStatic-grid">
+
+    <div class="field">
+      <label for="reportDate">التاريخ</label>
+      <input type="date" id="reportDate" required>
+    </div>
+
+    <div class="field">
+      <label for="totalComplaints">المجموع الكلي للبلاغات الواردة للإدارة</label>
+      <input type="number" id="totalComplaints" min="0" step="1" value="0" required>
+    </div>
+
+    <div class="field">
+      <label for="handledWithin3Days">البلاغات التي تم التعامل معها خلال 3 أيام</label>
+      <input type="number" id="handledWithin3Days" min="0" step="1" value="0" required>
+    </div>
+
+    <div class="field">
+      <label for="closedWithin10Days">البلاغات التي تم حلها / إغلاقها خلال 10 يومًا</label>
+      <input type="number" id="closedWithin10Days" min="0" step="1" value="0" required>
+    </div>
+
+    <div class="actions full">
+      <button type="submit" class="save">💾 حفظ</button>
+    </div>
+
+  </div>
+</form>
+
+<div class="tools">
+  <label class="sr-only" for="searchInput">بحث</label>
+  <input type="text" id="searchInput" placeholder="🔍 بحث في جميع الحقول">
+</div>
+
+<div class="filters" id="filtersBox">
+  <div class="f-item">
+    <label for="fromDate">من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+
+  <div class="f-item">
+    <label for="toDate">إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+
+  <button type="button" id="filterBtn">تطبيق الفلترة</button>
+  <button type="button" id="clearFilterBtn" class="ghost">مسح</button>
+</div>
+
+<table id="marketReportsTable">
+  <thead>
+    <tr>
+      <th>التاريخ</th>
+      <th>إجمالي البلاغات الواردة للإدارة</th>
+      <th>البلاغات التي تم التعامل معها خلال (3 أيام)</th>
+      <th>البلاغات التي تم حلها / إغلاقها خلال (10 أيام)</th>
+      <th>إجراءات</th>
+    </tr>
+  </thead>
+
+  <tbody id="marketReportsTbody"></tbody>
+
+  <tfoot>
+    <tr class="sum-row">
+      <th>الإجمالي</th>
+      <th id="sumTotalComplaints">0</th>
+      <th id="sumHandledWithin3Days">0</th>
+      <th id="sumClosedWithin10Days">0</th>
+      <th></th>
+    </tr>
+
+    <tr class="rate-row">
+      <th>نسبة الإنجاز</th>
+      <th id="rateTotalComplaints">0%</th>
+      <th id="rateHandledWithin3Days">0%</th>
+      <th id="rateClosedWithin10Days">0%</th>
+      <th></th>
+    </tr>
+  </tfoot>
+</table>
+
+
+
+<div id="totalMessageBox" style="display:none"></div>
+
+<!-- التوقيعات -->
+<div class="signatures-line">
+  <div class="sig-item">
+    <label class="sig-title" for="sigPrepared">أعد التقرير:</label>
+    <input type="text" id="sigPrepared" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item">
+    <label class="sig-title" for="sigReviewed">راجعه:</label>
+    <input type="text" id="sigReviewed" class="sig-input" placeholder="الاسم">
+  </div>
+
+  <div class="sig-item wide">
+    <label class="sig-title" for="sigApproved">اعتماد رئيس قسم التنظيم ومراقبة الأسواق</label>
+    <input type="text" id="sigApproved" class="sig-input" placeholder="الاسم">
+  </div>
+</div>
+
+<div class="export-buttons">
+  <button type="button" onclick="window.print()">
+    <i class="fa-solid fa-print"></i> طباعة
+  </button>
+  <button type="button" onclick="exportToExcel()">
+    <i class="fa-solid fa-file-excel"></i> Excel
+  </button>
+</div>
+
+<a href="javascript:history.back()" class="back-button" aria-label="الرجوع">
+  <i class="fa-solid fa-arrow-right"></i> الرجوع
+</a>
+
+<script>
+const TOTAL_API = "https://script.google.com/macros/s/AKfycbw9C-iUMUNQiFwBFLq0Uh7SzD5g-KLvSz8QDoYgZLdGoKg2vm0RVrlovhIiD8wNrmDZKw/exec";
+
+const $ = (id) => document.getElementById(id);
+
+let totalRowsData = [];
+let totalEditRowIndex = null;
+let totalChart = null;
+
+/* ===== helpers ===== */
+function normalizeDate(v){
+  if(!v) return "";
+  const s = String(v).trim();
+
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+
+  // ISO string => first 10 chars
+  const iso = s.slice(0,10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso;
+
+  // Try Date parse
+  const dt = new Date(s);
+  if(!isNaN(dt.getTime())){
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth()+1).padStart(2,"0");
+    const d = String(dt.getDate()).padStart(2,"0");
+    return `${y}-${m}-${d}`;
+  }
+  return "";
+}
+
+function showTotalMessage(text, type="success"){
+  const box = $("totalMessageBox");
+  if(!box) return;
+  box.textContent = text;
+  box.style.display = "block";
+  box.style.color = "#fff";
+  box.style.padding = "10px";
+  box.style.borderRadius = "8px";
+  box.style.margin = "10px auto";
+  box.style.maxWidth = "900px";
+  box.style.backgroundColor = (type==="error") ? "#dc3545" : "#28a745";
+  clearTimeout(showTotalMessage._t);
+  showTotalMessage._t = setTimeout(()=> box.style.display="none", 3000);
+}
+
+function num(id){
+  return Number($(id)?.value ?? 0) || 0;
+}
+
+function setText(id, value){
+  const el = $(id);
+  if(el) el.textContent = value;
+}
+
+/* ===== توحيد شكل الصف القادم من API (الجديد فقط) ===== */
+function normalizeRow(r){
+  const totalComplaints = Number(r.totalComplaints ?? 0) || 0;
+  const handledWithin3Days = Number(r.handledWithin3Days ?? 0) || 0;
+  const closedWithin10Days = Number(r.closedWithin10Days ?? 0) || 0;
+
+  const reportDate = normalizeDate(r.reportDate ?? "");
+
+  const rowIndex = Number(r.rowIndex ?? 0) || 0;
+
+  return {
+    reportDate,
+    totalComplaints,
+    handledWithin3Days,
+    closedWithin10Days,
+    rowIndex
+  };
+}
+
+
+/* ===== render (الجديد فقط) ===== */
+function renderTotalRows(data){
+  const tbody = $("marketReportsTbody");
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+
+  let sTotalComplaints = 0;
+  let sHandledWithin3Days = 0;
+  let sClosedWithin10Days = 0;
+
+  (data || []).forEach((raw) => {
+    const r = normalizeRow(raw);
+
+    sTotalComplaints += r.totalComplaints;
+    sHandledWithin3Days += r.handledWithin3Days;
+    sClosedWithin10Days += r.closedWithin10Days;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="date-cell">${r.reportDate}</td>
+      <td>${r.totalComplaints}</td>
+      <td>${r.handledWithin3Days}</td>
+      <td>${r.closedWithin10Days}</td>
+      <td class="action-col">
+        <button class="action-btn edit-btn" type="button" onclick="totalStartEdit(${r.rowIndex})">تعديل</button>
+        <button class="action-btn delete-btn" type="button" onclick="totalDeleteRow(${r.rowIndex})">حذف</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+ // ✅ الإجماليات
+setText("sumTotalComplaints", sTotalComplaints);
+setText("sumHandledWithin3Days", sHandledWithin3Days);
+setText("sumClosedWithin10Days", sClosedWithin10Days);
+
+// ✅ نسبة الإجمالي
+setText("rateTotalComplaints", sTotalComplaints > 0 ? "100%" : "0%");
+
+// ✅ نسب الإنجاز من الإجمالي
+const rateHandledWithin3Days = sTotalComplaints
+  ? Math.min(100, Math.round((sHandledWithin3Days / sTotalComplaints) * 100))
+  : 0;
+
+const rateClosedWithin10Days = sTotalComplaints
+  ? Math.min(100, Math.round((sClosedWithin10Days / sTotalComplaints) * 100))
+  : 0;
+
+setText("rateHandledWithin3Days", `${rateHandledWithin3Days}%`);
+setText("rateClosedWithin10Days", `${rateClosedWithin10Days}%`);
+
+
+const totalDone = Math.max(sHandledWithin3Days, sClosedWithin10Days);
+const rateTotalDone = sTotalComplaints ? Math.round((totalDone / sTotalComplaints) * 100) : 0;
+setText("rateTotalDone", `${rateTotalDone}%`);
+}
+
+/* ===== edit (الجديد فقط) ===== */
+window.totalStartEdit = function(rowIndex){
+  const r = (totalRowsData || []).find(x => Number(x.rowIndex) === Number(rowIndex));
+  if(!r) return;
+
+  totalEditRowIndex = Number(r.rowIndex);
+
+  $("reportDate").value = r.reportDate;
+  $("totalComplaints").value = r.totalComplaints;
+  $("handledWithin3Days").value = r.handledWithin3Days;
+  $("closedWithin10Days").value = r.closedWithin10Days;
+
+  window.scrollTo({ top: 0, behavior:"smooth" });
+};
+
+function fetchJSONP(url) {
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+
+    window[cb] = function(data) {
+      resolve(data);
+      cleanup();
+    };
+
+    const script = document.createElement("script");
+    script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+    script.onerror = function() {
+      reject(new Error("JSONP load failed"));
+      cleanup();
+    };
+
+    function cleanup() {
+      delete window[cb];
+      script.remove();
+    }
+
+    document.body.appendChild(script);
+  });
+}
+
+
+/* ===== load (الجديد فقط - JSONP) ===== */
+/* ===== load (الجديد فقط - JSONP) ===== */
+async function totalLoadData(){
+  try {
+    const url = new URL(TOTAL_API);
+    url.searchParams.set("action", "list");
+
+    const json = await fetchJSONP(url.toString());
+
+    if (!json?.ok) {
+      showTotalMessage(json?.msg || "فشل تحميل البيانات", "error");
+      totalRowsData = [];
+      renderTotalRows(totalRowsData);
+      return;
+    }
+
+    // ✅ توحيد الصفوف
+    totalRowsData = (json.rows || []).map(normalizeRow);
+
+    // ✅ ترتيب الأقدم للأحدث حسب reportDate
+    totalRowsData.sort((a,b)=>{
+      const da = normalizeDate(a?.reportDate || "");
+      const db = normalizeDate(b?.reportDate || "");
+      if(!da && !db) return 0;
+      if(!da) return 1;
+      if(!db) return -1;
+      const c = da.localeCompare(db);
+      if(c !== 0) return c;
+      return Number(a.rowIndex || 0) - Number(b.rowIndex || 0);
+    });
+
+    renderTotalRows(totalRowsData);
+
+  } catch (err) {
+    console.error(err);
+    showTotalMessage("تعذر الاتصال. تحقق من الرابط/النشر.", "error");
+  }
+}
+
+
+/* ===== filter ===== */
+function applyDateFilter(){
+  const from = normalizeDate($("fromDate")?.value || "");
+  const to   = normalizeDate($("toDate")?.value || "");
+
+  let data = totalRowsData;
+
+  if(from || to){
+    data = totalRowsData.filter(r => {
+      const d = r.Date || "";
+      if(!d) return false;
+      if(from && d < from) return false;
+      if(to && d > to) return false;
+      return true;
+    });
+  }
+
+  // لو فيه بحث مكتوب، طبّقه فوق الفلترة
+  const q = ($("searchInput")?.value || "").toLowerCase().trim();
+  if(q){
+    data = data.filter(r =>
+      Object.values(r).some(v => String(v ?? "").toLowerCase().includes(q))
+    );
+  }
+
+  renderTotalRows(data);
+}
+
+function clearDateFilter(){
+  if($("fromDate")) $("fromDate").value = "";
+  if($("toDate")) $("toDate").value = "";
+  applyDateFilter();
+}
+
+/* ===== save/update (الجديد فقط) ===== */
+async function totalSaveOrUpdate(e){
+  e.preventDefault();
+
+  const reportDate = normalizeDate($("reportDate")?.value || "");
+  if(!reportDate){
+    showTotalMessage("التاريخ مطلوب", "error");
+    return;
+  }
+
+  const payload = new URLSearchParams({
+    action: totalEditRowIndex ? "update" : "add",
+    rowIndex: totalEditRowIndex ? String(totalEditRowIndex) : "",
+
+    reportDate: reportDate,
+    totalComplaints: String(num("totalComplaints")),
+    handledWithin3Days: String(num("handledWithin3Days")),
+    closedWithin10Days: String(num("closedWithin10Days")),
+  });
+
+  try{
+    const res = await fetch(TOTAL_API, { method:"POST", body: payload });
+    const json = await res.json();
+
+    if(!json.ok){
+      showTotalMessage(json.msg || "فشل الحفظ", "error");
+      return;
+    }
+
+    showTotalMessage(totalEditRowIndex ? "تم التعديل ✅" : "تم الحفظ ✅");
+
+    totalEditRowIndex = null;
+
+    // ✅ Reset الفورم الصحيح
+    $("marketReportsForm")?.reset();
+
+    // إعادة تاريخ اليوم
+    const today = new Date().toISOString().slice(0,10);
+    if($("reportDate")) $("reportDate").value = today;
+
+    await totalLoadData();
+  }catch(err){
+    console.error(err);
+    showTotalMessage("فشل الإرسال. تحقق من الرابط/النشر.", "error");
+  }
+}
+
+/* ===== delete (الجديد فقط) ===== */
+window.totalDeleteRow = async function(rowIndex){
+  if(!confirm("هل تريد حذف هذا السطر؟")) return;
+
+  const payload = new URLSearchParams({
+    action: "delete",
+    rowIndex: String(Number(rowIndex || 0))
+  });
+
+  try{
+    const res = await fetch(TOTAL_API, { method:"POST", body: payload });
+    const json = await res.json();
+
+    if(!json?.ok){
+      showTotalMessage(json?.msg || "فشل الحذف", "error");
+      return;
+    }
+
+    showTotalMessage("تم الحذف ✅");
+    await totalLoadData();
+  }catch(err){
+    console.error(err);
+    showTotalMessage("تعذر الحذف (تحقق من الرابط/النشر).", "error");
+  }
+};
+
+/* ===== search ===== */
+function applySearch(){
+  applyDateFilter();
+}
+
+/* ===== export ===== */
+window.exportToExcel = function(){
+  const table = $("marketReportsTable");
+  if(!table){
+    showTotalMessage("الجدول غير موجود للتصدير", "error");
+    return;
+  }
+  if(typeof XLSX === "undefined"){
+    showTotalMessage("مكتبة XLSX غير محمّلة. تأكد من إضافة SheetJS.", "error");
+    return;
+  }
+  const wb = XLSX.utils.table_to_book(table, { sheet:"تقرير البلاغات الواردة" });
+  XLSX.writeFile(wb, "تقرير_ابلاغات الواردة.xlsx");
+};
+
+/* ===== events ===== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  const today = new Date().toISOString().slice(0,10);
+  if($("reportDate")) $("reportDate").value = today;
+
+  ["totalComplaints","handled5Days","closed20Days"].forEach(id=>{
+    $(id)?.addEventListener("input", ()=>{ /* لو تريد حسابات فورية مستقبلًا */ });
+  });
+
+  $("marketReportsForm")?.addEventListener("submit", totalSaveOrUpdate);
+
+  $("filterBtn")?.addEventListener("click", applyDateFilter);
+  $("clearFilterBtn")?.addEventListener("click", clearDateFilter);
+  $("fromDate")?.addEventListener("change", applyDateFilter);
+  $("toDate")?.addEventListener("change", applyDateFilter);
+
+  $("searchInput")?.addEventListener("input", applySearch);
+
+  totalLoadData();
+});
+</script>
+</body>
+</html>

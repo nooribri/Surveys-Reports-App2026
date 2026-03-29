@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مسوحات الأسماك</title>
+
+ <!-- أيقونات و Excel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background:#ffffff;
+      margin:0;
+      padding:16px;
+    }
+
+    /* ===== الهيدر أعلى الصفحة ===== */
+    .main-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      background:#ffffff;
+      border-radius: 12px;
+      padding: 16px 20px 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      position: relative;
+      text-align: center;  /* محاذاة الشعار والنصوص في الوسط */
+    }
+
+   .header-top {
+  display: flex;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  align-items: flex-start;  /* محاذاة العناصر في الأعلى */
+  gap: 20px;                /* المسافة بين الشعار والعناوين */
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  gap: 12px;
+}
+
+    .logo-box img {
+      width:100px;
+      height:auto;
+    }
+
+  .gov-info {
+  position: absolute;
+  right: 0;                /* العناوين على الجهة اليمنى */
+  text-align: right;       /* محاذاة النصوص لليمين */
+  line-height: 1.5;
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.gov-info h2,
+.gov-info h3,
+.gov-info h4 {
+  margin: 0;              /* إزالة الهوامش الافتراضية */
+  padding: 2px 0;         /* تقليل المسافة بين العناوين */
+  line-height: 1.2;       /* تقليل المسافة بين الأسطر */
+}
+
+   .main-title {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.main-title h1 {
+  font-size: 2.2rem;
+  color: #0a66c2;
+  font-weight: 700;
+}
+
+.main-title p {
+  margin-top: 4px;
+  font-size: 1.1rem;
+  color: #0a66c2;
+  opacity: 0.9;
+}
+
+    #fishForm label {
+      font-weight:600;
+      justify-self:end;
+      color:#0a3d73;
+    }
+    #fishForm input {
+      width:100%;
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #c7d8f0;
+      font-size:14px;
+    }
+
+    .form-actions {
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .form-actions button {
+      border:none;
+      border-radius:8px;
+      padding:9px 16px;
+      font-size:14px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .form-actions .save { background:#0b8c4a; }
+    .form-actions .cancel { background:#6c757d; display:none; }
+
+    /* ===== أدوات أعلى الجدول ===== */
+    .tools {
+      max-width:1100px;
+      margin:0 auto 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .tools-left, .tools-right{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .tools input[type="text"] {
+      padding:7px 10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      min-width:220px;
+    }
+    .tools button {
+      padding:8px 12px;
+      border:none;
+      border-radius:8px;
+      background:#0d6efd;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    /* ===== الجدول ===== */
+    table {
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      border-collapse:collapse;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+      background:#fff;
+    }
+    th, td {
+      border:1px solid #d0d7e2;
+      padding:6px 4px;
+      text-align:center;
+      font-size:13px;
+    }
+    th {
+      background:#0b5ed7;
+      color:#fff;
+      font-size:13px;
+    }
+    tbody tr:nth-child(even){ background:#f9fbff; }
+
+    .action-btn {
+      border:none;
+      border-radius:6px;
+      padding:4px 8px;
+      font-size:12px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .edit-btn{ background:#17a2b8; }
+    .delete-btn{ background:#dc3545; }
+
+    .export-buttons{
+      max-width:1100px;
+      margin:18px auto 8px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .export-buttons button{
+      padding:8px 13px;
+      border:none;
+      border-radius:8px;
+      background:#6f42c1;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .back-button{
+      display:block;
+      text-align:center;
+      margin:10px auto 0;
+      text-decoration:none;
+      color:#0d6efd;
+      font-size:14px;
+    }
+
+    /* رسالة علوية صغيرة */
+    #messageBox{
+      position:fixed;
+      top:20px;
+      right:20px;
+      background:#28a745;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:10px;
+      font-size:13px;
+      display:none;
+      z-index:9999;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+
+    /* إخفاء عمود الإجراء أثناء الطباعة */
+    @media print {
+      #fishForm,
+      .tools,
+      .export-buttons,
+      .back-button {
+        display:none !important;
+      }
+      th.action-col, td.action-col {
+        display:none !important;
+      }
+    }
+
+   @media (max-width: 600px) {
+  .form-box {
+    width: 100%;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-actions {
+    grid-column: span 1;
+  }
+}
+
+
+    .company-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .company-section label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    .company-section input, .company-section select {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      width: 48%;
+      margin-bottom: 10px;
+    }
+
+    .company-section input[type="number"] {
+      width: 48%;
+    }
+
+    .company-section select {
+      width: 48%;
+    }
+    .tools-center {
+  display: flex;
+  justify-content: center; /* محاذاة مربع البحث في المنتصف */
+  width: 100%; 
+  margin-bottom: 15px; /* إضافة بعض المسافة أسفل */
+}
+
+.tools-center input {
+  width: 30%; /* تخصيص العرض حسب الحاجة */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.export-buttons {
+  display: flex;
+  justify-content: center; /* محاذاة الأزرار في المنتصف */
+  gap: 20px; /* المسافة بين الأزرار */
+  margin: 20px 0;
+}
+
+.export-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6f42c1;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.export-buttons button i {
+  margin-left: 5px; /* إضافة مسافة صغيرة بين الأيقونة والنص */
+}
+
+.export-buttons button:hover {
+  background-color: #5a35a0;
+}
+/* الصندوق الرئيسي */
+/* الصندوق الرئيسي */
+/* ===== صندوق النموذج ===== */
+#fishForm {
+  display: flex;
+  justify-content: center;
+  margin: 30px auto;
+}
+
+/* الصندوق */
+.form-box {
+  width: 420px;
+  background: #f8fbff;
+  padding: 28px 22px;
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+}
+
+/* شبكة الحقول */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 16px;
+}
+
+/* كل حقل */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* العناوين */
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b3c8a;
+  margin-bottom: 6px;
+}
+
+/* الحقول */
+.form-group input {
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid #c6d7f5;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #2f6df6;
+  box-shadow: 0 0 0 3px rgba(47,109,246,0.15);
+}
+
+/* زر الحفظ */
+.form-actions {
+  grid-column: span 2;
+  text-align: center;
+  margin-top: 22px;
+}
+
+.form-actions button {
+  background: #0a8f44;
+  color: #fff;
+  border: none;
+  padding: 12px 46px;
+  font-size: 16px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.form-actions button:hover {
+  background: #087a3a;
+}
+
+/* زر التعديل */
+.edit-btn {
+  background-color: #28a745; /* أخضر */
+}
+
+.edit-btn:hover {
+  background-color: #218838;
+}
+
+/* زر الحذف */
+.delete-btn {
+  background-color: #dc3545; /* أحمر */
+}
+
+.delete-btn:hover {
+  background-color: #b02a37;
+}
+@media print {
+  .actions-column {
+    display: none !important;
+  }
+}
+
+  </style>
+
+</head>
+<body>
+
+ <!-- ===== الهيدر ===== -->
+  <header class="main-header">
+  <div class="header-top">
+    <!-- الشعار في المنتصف في الأعلى -->
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان" class="logo">
+    </div>
+
+    <!-- عناوين الحكومة على الجهة اليمنى -->
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+       <h4>قسم الدراسات والتطوير</h4>
+    </div>
+  </div>
+
+    <!-- عنوان التطبيق -->
+    <div class="main-title">
+      <h1>مسوحات أسعار الأسماك</h1>
+      <p>مسح أسعارالأسماك</p>
+    </div>
+  </header>
+
+<form id="fishForm">
+  <div class="form-box">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>اسم المؤسسة التجارية</label>
+        <input type="text" id="shopName" name="shopName" required>
+      </div>
+      <div class="form-group">
+        <label>رقم السجل التجاري</label>
+        <input type="text" id="commercialRegister" name="commercialRegister">
+      </div>
+      <div class="form-group">
+        <label>الموقع</label>
+        <input type="text" id="location" name="location">
+      </div>
+      <div class="form-group">
+        <label>رقم الهاتف</label>
+        <input type="text" id="phoneNumber" name="phoneNumber">
+      </div>
+      <div class="form-group">
+        <label>نوع السمك</label>
+        <input type="text" id="fishType" name="fishType">
+      </div>
+      <div class="form-group">
+        <label>سعر الكيلو (ر.ع)</label>
+        <input type="text" id="fishPrice" name="fishPrice" step="0.01">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" id="submitBtn">حفظ</button>
+    </div>
+  </div>
+</form>
+
+<div class="tools">
+  <div class="tools-center">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث في الاسم، الموقع، السعر ...">
+  </div>
+</div>
+
+<table id="fishTable">
+  <thead>
+    <tr>
+      <th>اسم المؤسسة التجارية</th>
+      <th>رقم السجل التجاري</th>
+      <th>الموقع</th>
+      <th>رقم الهاتف</th>
+      <th>نوع السمك</th>
+      <th>سعر الكيلو (ر.ع)</th>
+      <th class="actions-column">إجراء</th>
+    </tr>
+  </thead>
+  <tbody id="fishTableBody"></tbody>
+</table>
+
+<div class="export-buttons">
+  <button type="button" onclick="window.print()">طباعة</button>
+  <button type="button" onclick="exportToExcel()">Excel</button>
+</div>
+
+<a href="javascript:history.back()" class="back-button">الرجوع</a>
+
+<div class="footer-note">
+  الرمز : 01-107-SOP &nbsp;|&nbsp; الإصدار: 02 &nbsp;|&nbsp; التاريخ: سبتمبر 2024
+</div>
+
+<div id="messageBox"></div>
+
+<script>
+const SHEET_API = "https://script.google.com/macros/s/AKfycbz2gxMND-UOYlckc8NMNhnaZwdHLIA_d1i8QsGVYD6STPYeHm5PSdTiZ5h_S8Iq0YbpCA/exec";
+
+let fishData = [];
+let editRowNumber = null;
+
+let fishForm, shopName, commercialRegister, shopLocation, phoneNumber, fishType, fishPrice, submitBtn;
+
+document.addEventListener("DOMContentLoaded", () => {
+  fishForm = document.getElementById("fishForm");
+  shopName = document.getElementById("shopName");
+  commercialRegister = document.getElementById("commercialRegister");
+  shopLocation = document.getElementById("location");
+  phoneNumber = document.getElementById("phoneNumber");
+  fishType = document.getElementById("fishType");
+  fishPrice = document.getElementById("fishPrice");
+  submitBtn = document.getElementById("submitBtn");
+
+  fishForm.addEventListener("submit", submitForm);
+  document.getElementById("searchInput").addEventListener("input", searchTable);
+
+  loadData();
+});
+
+/* تحميل البيانات */
+async function loadData(){
+  try {
+    const res = await fetch(SHEET_API);
+    if(!res.ok) throw new Error("فشل تحميل البيانات");
+    fishData = await res.json();
+    renderRows(fishData);
+  } catch(err) {
+    showMessage(err.message, "error");
+  }
+}
+
+/* عرض الصفوف */
+/* عرض الصفوف - تعديل بسيط لضمان دقة التعديل والحذف */
+function renderRows(data) {
+  const tbody = document.getElementById("fishTableBody");
+  tbody.innerHTML = "";
+  data.forEach((row) => {
+    const tr = document.createElement("tr");
+    // نستخدم row.rowNumber بدلاً من idx لضمان الوصول للسجل الصحيح في Google Sheet
+    tr.innerHTML = `
+      <td>${row["اسم المؤسسة التجارية"] || ""}</td>
+      <td>${row["رقم السجل التجاري"] || ""}</td>
+      <td>${row["الموقع"] || ""}</td>
+      <td>${row["رقم الهاتف"] || ""}</td>
+      <td>${row["نوع السمك"] || ""}</td>
+      <td>${row["سعر الكيلو (ر.ع)"] || ""}</td>
+     <td class="actions-column">
+  <button class="action-btn edit-btn"
+    onclick="startEditByRowNumber('${row.rowNumber}')">
+    تعديل
+  </button>
+
+  <button class="action-btn delete-btn"
+    onclick="deleteRowByRowNumber('${row.rowNumber}')">
+    حذف
+  </button>
+</td>
+
+    `;
+    tbody.appendChild(tr);
+  });
+}
+/* إضافة / تعديل */
+async function submitForm(e) {
+  e.preventDefault();
+  const isEdit = editRowNumber !== null;
+
+  const formData = new URLSearchParams();
+  formData.append("action", isEdit ? "update" : "add");
+  formData.append("rowNumber", editRowNumber || "");
+  formData.append("اسم المؤسسة التجارية", shopName.value.trim());
+  formData.append("رقم السجل التجاري", commercialRegister.value.trim());
+  formData.append("الموقع", shopLocation.value.trim());
+  formData.append("رقم الهاتف", phoneNumber.value.trim());
+  formData.append("نوع السمك", fishType.value.trim());
+  formData.append("سعر الكيلو (ر.ع)", fishPrice.value.trim());
+
+  try {
+    const res = await fetch(SHEET_API, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
+
+    if (!res.ok) throw new Error("فشل الحفظ");
+
+    await loadData();
+
+    showMessage(
+      isEdit ? "تم التحديث بنجاح" : "تم الحفظ بنجاح",
+      "success"
+    );
+
+    resetForm(); // ✅ تفريغ الحقول
+
+  } catch (err) {
+    console.error(err);
+    showMessage("حدث خطأ في الاتصال", "error");
+  }
+}
+
+/* =========================
+   تفريغ النموذج
+========================= */
+function resetForm() {
+  fishForm.reset();
+  editRowNumber = null;
+  submitBtn.textContent = "حفظ";
+  shopName.focus(); // تحسين بسيط
+}
+
+
+/* =========================
+   تعديل باستخدام rowNumber
+========================= */
+function startEditByRowNumber(rowNumber) {
+  const row = fishData.find(r => String(r.rowNumber) === String(rowNumber));
+  if (!row) return;
+
+  editRowNumber = row.rowNumber;
+
+  shopName.value = row["اسم المؤسسة التجارية"] || "";
+  commercialRegister.value = row["رقم السجل التجاري"] || "";
+  shopLocation.value = row["الموقع"] || "";
+  phoneNumber.value = row["رقم الهاتف"] || "";
+  fishType.value = row["نوع السمك"] || "";
+  fishPrice.value = row["سعر الكيلو (ر.ع)"] || "";
+
+  submitBtn.textContent = "تحديث";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* =========================
+   حذف باستخدام rowNumber
+========================= */
+async function deleteRowByRowNumber(rowNumber) {
+  if (!confirm("هل تريد حذف هذا السجل؟")) return;
+
+  try {
+    const res = await fetch(SHEET_API, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "delete",
+        rowNumber: rowNumber
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      }
+    });
+
+    if (!res.ok) throw new Error("فشل الحذف");
+
+    await loadData();
+    showMessage("تم الحذف بنجاح", "success");
+
+  } catch (err) {
+    console.error(err);
+    showMessage("حدث خطأ أثناء الحذف", "error");
+  }
+}
+
+
+/* رسالة نجاح / خطأ */
+function showMessage(text, type="success"){
+  const box = document.getElementById("messageBox");
+  box.textContent = text;
+  box.className = type;
+  box.style.display = "block";
+  setTimeout(()=>{ box.style.display="none"; },3000);
+}
+
+/* البحث المباشر */
+function searchTable(){
+  const q = this.value.toLowerCase().trim();
+  const filtered = fishData.filter(row => Object.values(row).some(v=>String(v||"").toLowerCase().includes(q)));
+  renderRows(filtered);
+}
+
+/* تصدير Excel */
+function exportToExcel(){
+  const table = document.getElementById("fishTable");
+  const wb = XLSX.utils.table_to_book(table,{sheet:"الأسماك"});
+  XLSX.writeFile(wb,"مسوحات_الأسماك.xlsx");
+}
+</script>
+</body>
+</html>

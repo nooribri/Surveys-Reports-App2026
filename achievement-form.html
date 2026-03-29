@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>إنجازات قسم الدراسات والتطوير</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background: #f5f7fb;
+      font-family: 'Cairo', sans-serif;
+      color: #1f2937;
+    }
+
+    .main-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      background: #fff;
+      border: 1px solid #d9e2ec;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .header-top {
+      position: relative;
+      min-height: 130px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-box {
+      text-align: center;
+    }
+
+    .logo-box img {
+      width: 90px;
+      height: auto;
+    }
+
+    .gov-info {
+      position: absolute;
+      top: 0;
+      right: 0;
+      text-align: right;
+      color: #0d47a1;
+      line-height: 1.6;
+    }
+
+    .gov-info h2,
+    .gov-info h3,
+    .gov-info h4 {
+      margin: 0;
+      font-weight: 700;
+    }
+
+    .gov-info h2 { font-size: 20px; }
+    .gov-info h3 { font-size: 18px; }
+    .gov-info h4 { font-size: 16px; }
+
+    #achievement-form {
+      max-width: 1100px;
+      margin: 25px auto;
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #0d47a1;
+      margin-bottom: 25px;
+    }
+
+    .form-section {
+      margin-bottom: 28px;
+      padding: 18px;
+      background: #f8fbff;
+      border: 1px solid #dbe8f5;
+      border-radius: 14px;
+    }
+
+    .form-section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0a66c2;
+      margin-bottom: 18px;
+      border-right: 5px solid #0a66c2;
+      padding-right: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(220px, 1fr));
+      gap: 18px 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: 'Cairo', sans-serif;
+      background: #fff;
+      transition: 0.2s ease;
+    }
+
+    .form-group textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0a66c2;
+      box-shadow: 0 0 0 3px rgba(10,102,194,0.12);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .form-actions button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 24px;
+      font-size: 15px;
+      font-family: 'Cairo', sans-serif;
+      cursor: pointer;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .form-actions .save {
+      background: #198754;
+    }
+
+    .form-actions .save:hover {
+      background: #157347;
+    }
+
+    .form-actions .cancel {
+      background: #6c757d;
+      display: none;
+    }
+
+    .form-actions .cancel:hover {
+      background: #565e64;
+    }
+
+    .tools {
+      max-width: 1100px;
+      margin: 0 auto 15px;
+    }
+
+    .tools-center {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .tools-center input {
+      width: 40%;
+      min-width: 260px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      font-family: 'Cairo', sans-serif;
+      background: #fff;
+    }
+
+    .table-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      overflow-x: auto;
+      border-radius: 14px;
+    }
+
+    #achievementTable {
+      width: 100%;
+      min-width: 1450px;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    }
+
+    #achievementTable th {
+      background: #0a66c2;
+      color: white;
+      padding: 8px;
+      font-size: 13px;
+      border: 1px solid #d9e1ec;
+      white-space: nowrap;
+    }
+
+    #achievementTable td {
+      padding: 6px;
+      font-size: 13px;
+      border: 1px solid #e0e6ef;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    #achievementTable tbody tr:nth-child(even) {
+      background: #f6f9ff;
+    }
+
+    #achievementTable tbody tr:hover {
+      background: #eef5ff;
+    }
+
+    #achievementTable a {
+      color: #0a66c2;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    #achievementTable a:hover {
+      text-decoration: underline;
+    }
+
+    .action-col {
+      white-space: nowrap;
+    }
+
+    .action-btn {
+      border: none;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: 'Cairo', sans-serif;
+      margin: 2px;
+    }
+
+    .edit-btn {
+      background: #198754;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+    }
+
+    .export-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .export-buttons button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #6f42c1;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .export-buttons button:hover {
+      background-color: #5a35a0;
+    }
+
+    .back-button {
+      display: block;
+      width: fit-content;
+      margin: 10px auto 0;
+      text-decoration: none;
+      color: #0a66c2;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    #messageBox {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    }
+
+    @media (max-width: 992px) {
+      .form-grid {
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+      }
+
+      .tools-center input {
+        width: 70%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-top {
+        min-height: auto;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .gov-info {
+        position: static;
+        text-align: center;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-title {
+        font-size: 22px;
+      }
+
+      .form-section-title {
+        font-size: 17px;
+      }
+
+      .tools-center input {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
+    @media print {
+      #achievement-form,
+      .tools,
+      .export-buttons,
+      .back-button,
+      .action-col,
+      .edit-btn,
+      .delete-btn,
+      #messageBox {
+        display: none !important;
+      }
+
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .main-header {
+        box-shadow: none;
+        border: none;
+        margin-bottom: 10px;
+      }
+
+      #achievementTable {
+        box-shadow: none;
+      }
+    }
+
+    @media print {
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  body {
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .main-header {
+    box-shadow: none !important;
+    border: none !important;
+    margin-bottom: 8px !important;
+  }
+
+  #achievement-form,
+  .tools,
+  .export-buttons,
+  .back-button,
+  .action-col,
+  .edit-btn,
+  .delete-btn,
+  #messageBox {
+    display: none !important;
+  }
+
+  .table-wrapper {
+    overflow: visible !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  #achievementTable {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+    box-shadow: none !important;
+  }
+
+  #achievementTable th,
+  #achievementTable td {
+    font-size: 10px !important;
+    padding: 4px 3px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  #achievementTable thead {
+    display: table-header-group;
+  }
+
+  #achievementTable tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  #achievementTable td a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+}
+  </style>
+</head>
+<body>
+
+  <div id="messageBox"></div>
+
+  <header class="main-header">
+    <div class="header-top">
+      <div class="logo-box">
+        <img src="image.png" alt="شعار سلطنة عمان" class="logo">
+      </div>
+
+      <div class="gov-info">
+        <h2>سلطنة عمان</h2>
+        <h3>هيئة حماية المستهلك</h3>
+        <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+        <h4>إنجازات قسم الدراسات والتطوير</h4>
+      </div>
+    </div>
+  </header>
+
+  <form id="achievement-form" dir="rtl">
+   
+
+    <div class="form-section">
+      <div class="form-section-title">البيانات الأساسية</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="title">عنوان الإنجاز</label>
+          <input type="text" id="title" name="title">
+        </div>
+
+        <div class="form-group">
+          <label for="achievementType">نوع الإنجاز</label>
+          <select id="achievementType" name="achievementType">
+            <option value="">اختر النوع</option>
+            <option>دراسة</option>
+            <option>تقرير تحليلي</option>
+            <option>مبادرة تطويرية</option>
+            <option>مشروع تحسين</option>
+            <option>بحث</option>
+            <option>قياس أثر</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="date">تاريخ الإنجاز</label>
+          <input type="date" id="date" name="date">
+        </div>
+
+        <div class="form-group">
+          <label for="executingEntity">الجهة المنفذة</label>
+          <input type="text" id="executingEntity" name="executingEntity">
+        </div>
+
+        <div class="form-group">
+          <label for="partners">الجهةالمشاركة</label>
+          <input type="text" id="partners" name="partners">
+        </div>
+
+
+        <div class="form-group">
+          <label for="targetGroup">الفئة المستهدفة</label>
+          <input type="text" id="targetGroup" name="targetGroup">
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">تفاصيل الإنجاز</div>
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label for="description">وصف وهدف الإنجاز</label>
+          <textarea id="description" name="description"></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label for="kpis">مؤشرات الأداء المرتبطة</label>
+          <textarea id="kpis" name="kpis"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="studyType">نوع الدراسة / المبادرة</label>
+          <input type="text" id="studyType" name="studyType">
+        </div>
+
+        <div class="form-group">
+          <label for="tools">أدوات جمع البيانات</label>
+          <input type="text" id="tools" name="tools">
+        </div>
+
+
+        <div class="form-group full">
+          <label for="impact">الأثر المتوقع / المتحقق</label>
+          <textarea id="impact" name="impact"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">التوثيق والمتابعة</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="documentationLink">رابط التوثيق</label>
+          <input type="url" id="documentationLink" name="documentationLink">
+        </div>
+
+        <div class="form-group">
+          <label for="responsible">اسم المسؤول</label>
+          <input type="text" id="responsible" name="responsible">
+        </div>
+
+        <div class="form-group">
+          <label for="status">حالة الإنجاز</label>
+          <select id="status" name="status">
+            <option>مكتمل</option>
+            <option>قيد التنفيذ</option>
+            <option>مؤجل</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label for="notes">ملاحظات</label>
+          <textarea id="notes" name="notes"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="save">حفظ الإنجاز</button>
+      <button type="button" class="cancel" id="cancelEditBtn">إلغاء</button>
+    </div>
+  </form>
+
+  <div class="tools">
+    <div class="tools-center">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث في الإنجازات">
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="achievementTable">
+      <thead>
+        <tr>
+          <th colspan="7">البيانات الأساسية</th>
+          <th colspan="4">تفاصيل الإنجاز</th>
+          <th rowspan="2">الأثر المتوقع</th>
+          <th colspan="4">التوثيق والمتابعة</th>
+          <th rowspan="2" class="action-col">إجراء</th>
+        </tr>
+
+        <tr>
+          <th>م</th>
+          <th>عنوان الإنجاز</th>
+          <th>نوع الإنجاز</th>
+          <th>تاريخ الإنجاز</th>
+          <th>الجهة المنفذة</th>
+          <th>الجهة المشاركة</th>
+          <th>الفئة المستهدفة</th>
+
+          <th>الوصف</th>
+          <th>مؤشرات الأداء المتربطة</th>
+          <th>نوع الدراسة /المبادرة</th>
+          <th>أدوات جمع البيانات</th>
+
+          <th>الرابط</th>
+          <th>اسم المسؤول</th>
+          <th>الحالة</th>
+          <th>ملاحظات</th>
+        </tr>
+      </thead>
+
+      <tbody id="achievementBody"></tbody>
+    </table>
+  </div>
+
+  <div class="export-buttons">
+    <button type="button" onclick="window.print()">طباعة</button>
+    <button type="button" onclick="exportToExcel()">Excel</button>
+  </div>
+
+  <a href="javascript:history.back()" class="back-button">الرجوع</a>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <script>
+    const SHEET_API = "https://script.google.com/macros/s/AKfycbz8KwQvbwIoUNARL1mqObV7c-_xN957-3uBWw4pHlaNfPSqH6bDuSg6fGlWk0psbL8h/exec";
+
+    let tableData = [];
+    let editRowNumber = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("achievement-form");
+      const cancelBtn = document.getElementById("cancelEditBtn");
+      const searchInput = document.getElementById("searchInput");
+
+      const title = document.getElementById("title");
+      const achievementType = document.getElementById("achievementType");
+      const date = document.getElementById("date");
+      const executingEntity = document.getElementById("executingEntity");
+      const partners = document.getElementById("partners");
+      const field = document.getElementById("field");
+      const targetGroup = document.getElementById("targetGroup");
+      const description = document.getElementById("description");
+      const kpis = document.getElementById("kpis");
+      const studyType = document.getElementById("studyType");
+      const tools = document.getElementById("tools");
+      const results = document.getElementById("results");
+      const recommendations = document.getElementById("recommendations");
+      const impact = document.getElementById("impact");
+      const documentationLink = document.getElementById("documentationLink");
+      const responsible = document.getElementById("responsible");
+      const status = document.getElementById("status");
+      const notes = document.getElementById("notes");
+
+      loadData();
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const data = {
+          action: editRowNumber ? "update" : "add",
+          rowNumber: editRowNumber || "",
+          title: title.value,
+          achievementType: achievementType.value,
+          date: date.value,
+          executingEntity: executingEntity.value,
+          partners: partners.value,
+          field: field.value,
+          targetGroup: targetGroup.value,
+          description: description.value,
+          kpis: kpis.value,
+          studyType: studyType.value,
+          tools: tools.value,
+          results: results.value,
+          recommendations: recommendations.value,
+          impact: impact.value,
+          documentationLink: documentationLink.value,
+          responsible: responsible.value,
+          status: status.value,
+          notes: notes.value
+        };
+
+        try {
+          const res = await fetch(SHEET_API, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: new URLSearchParams(data)
+          });
+
+          if (res.ok) {
+            form.reset();
+            editRowNumber = null;
+            cancelBtn.style.display = "none";
+            loadData();
+            showMessage("تم حفظ الإنجاز بنجاح");
+          } else {
+            showMessage("فشل الحفظ", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showMessage("فشل الاتصال بالخادم", "error");
+        }
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        form.reset();
+        editRowNumber = null;
+        cancelBtn.style.display = "none";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+
+      if (searchInput) {
+        searchInput.addEventListener("input", searchTable);
+      }
+    });
+
+    async function loadData() {
+      try {
+        const res = await fetch(SHEET_API);
+        tableData = await res.json();
+        renderTable(tableData);
+      } catch (err) {
+        console.error(err);
+        showMessage("فشل تحميل البيانات", "error");
+      }
+    }
+
+   function renderTable(data) {
+  const tbody = document.getElementById("achievementBody");
+  tbody.innerHTML = "";
+
+  data.forEach((row, i) => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${safe(row["عنوان الإنجاز"])}</td>
+        <td>${safe(row["نوع الإنجاز"])}</td>
+        <td>${formatDate(row["تاريخ الإنجاز"])}</td>
+        <td>${safe(row["الجهة المنفذة"])}</td>
+        <td>${safe(row["الجهة المشاركة"])}</td>
+        <td>${safe(row["الفئة المستهدفة"])}</td>
+        <td>${safe(row["وصف وهدف الإنجاز"])}</td>
+        <td>${safe(row["مؤشرات الأداء المتربطة"])}</td>
+        <td>${safe(row["نوع الدراسة / المبادرة"])}</td>
+        <td>${safe(row["أدوات جمع البيانات"])}</td>
+        <td>${safe(row["الأثر المتوقع"])}</td>
+        <td>${renderLink(row["رابط التوثيق"])}</td>
+        <td>${safe(row["اسم المسؤول"])}</td>
+        <td>${safe(row["حالة الإنجاز"])}</td>
+        <td>${safe(row["ملاحظات"])}</td>
+        <td class="action-col">
+          <button class="action-btn edit-btn" onclick="startEdit(${i})">تعديل</button>
+          <button class="action-btn delete-btn" onclick="deleteRow(${i})">حذف</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+    function toDateInputValue(value) {
+      if (!value) return "";
+      return String(value).split("T")[0];
+    }
+
+    function startEdit(index) {
+      const row = tableData[index];
+      if (!row) return;
+
+      editRowNumber = row.rowNumber;
+
+      document.getElementById("title").value = row.title || "";
+      document.getElementById("achievementType").value = row.achievementType || "";
+      document.getElementById("date").value = toDateInputValue(row.date);
+      document.getElementById("executingEntity").value = row.executingEntity || "";
+      document.getElementById("partners").value = row.partners || "";
+      document.getElementById("field").value = row.field || "";
+      document.getElementById("targetGroup").value = row.targetGroup || "";
+      document.getElementById("description").value = row.description || "";
+      document.getElementById("kpis").value = row.kpis || "";
+      document.getElementById("studyType").value = row.studyType || "";
+      document.getElementById("tools").value = row.tools || "";
+      document.getElementById("results").value = row.results || "";
+      document.getElementById("recommendations").value = row.recommendations || "";
+      document.getElementById("impact").value = row.impact || "";
+      document.getElementById("documentationLink").value = row.documentationLink || "";
+      document.getElementById("responsible").value = row.responsible || "";
+      document.getElementById("status").value = row.status || "مكتمل";
+      document.getElementById("notes").value = row.notes || "";
+
+      document.getElementById("cancelEditBtn").style.display = "inline-block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function deleteRow(index) {
+      if (!confirm("هل تريد حذف هذا الإنجاز؟")) return;
+
+      const row = tableData[index];
+      if (!row || !row.rowNumber) {
+        showMessage("تعذر العثور على السطر", "error");
+        return;
+      }
+
+      try {
+        const res = await fetch(SHEET_API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: new URLSearchParams({
+            action: "delete",
+            rowNumber: row.rowNumber
+          })
+        });
+
+        if (res.ok) {
+          showMessage("تم حذف الإنجاز بنجاح");
+          loadData();
+        } else {
+          showMessage("خطأ أثناء الحذف", "error");
+        }
+      } catch (err) {
+        console.error(err);
+        showMessage("فشل الاتصال بالخادم", "error");
+      }
+    }
+
+    function searchTable() {
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+
+      const filtered = tableData.filter(row =>
+        Object.values(row).some(val =>
+          String(val || "").toLowerCase().includes(q)
+        )
+      );
+
+      renderTable(filtered);
+    }
+
+    function showMessage(msg, type = "success") {
+      const box = document.getElementById("messageBox");
+      box.textContent = msg;
+      box.style.background = type === "error" ? "#dc3545" : "#28a745";
+      box.style.display = "block";
+      setTimeout(() => {
+        box.style.display = "none";
+      }, 3000);
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      if (isNaN(d)) return dateStr;
+      return d.toLocaleDateString("en-CA");
+    }
+
+    function safe(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function renderLink(url) {
+      if (!url) return "";
+      const safeUrl = safe(url);
+      return `<a href="${safeUrl}" target="_blank">عرض</a>`;
+    }
+
+    function exportToExcel() {
+      const table = document.getElementById("achievementTable");
+      const wb = XLSX.utils.table_to_book(table, { sheet: "إنجازات الدراسات والتطوير" });
+      XLSX.writeFile(wb, "إنجازات_قسم_الدراسات_والتطوير.xlsx");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تقرير القضايا</title>
+
+  <!-- أيقونات و Excel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background:#ffffff;
+      margin:0;
+      padding:16px;
+    }
+
+    /* ===== الهيدر أعلى الصفحة ===== */
+    .main-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      background:#ffffff;
+      border-radius: 12px;
+      padding: 16px 20px 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      position: relative;
+      text-align: center;  /* محاذاة الشعار والنصوص في الوسط */
+    }
+
+   .header-top {
+  display: flex;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  align-items: flex-start;  /* محاذاة العناصر في الأعلى */
+  gap: 20px;                /* المسافة بين الشعار والعناوين */
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;  /* محاذاة الشعار في المنتصف */
+  gap: 12px;
+}
+
+    .logo-box img {
+      width:100px;
+      height:auto;
+    }
+
+  .gov-info {
+  position: absolute;
+  right: 0;                /* العناوين على الجهة اليمنى */
+  text-align: right;       /* محاذاة النصوص لليمين */
+  line-height: 1.5;
+  color: #0a66c2;
+  font-weight: 600;
+}
+
+.gov-info h2,
+.gov-info h3,
+.gov-info h4 {
+  margin: 0;              /* إزالة الهوامش الافتراضية */
+  padding: 2px 0;         /* تقليل المسافة بين العناوين */
+  line-height: 1.2;       /* تقليل المسافة بين الأسطر */
+}
+
+   .main-title {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.main-title h1 {
+  font-size: 2.2rem;
+  color: #0a66c2;
+  font-weight: 700;
+}
+
+.main-title p {
+  margin-top: 4px;
+  font-size: 1.1rem;
+  color: #0a66c2;
+  opacity: 0.9;
+}
+
+    /* ===== نموذج الإدخال ===== */
+    #legalForm {
+      max-width:1100px;
+      margin:0 auto 18px;
+      background:#f3f8ff;
+      border-radius:12px;
+      padding:18px 20px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.06);
+
+      display:grid;
+      grid-template-columns: 150px 1fr 150px 1fr;
+      column-gap:16px;
+      row-gap:10px;
+      align-items:center;
+    }
+    #legalForm label {
+      font-weight:600;
+      justify-self:end;
+      color:#0a3d73;
+    }
+    #legalForm input {
+      width:100%;
+      padding:8px 10px;
+      border-radius:8px;
+      border:1px solid #c7d8f0;
+      font-size:14px;
+    }
+
+    .form-actions {
+      grid-column:1 / -1;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:6px;
+    }
+    .form-actions button {
+      border:none;
+      border-radius:8px;
+      padding:9px 16px;
+      font-size:14px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .form-actions .save { background:#0b8c4a; }
+    .form-actions .cancel { background:#6c757d; display:none; }
+
+    /* ===== أدوات أعلى الجدول ===== */
+    .tools {
+      max-width:1100px;
+      margin:0 auto 14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .tools-left, .tools-right{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+    .tools input[type="text"] {
+      padding:7px 10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      min-width:220px;
+    }
+    .tools button {
+      padding:8px 12px;
+      border:none;
+      border-radius:8px;
+      background:#0d6efd;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    /* ===== الجدول ===== */
+    table {
+      width:100%;
+      max-width:1100px;
+      margin:0 auto;
+      border-collapse:collapse;
+      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+      background:#fff;
+    }
+    th, td {
+      border:1px solid #d0d7e2;
+      padding:6px 4px;
+      text-align:center;
+      font-size:13px;
+    }
+    th {
+      background:#0b5ed7;
+      color:#fff;
+      font-size:13px;
+    }
+    tbody tr:nth-child(even){ background:#f9fbff; }
+
+    .action-btn {
+      border:none;
+      border-radius:6px;
+      padding:4px 8px;
+      font-size:12px;
+      cursor:pointer;
+      color:#fff;
+    }
+    .edit-btn{ background:#17a2b8; }
+    .delete-btn{ background:#dc3545; }
+
+    .export-buttons{
+      max-width:1100px;
+      margin:18px auto 8px;
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .export-buttons button{
+      padding:8px 13px;
+      border:none;
+      border-radius:8px;
+      background:#6f42c1;
+      color:#fff;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .back-button{
+      display:block;
+      text-align:center;
+      margin:10px auto 0;
+      text-decoration:none;
+      color:#0d6efd;
+      font-size:14px;
+    }
+
+    /* رسالة علوية صغيرة */
+    #messageBox{
+      position:fixed;
+      top:20px;
+      right:20px;
+      background:#28a745;
+      color:#fff;
+      padding:8px 12px;
+      border-radius:10px;
+      font-size:13px;
+      display:none;
+      z-index:9999;
+      box-shadow:0 0 10px rgba(0,0,0,0.2);
+    }
+
+    /* إخفاء عمود الإجراء أثناء الطباعة */
+  @media print {
+  #legalForm,
+  .tools,
+  .export-buttons,
+  .back-button,
+  #messageBox {
+    display:none !important;
+  }
+
+  th.action-col, td.action-col, .action-col {
+    display:none !important;
+  }
+
+  #legalTable {
+    display: table !important;
+    width: 100% !important;
+  }
+
+  #legalTable thead { display: table-header-group !important; }
+  #legalTable tfoot { display: table-footer-group !important; }
+
+  .wrap, .card {
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+}
+
+  body {
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+
+
+    /* موبايل */
+    @media (max-width: 768px){
+      .header-top{
+        flex-direction:column-reverse;
+        align-items:flex-start;
+      }
+      .gov-info{ text-align:right; }
+      #legalForm{
+        grid-template-columns: 130px 1fr;
+      }
+    }
+
+    .company-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .company-section label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    .company-section input, .company-section select {
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      width: 48%;
+      margin-bottom: 10px;
+    }
+
+    .company-section input[type="number"] {
+      width: 48%;
+    }
+
+    .company-section select {
+      width: 48%;
+    }
+    .tools-center {
+  display: flex;
+  justify-content: center; /* محاذاة مربع البحث في المنتصف */
+  width: 100%; 
+  margin-bottom: 15px; /* إضافة بعض المسافة أسفل */
+}
+
+.tools-center input {
+  width: 30%; /* تخصيص العرض حسب الحاجة */
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.export-buttons {
+  display: flex;
+  justify-content: center; /* محاذاة الأزرار في المنتصف */
+  gap: 20px; /* المسافة بين الأزرار */
+  margin: 20px 0;
+}
+
+.export-buttons button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #6f42c1;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.export-buttons button i {
+  margin-left: 5px; /* إضافة مسافة صغيرة بين الأيقونة والنص */
+}
+
+.export-buttons button:hover {
+  background-color: #5a35a0;
+}
+
+
+  </style>
+</head>
+<body>
+
+  <!-- ===== الهيدر ===== -->
+  <header class="main-header">
+  <div class="header-top">
+    <!-- الشعار في المنتصف في الأعلى -->
+    <div class="logo-box">
+      <img src="image.png" alt="شعار سلطنة عمان" class="logo">
+    </div>
+
+    <!-- عناوين الحكومة على الجهة اليمنى -->
+    <div class="gov-info">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+       <h4>قسم الشؤون القانونية</h4>
+    </div>
+  </div>
+
+    <!-- عنوان التطبيق -->
+    <div class="main-title">
+      <h1></h1>
+      <p>التقرير الإحصائي السنوي للقضايا</p>
+    </div>
+  </header>
+
+
+<body>
+<div class="wrap">
+
+  <div class="card">
+    
+    <div id="messageBox"></div>
+
+    <form id="legalForm">
+      <label>القضايا المحالة للإدعاء العام</label>
+      <input type="number" id="casesToProsecution" min="0" >
+
+      <label>قيمة الغرامات الصادرة للقضايا</label>
+      <input type="text" id="finesValue" min="0" step="0.001" >
+
+      <label>قيمة التعويضات المدنية والمبالغ المسترجعة الخاصة بالقضايا</label>
+      <input type="text" id="compensationsAndRecovered" min="0" step="0.001" >
+
+      <label>عدد محاضر السؤال</label>
+      <input type="number" id="questionMinutesCount" min="0" >
+
+
+   <!-- الأزرار -->
+    <div class="form-actions">
+      <button type="submit" class="save">
+        <i class="fa-solid fa-floppy-disk"></i> حفظ
+      </button>
+      <button type="button" class="cancel" id="cancelEdit" style="display:none">
+        <i class="fa-solid fa-ban"></i> إلغاء التعديل
+      </button>
+    </div>
+  </form>
+
+  <div class="tools">
+  <div class="tools-center">
+    <input type="text" id="searchInput" placeholder="🔍 بحث في جميع الحقول">
+  </div>
+</div>
+
+<table id="legalTable">
+  <thead>
+    <tr>
+      <th>م</th>
+      <th>القضايا المحالة للإدعاء العام</th>
+      <th>قيمة الغرامات الصادرة للقضايا</th>
+      <th>قيمة التعويضات المدنية والمبالغ المسترجعة الخاصة بالقضايا</th>
+      <th>عدد محاضر السؤال</th>
+      <th class="action-col">إجراء</th>
+    </tr>
+  </thead>
+
+  <tbody id="tbody"></tbody>
+
+  <tfoot>
+    <tr>
+      <td>الإجمالي</td>
+      <td id="sumCases">0</td>
+      <td id="sumFines">0</td>
+      <td id="sumComp">0</td>
+      <td id="sumMinutes">0</td>
+      <td class="action-col"></td>
+    </tr>
+  </tfoot>
+</table>
+
+<h3 style="margin-top: 30px; text-align: left;">إعتماد رئيس قسم الشؤون القانونية</h3>
+  <div style="text-align:right; margin:10px 0;">
+</div>
+
+ <!-- أزرار الطباعة والتصدير -->
+<div class="export-buttons">
+  <!-- زر الطباعة -->
+  <button type="button" onclick="window.print()">
+    <i class="fa-solid fa-print"></i> طباعة
+  </button>
+
+  <!-- زر التصدير إلى Excel -->
+  <button type="button" onclick="exportToExcel()">
+    <i class="fa-solid fa-file-excel"></i> Excel
+  </button>
+</div>
+
+
+  <a href="javascript:history.back()" class="back-button">
+    <i class="fa-solid fa-arrow-right"></i> الرجوع
+  </a>
+
+  <div id="messageBox"></div>
+
+
+<script>
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxObVvd64sYtcg49O3LCAqOrjUqF-yI7uy5x0OXzBqH9pCDxQehYE19SIe-bP93emE_cg/exec";
+
+let casesData = [];
+let editRowIndex = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("legalForm");
+  const cancelBtn = document.getElementById("cancelEdit");
+  const searchInput = document.getElementById("searchInput");
+
+  if (!form) {
+    console.error("legalForm غير موجود");
+    return;
+  }
+
+  loadData();
+
+  form.addEventListener("submit", onSubmitForm);
+
+  cancelBtn?.addEventListener("click", () => {
+    editRowIndex = null;
+    form.reset();
+    cancelBtn.style.display = "none";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  searchInput?.addEventListener("input", () => {
+    const q = searchInput.value.toLowerCase().trim();
+    if (!q) return renderRows(casesData);
+
+    const filtered = casesData.filter(row =>
+      Object.values(row).some(v => String(v ?? "").toLowerCase().includes(q))
+    );
+    renderRows(filtered);
+  });
+});
+
+/* ===== تحميل البيانات ===== */
+async function loadData(){
+  const res = await fetch(SHEET_API + "?data=1");
+  const raw = await res.text();
+
+  console.log("GET status:", res.status);
+  console.log("GET raw:", raw);
+
+  casesData = JSON.parse(raw);     // ✅ مهم
+  renderRows(casesData);           // ✅ اسم الدالة الصحيح
+}
+
+/* ===== رسائل ===== */
+function showMessage(msg, type="success"){
+  const box = document.getElementById("messageBox");
+  if (!box) return;
+
+  box.textContent = msg;
+  box.style.backgroundColor = (type==="error") ? "#dc3545" : "#28a745";
+  box.style.display = "block";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  setTimeout(()=> box.style.display="none", 3000);
+}
+
+/* ===== عرض الجدول ===== */
+function renderRows(data){
+  const tbody = document.getElementById("tbody"); // ✅ id الصحيح
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  let sumCases = 0, sumFines = 0, sumComp = 0, sumMinutes = 0;
+
+  data.forEach((row, idx) => {
+    const casesToProsecution = Number(row.casesToProsecution || 0);
+    const finesValue = Number(row.finesValue || 0);
+    const compensationsAndRecovered = Number(row.compensationsAndRecovered || 0);
+    const questionMinutesCount = Number(row.questionMinutesCount || 0);
+
+    sumCases += casesToProsecution;
+    sumFines += finesValue;
+    sumComp += compensationsAndRecovered;
+    sumMinutes += questionMinutesCount;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${idx + 1}</td>
+      <td>${casesToProsecution}</td>
+      <td>${finesValue}</td>
+      <td>${compensationsAndRecovered}</td>
+      <td>${questionMinutesCount}</td>
+      <td class="action-col">
+        <button type="button" class="action-btn edit-btn"
+          onclick="startEditByRowIndex(${row.rowIndex})">تعديل</button>
+        <button type="button" class="action-btn delete-btn"
+          onclick="deleteRowByRowIndex(${row.rowIndex})">حذف</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("sumCases").textContent = sumCases;
+  document.getElementById("sumFines").textContent = sumFines;
+  document.getElementById("sumComp").textContent = sumComp;
+  document.getElementById("sumMinutes").textContent = sumMinutes;
+}
+
+/* ===== حفظ/تحديث ===== */
+async function onSubmitForm(e){
+  e.preventDefault();
+
+  const payload = {
+    action: editRowIndex ? "update" : "add",
+    rowIndex: editRowIndex || "",                      // ✅ rowIndex
+    casesToProsecution: document.getElementById("casesToProsecution").value || 0,
+    finesValue: document.getElementById("finesValue").value || 0,
+    compensationsAndRecovered: document.getElementById("compensationsAndRecovered").value || 0,
+    questionMinutesCount: document.getElementById("questionMinutesCount").value || 0
+  };
+
+  try {
+    const res = await fetch(SHEET_API, {
+      method: "POST",
+      body: new URLSearchParams(payload)
+    });
+
+    const text = await res.text();
+    console.log("POST status:", res.status);
+    console.log("POST response:", text);
+
+    if (!res.ok) throw new Error("فشل الاتصال");
+
+    showMessage("تم الحفظ بنجاح");
+    document.getElementById("legalForm").reset();
+
+    editRowIndex = null;
+    const cancelBtn = document.getElementById("cancelEdit");
+    if (cancelBtn) cancelBtn.style.display = "none";
+
+    await loadData();
+  } catch (err) {
+    console.error(err);
+    showMessage("حدث خطأ أثناء الحفظ", "error");
+  }
+}
+
+/* ===== تعديل ===== */
+window.startEditByRowIndex = function(rowIndex){
+  const row = casesData.find(r => Number(r.rowIndex) === Number(rowIndex));
+  if (!row) return;
+
+  editRowIndex = Number(row.rowIndex);
+
+  document.getElementById("casesToProsecution").value = Number(row.casesToProsecution || 0);
+  document.getElementById("finesValue").value = Number(row.finesValue || 0);
+  document.getElementById("compensationsAndRecovered").value = Number(row.compensationsAndRecovered || 0);
+  document.getElementById("questionMinutesCount").value = Number(row.questionMinutesCount || 0);
+
+  const cancelBtn = document.getElementById("cancelEdit");
+  if (cancelBtn) cancelBtn.style.display = "inline-block";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+/* ===== حذف ===== */
+window.deleteRowByRowIndex = async function(rowIndex){
+  if(!confirm("هل تريد حذف السطر؟")) return;
+
+  try {
+    const res = await fetch(SHEET_API, {
+      method: "POST",
+      body: new URLSearchParams({
+        action: "delete",
+        rowIndex: String(rowIndex)   // ✅ rowIndex
+      })
+    });
+
+    const text = await res.text();
+    console.log("DELETE status:", res.status);
+    console.log("DELETE response:", text);
+
+    if (!res.ok) throw new Error("فشل الحذف");
+
+    showMessage("تم حذف السطر بنجاح");
+    await loadData();
+  } catch (err) {
+    console.error(err);
+    showMessage("حدث خطأ أثناء الحذف", "error");
+  }
+};
+
+/* ===== Excel ===== */
+window.exportToExcel = function(){
+  const table = document.getElementById("legalTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet: "legalReport" });
+  XLSX.writeFile(wb, "تقرير_القضايا.xlsx");
+};
+</script>
+
+</body>
+</html>
