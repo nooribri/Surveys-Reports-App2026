@@ -380,6 +380,22 @@
     display: none !important;
   }
 }
+.filters { display: flex; gap: 15px; align-items: flex-end; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 10px; }
+    .filter-item { display: flex; flex-direction: column; }
+    .filter-item label { font-size: 13px; color: #666; margin-bottom: 5px; }
+    .filter-item input { padding: 8px 12px; border: 2px solid #e0e6ed; border-radius: 6px; }
+    
+    .filters button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    #filterBtn { background: #3498db; color: white; }
+    #filterBtn:hover { background: #2980b9; }
+    #clearFilterBtn { background: #95a5a6; color: white; }
+    #clearFilterBtn:hover { background: #7f8c8d; }
+    
+     @media print {
+  .no-print {
+    display: none !important;
+  }
+}
 
   </style>
 </head>
@@ -398,6 +414,7 @@
       <h2>سلطنة عمان</h2>
       <h3>هيئة حماية المستهلك</h3>
       <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h5>قسم الدراسات والتطوير</h5>
     </div>
   </div>
 
@@ -428,25 +445,25 @@
    <input type="date" id="orderDate">
 
   <label>رقم الطلب</label>
-  <input type="text" id="orderNumber" placeholder="أدخل رقم الطلب">
+  <input type="text" id="orderNumber" >
 
   <label>الاسم التجاري</label>
-  <input type="text" id="tradeName" placeholder="أدخل الاسم التجاري">
+  <input type="text" id="tradeName" >
 
   <label>رقم السجل </label>
-  <input type="text" id="commercialRecord" placeholder="أدخل رقم السجل">
+  <input type="text" id="commercialRecord" >
 
   <label>مقدم الطلب</label>
-  <input type="text" id="applicantName" placeholder="اسم مقدم الطلب">
+  <input type="text" id="applicantName" >
 
   <label>رقم الهاتف</label>
-  <input type="tel" id="phone" placeholder="مثال: 9XXXXXXXX">
+  <input type="tel" id="phone">
 
   <label>المحافظة / الولاية</label>
-  <input type="text" id="region" placeholder="المنطقة أو الولاية">
+  <input type="text" id="region" >
 
   <label>البريد الإلكتروني</label>
-  <input type="email" id="email" placeholder="example@email.com">
+  <input type="email" id="email" >
 
   <!-- زر الحفظ -->
   <div class="form-actions">
@@ -464,6 +481,20 @@
       <input type="text" id="searchInput" placeholder="🔍 ابحث في الرقم، الشركة، السعر ...">
     </div>
 </div>
+
+<div class="filters no-print">
+  <div class="filter-item">
+    <label for="fromDate">من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+  <div class="filter-item">
+    <label for="toDate">إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+  <button type="button" id="filterBtn"><i class="fa-solid fa-filter"></i> تطبيق</button>
+  <button type="button" id="clearFilterBtn"><i class="fa-solid fa-broom"></i> مسح</button>
+</div>
+
  <!-- جدول عرض بيانات مقدمي الطلبات -->
 <table id="requestTable">
   <thead>
@@ -501,7 +532,7 @@
 
   <!-- السكريبت -->
   <script>
-const SHEET_API = "https://script.google.com/macros/s/AKfycby7LEnmmh8ymz8ZneZXyaG3YeT78aMidDe381vrlcsmuygMCVhYoAx8aZ97mJkTZWQ5fg/exec";
+const SHEET_API = "https://script.google.com/macros/s/AKfycbyelW46-_bfCmckavGQEI8kSiGgMl1DBRhICGIiwFj0dfquDZxUxqr4UG4lmnMtpAzsPg/exec";
 
 let tableData = [];
 let editRowNumber = null;
@@ -573,6 +604,7 @@ async function loadData() {
     showMessage("فشل تحميل البيانات", "error");
   }
 }
+
 // =====================
 // رسم الجدول
 // =====================
@@ -585,27 +617,76 @@ function renderTable(data) {
       <tr>
         <td>${i + 1}</td>
         <td>${formatDate(row.orderDate || "")}</td>
-        <td>${row.orderNumber}</td>
-        <td>${row.tradeName}</td>
-        <td>${row.commercialRecord}</td>
-        <td>${row.applicantName}</td>
-        <td>${row.phone}</td>
-        <td>${row.region}</td>
-        <td>${row.email}</td>
+        <td>${row.orderNumber || ""}</td>
+        <td>${row.tradeName || ""}</td>
+        <td>${row.commercialRecord || ""}</td>
+        <td>${row.applicantName || ""}</td>
+        <td>${row.phone || ""}</td>
+        <td>${row.region || ""}</td>
+        <td>${row.email || ""}</td>
         <td>
-          <button class="action-btn edit-btn"
-            onclick="startEdit(${i})">
+          <button class="action-btn edit-btn" onclick="startEdit(${i})">
             تعديل
           </button>
 
-          <button class="action-btn delete-btn"
-            onclick="deleteRow(${i})">
+          <button class="action-btn delete-btn" onclick="deleteRow(${i})">
             حذف
           </button>
         </td>
       </tr>
     `;
   });
+}
+// =====================
+// تنسيق التاريخ بدون نقص يوم
+// =====================
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+
+  dateStr = String(dateStr).trim();
+
+  if (dateStr.includes("T")) {
+    return dateStr.split("T")[0];
+  }
+
+  if (dateStr.includes("/")) {
+    const parts = dateStr.split("/");
+    const day = parts[0].padStart(2, "0");
+    const month = parts[1].padStart(2, "0");
+    const year = parts[2];
+    return `${year}-${month}-${day}`;
+  }
+
+  return dateStr;
+}
+
+// =====================
+// تجهيز التاريخ للنموذج
+// =====================
+function toDateInputValue(value) {
+  return formatDate(value);
+}
+
+// =====================
+// تحويل التاريخ للمقارنة في الفلترة
+// =====================
+function parseDateForCompare(str) {
+  if (!str) return null;
+
+  const cleanDate = formatDate(str);
+  const parts = cleanDate.split("-");
+
+  if (parts.length === 3) {
+    const year = Number(parts[0]);
+    const month = Number(parts[1]) - 1;
+    const day = Number(parts[2]);
+
+    const d = new Date(year, month, day);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  return null;
 }
 
 
@@ -614,9 +695,29 @@ function renderTable(data) {
 // =====================
 function toDateInputValue(value) {
   if (!value) return "";
-  return String(value).split("T")[0];
+
+  value = String(value);
+
+  // إذا فيه T (ISO string من Sheets)
+  if (value.includes("T")) {
+    return value.split("T")[0]; // yyyy-mm-dd
+  }
+
+  // لو فيه / dd/mm/yyyy
+  if (value.includes("/")) {
+    const parts = value.split("/");
+    const day = parts[0].padStart(2, "0");
+    const month = parts[1].padStart(2, "0");
+    const year = parts[2];
+    return `${year}-${month}-${day}`;
+  }
+
+  return value;
 }
 
+// =====================
+// تعديل
+// =====================
 function startEdit(index) {
   const row = tableData[index];
   editRowNumber = row.rowNumber;
@@ -677,12 +778,56 @@ function showMessage(msg, type = "success") {
   setTimeout(() => box.style.display = "none", 3000);
 }
 
-    // تنسيق التاريخ
-    function formatDate(dateStr) {
-      if (!dateStr) return "";
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("en-CA");
-    }
+  
+// =====================
+// البحث والفلترة
+// =====================
+function applyFiltersAndRender() {
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+
+  const filtered = tableData.filter(row => {
+    const matchText = !q || Object.values(row).some(v =>
+      String(v ?? "").toLowerCase().includes(q)
+    );
+
+    const rowDate = parseDateForCompare(row.orderDate);
+    const fromDate = from ? parseDateForCompare(from) : null;
+    const toDate = to ? parseDateForCompare(to) : null;
+
+    const matchFrom = !fromDate || (rowDate && rowDate >= fromDate);
+    const matchTo = !toDate || (rowDate && rowDate <= toDate);
+
+    return matchText && matchFrom && matchTo;
+  });
+
+  renderTable(filtered);
+}
+
+function clearFilters() {
+  document.getElementById("fromDate").value = "";
+  document.getElementById("toDate").value = "";
+  document.getElementById("searchInput").value = "";
+  renderTable(tableData);
+}
+
+document.getElementById("filterBtn").addEventListener("click", applyFiltersAndRender);
+document.getElementById("clearFilterBtn").addEventListener("click", clearFilters);
+document.getElementById("searchInput").addEventListener("input", applyFiltersAndRender);
+document.getElementById("fromDate").addEventListener("change", applyFiltersAndRender);
+document.getElementById("toDate").addEventListener("change", applyFiltersAndRender);
+/* =========================
+   تفريغ النموذج
+========================= */
+function resetForm() {
+  document.getElementById("requestForm").reset();
+  editIndex = null;
+  currentSheetRow = null;
+  document.querySelector('.form-actions-feed button[type="submit"]').textContent = "حفظ";
+  document.getElementById("date").focus();
+}
+
 
     // البحث
     function searchTable() {

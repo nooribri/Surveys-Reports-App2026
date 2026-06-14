@@ -375,6 +375,23 @@
   }
 }
 
+.filters { display: flex; gap: 15px; align-items: flex-end; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 10px; }
+    .filter-item { display: flex; flex-direction: column; }
+    .filter-item label { font-size: 13px; color: #666; margin-bottom: 5px; }
+    .filter-item input { padding: 8px 12px; border: 2px solid #e0e6ed; border-radius: 6px; }
+    
+    .filters button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    #filterBtn { background: #3498db; color: white; }
+    #filterBtn:hover { background: #2980b9; }
+    #clearFilterBtn { background: #95a5a6; color: white; }
+    #clearFilterBtn:hover { background: #7f8c8d; }
+    
+     @media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -392,6 +409,7 @@
       <h2>سلطنة عمان</h2>
       <h3>هيئة حماية المستهلك</h3>
       <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+      <h5>قسم الدراسات والتطوير</h5>
     </div>
   </div>
 
@@ -416,26 +434,29 @@
  <!-- نموذج إدخال البيانات -->
 <form id="approveForm">
 
+  <label for="orderDate">تاريخ الطلب:</label>
+<input type="date" id="orderDate">
+
+
   <label>رقم الطلب</label>
-  <input type="text" id="orderNumber" placeholder="أدخل رقم الطلب">
+  <input type="text" id="orderNumber">
 
   <label>الاسم التجاري</label>
-  <input type="text" id="tradeName" placeholder="أدخل الاسم التجاري">
-
+  <input type="text" id="tradeName" >
   <label>رقم السجل التجاري</label>
-  <input type="text" id="commercialRecord" placeholder="أدخل رقم السجل">
+  <input type="text" id="commercialRecord" >
 
   <label>مقدم الطلب</label>
-  <input type="text" id="applicantName" placeholder="اسم مقدم الطلب">
+  <input type="text" id="applicantName" >
 
   <label>رقم الهاتف</label>
-  <input type="tel" id="phone" placeholder="مثال: 9XXXXXXXX">
+  <input type="tel" id="phone">
 
   <label>المنطقة / الولاية</label>
-  <input type="text" id="region" placeholder="المنطقة أو الولاية">
+  <input type="text" id="region">
 
   <label>البريد الإلكتروني</label>
-  <input type="email" id="email" placeholder="example@email.com">
+  <input type="email" id="email">
 
   <!-- زر الحفظ -->
   <div class="form-actions">
@@ -453,11 +474,26 @@
       <input type="text" id="searchInput" placeholder="🔍 ابحث في الرقم، الشركة، السعر ...">
     </div>
 </div>
+
+<div class="filters no-print">
+  <div class="filter-item">
+    <label for="fromDate">من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+  <div class="filter-item">
+    <label for="toDate">إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+  <button type="button" id="filterBtn"><i class="fa-solid fa-filter"></i> تطبيق</button>
+  <button type="button" id="clearFilterBtn"><i class="fa-solid fa-broom"></i> مسح</button>
+</div>
+
  <!-- جدول عرض بيانات مقدمي الطلبات -->
 <table id="approveTable">
   <thead>
     <tr>
       <th>رقم</th>
+      <th>تاريخ الطلب</th>
       <th>رقم الطلب</th>
       <th>الاسم التجاري</th>
       <th>رقم السجل التجاري</th>
@@ -488,15 +524,15 @@
 
 
   <!-- السكريبت -->
-  <script>
-const SHEET_API = "https://script.google.com/macros/s/AKfycbxTYCqjIUzDhBYhIPg1L1B8X0Mr07rO6Zb0UBSYQHN9eGcUB9Wdufy0YqUFsNMhdhth/exec";
+ <script>
+const SHEET_API = "https://script.google.com/macros/s/AKfycbzuXC3ChJYN6x2TMEv4GDN_40DW5qsjgojvJ5qfx4mwRB26dEHGZAdNLPtq2aUCWtbm/exec";
 
 let tableData = [];
 let editRowNumber = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("approveForm");
-
+  const orderDate = document.getElementById("orderDate");
   const orderNumber = document.getElementById("orderNumber");
   const tradeName = document.getElementById("tradeName");
   const commercialRecord = document.getElementById("commercialRecord");
@@ -507,13 +543,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadData();
 
-  // حفظ / تحديث
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const data = {
       action: editRowNumber ? "update" : "add",
       rowNumber: editRowNumber || "",
+      orderDate: orderDate.value,
       orderNumber: orderNumber.value,
       tradeName: tradeName.value,
       commercialRecord: commercialRecord.value,
@@ -542,6 +578,13 @@ document.addEventListener("DOMContentLoaded", () => {
       showMessage("فشل الاتصال بالخادم", "error");
     }
   });
+
+  // ربط أحداث البحث والفلترة داخل DOMContentLoaded
+  document.getElementById("filterBtn").addEventListener("click", applyFiltersAndRender);
+  document.getElementById("clearFilterBtn").addEventListener("click", clearFilters);
+  document.getElementById("searchInput").addEventListener("input", applyFiltersAndRender);
+  document.getElementById("fromDate").addEventListener("change", applyFiltersAndRender);
+  document.getElementById("toDate").addEventListener("change", applyFiltersAndRender);
 });
 
 // =====================
@@ -558,6 +601,74 @@ async function loadData() {
 }
 
 // =====================
+// تنسيق التاريخ → YYYY-MM-DD
+// =====================
+// =====================
+// تنسيق التاريخ → YYYY-MM-DD (بدون نقص يوم)
+// =====================
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+
+  dateStr = String(dateStr).trim();
+
+  // ✅ إذا كان ISO يحتوي T → نأخذ التاريخ بالتوقيت المحلي
+  if (dateStr.includes("T")) {
+    const d = new Date(dateStr);
+    const year = d.getFullYear();        // محلي وليس UTC
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  // إذا كان DD/MM/YYYY
+  if (dateStr.includes("/")) {
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  // إذا كان YYYY-MM-DD مباشرة
+  return dateStr;
+}
+
+// =====================
+// تجهيز التاريخ لـ input type="date"
+// =====================
+function toDateInputValue(value) {
+  return formatDate(value);
+}
+
+// =====================
+// عرض التاريخ في الجدول DD/MM/YYYY
+// =====================
+function displayDate(value) {
+  if (!value) return "";
+
+  const datePart = formatDate(String(value).trim());
+  if (!datePart) return "";
+
+  const [year, month, day] = datePart.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+// =====================
+// تحويل التاريخ للمقارنة في الفلترة
+// =====================
+function parseDateForCompare(str) {
+  if (!str) return null;
+
+  const cleanDate = formatDate(str);
+  const parts = cleanDate.split("-");
+
+  if (parts.length === 3) {
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  return null;
+}
+
+// =====================
 // رسم الجدول
 // =====================
 function renderTable(data) {
@@ -568,29 +679,22 @@ function renderTable(data) {
     tbody.innerHTML += `
       <tr>
         <td>${i + 1}</td>
-        <td>${row.orderNumber}</td>
-        <td>${row.tradeName}</td>
-        <td>${row.commercialRecord}</td>
-        <td>${row.applicantName}</td>
-        <td>${row.phone}</td>
-        <td>${row.region}</td>
-        <td>${row.email}</td>
+        <td>${displayDate(row.orderDate)}</td>
+        <td>${row.orderNumber ?? ""}</td>
+        <td>${row.tradeName ?? ""}</td>
+        <td>${row.commercialRecord ?? ""}</td>
+        <td>${row.applicantName ?? ""}</td>
+        <td>${row.phone ?? ""}</td>
+        <td>${row.region ?? ""}</td>
+        <td>${row.email ?? ""}</td>
         <td class="actions-column">
-  <button class="action-btn edit-btn"
-    onclick="startEdit(${i})">
-    تعديل
-  </button>
-
-  <button class="action-btn delete-btn"
-    onclick="deleteRow(${i})">
-    حذف
-  </button>
-</td>
+          <button class="action-btn edit-btn" onclick="startEdit(${i})">تعديل</button>
+          <button class="action-btn delete-btn" onclick="deleteRow(${i})">حذف</button>
+        </td>
       </tr>
     `;
   });
 }
-
 
 // =====================
 // تعديل
@@ -599,13 +703,14 @@ function startEdit(index) {
   const row = tableData[index];
   editRowNumber = row.rowNumber;
 
-  document.getElementById("orderNumber").value = row.orderNumber;
-  document.getElementById("tradeName").value = row.tradeName;
-  document.getElementById("commercialRecord").value = row.commercialRecord;
-  document.getElementById("applicantName").value = row.applicantName;
-  document.getElementById("phone").value = row.phone;
-  document.getElementById("region").value = row.region;
-  document.getElementById("email").value = row.email;
+  document.getElementById("orderDate").value = toDateInputValue(row.orderDate);
+  document.getElementById("orderNumber").value = row.orderNumber ?? "";
+  document.getElementById("tradeName").value = row.tradeName ?? "";
+  document.getElementById("commercialRecord").value = row.commercialRecord ?? "";
+  document.getElementById("applicantName").value = row.applicantName ?? "";
+  document.getElementById("phone").value = row.phone ?? "";
+  document.getElementById("region").value = row.region ?? "";
+  document.getElementById("email").value = row.email ?? "";
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -639,41 +744,58 @@ async function deleteRow(index) {
 }
 
 // =====================
+// البحث والفلترة
+// =====================
+function applyFiltersAndRender() {
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+
+  const filtered = tableData.filter(row => {
+    const matchText = !q || Object.values(row).some(v =>
+      String(v ?? "").toLowerCase().includes(q)
+    );
+
+    const rowDate = parseDateForCompare(row.orderDate);
+    const fromDate = from ? parseDateForCompare(from) : null;
+    const toDate = to ? parseDateForCompare(to) : null;
+
+    const matchFrom = !fromDate || (rowDate && rowDate >= fromDate);
+    const matchTo = !toDate || (rowDate && rowDate <= toDate);
+
+    return matchText && matchFrom && matchTo;
+  });
+
+  renderTable(filtered);
+}
+
+function clearFilters() {
+  document.getElementById("fromDate").value = "";
+  document.getElementById("toDate").value = "";
+  document.getElementById("searchInput").value = "";
+  renderTable(tableData);
+}
+
+// =====================
 // رسالة
 // =====================
 function showMessage(msg, type = "success") {
   const box = document.getElementById("messageBox");
+  if (!box) return;
   box.textContent = msg;
   box.style.background = type === "error" ? "#dc3545" : "#28a745";
   box.style.display = "block";
   setTimeout(() => box.style.display = "none", 3000);
 }
 
-    // تنسيق التاريخ
-    function formatDate(dateStr) {
-      if (!dateStr) return "";
-      const d = new Date(dateStr);
-      return d.toLocaleDateString("en-CA");
-    }
-
-    // البحث
-    function searchTable() {
-      const q = this.value.toLowerCase();
-      const filtered = approveData.filter(row =>
-        Object.values(row).some(val =>
-          String(val).toLowerCase().includes(q)
-        )
-      );
-      renderTable(filtered);
-    }
-
-    // تصدير Excel
-    function exportToExcel() {
-      const table = document.getElementById("approveTable");
-      const wb = XLSX.utils.table_to_book(table, { sheet: "إعتماد أسعار" });
-      XLSX.writeFile(wb, "إعتماد أسعار.xlsx");
-    }
-  
+// =====================
+// تصدير Excel
+// =====================
+function exportToExcel() {
+  const table = document.getElementById("approveTable");
+  const wb = XLSX.utils.table_to_book(table, { sheet: "إعتماد أسعار" });
+  XLSX.writeFile(wb, "إعتماد أسعار.xlsx");
+}
 </script>
 </body>
 </html>

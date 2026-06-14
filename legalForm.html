@@ -361,6 +361,22 @@
   background-color: #5a35a0;
 }
 
+.filters { display: flex; gap: 15px; align-items: flex-end; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 10px; }
+    .filter-item { display: flex; flex-direction: column; }
+    .filter-item label { font-size: 13px; color: #666; margin-bottom: 5px; }
+    .filter-item input { padding: 8px 12px; border: 2px solid #e0e6ed; border-radius: 6px; }
+    
+    .filters button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    #filterBtn { background: #3498db; color: white; }
+    #filterBtn:hover { background: #2980b9; }
+    #clearFilterBtn { background: #95a5a6; color: white; }
+    #clearFilterBtn:hover { background: #7f8c8d; }
+    
+     @media print {
+  .no-print {
+    display: none !important;
+  }
+}
 
   </style>
 </head>
@@ -379,13 +395,13 @@
       <h2>سلطنة عمان</h2>
       <h3>هيئة حماية المستهلك</h3>
       <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
-       <h4>قسم الشؤون القانونية</h4>
+       <h4>قسم الدراسات والتطوير</h4>
     </div>
   </div>
 
     <!-- عنوان التطبيق -->
     <div class="main-title">
-      <h1></h1>
+      <h4>تقرير قسم الشؤون القانونية</h4>
       <p>التقرير الإحصائي السنوي للقضايا</p>
     </div>
   </header>
@@ -399,6 +415,10 @@
     <div id="messageBox"></div>
 
     <form id="legalForm">
+
+        <label for="date">التاريخ</label>
+        <input type="date" id="date">
+
       <label>القضايا المحالة للإدعاء العام</label>
       <input type="number" id="casesToProsecution" min="0" >
 
@@ -429,31 +449,44 @@
   </div>
 </div>
 
+<div class="filters no-print">
+  <div class="filter-item">
+    <label for="fromDate">من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+  <div class="filter-item">
+    <label for="toDate">إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+  <button type="button" id="filterBtn"><i class="fa-solid fa-filter"></i> تطبيق</button>
+  <button type="button" id="clearFilterBtn"><i class="fa-solid fa-broom"></i> مسح</button>
+</div>
+
 <table id="legalTable">
   <thead>
     <tr>
       <th>م</th>
+      <th>التاريخ</th>
       <th>القضايا المحالة للإدعاء العام</th>
       <th>قيمة الغرامات الصادرة للقضايا</th>
       <th>قيمة التعويضات المدنية والمبالغ المسترجعة الخاصة بالقضايا</th>
       <th>عدد محاضر السؤال</th>
-      <th class="action-col">إجراء</th>
+      <th class="action-col no-print">إجراء</th>
     </tr>
   </thead>
-
   <tbody id="tbody"></tbody>
-
   <tfoot>
     <tr>
-      <td>الإجمالي</td>
+      <td colspan="2">الإجمالي</td>
       <td id="sumCases">0</td>
       <td id="sumFines">0</td>
       <td id="sumComp">0</td>
       <td id="sumMinutes">0</td>
-      <td class="action-col"></td>
+      <td class="action-col no-print"></td>
     </tr>
   </tfoot>
 </table>
+
 
 <h3 style="margin-top: 30px; text-align: left;">إعتماد رئيس قسم الشؤون القانونية</h3>
   <div style="text-align:right; margin:10px 0;">
@@ -481,7 +514,7 @@
 
 
 <script>
-const SHEET_API = "https://script.google.com/macros/s/AKfycbxObVvd64sYtcg49O3LCAqOrjUqF-yI7uy5x0OXzBqH9pCDxQehYE19SIe-bP93emE_cg/exec";
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxb8_k9wBpu9-eTISzqfVWhkI_DlXEEornN8V8NIWcmtm10T4xiBLi4NEZ73VPaq5a6-g/exec";
 
 let casesData = [];
 let editRowIndex = null;
@@ -490,11 +523,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("legalForm");
   const cancelBtn = document.getElementById("cancelEdit");
   const searchInput = document.getElementById("searchInput");
-
-  if (!form) {
-    console.error("legalForm غير موجود");
-    return;
-  }
 
   loadData();
 
@@ -507,97 +535,131 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
-  searchInput?.addEventListener("input", () => {
-    const q = searchInput.value.toLowerCase().trim();
-    if (!q) return renderRows(casesData);
-
-    const filtered = casesData.filter(row =>
-      Object.values(row).some(v => String(v ?? "").toLowerCase().includes(q))
-    );
-    renderRows(filtered);
-  });
+  document.getElementById("filterBtn")?.addEventListener("click", applyFiltersAndRender);
+  document.getElementById("clearFilterBtn")?.addEventListener("click", clearFilters);
+  searchInput?.addEventListener("input", applyFiltersAndRender);
 });
 
 /* ===== تحميل البيانات ===== */
-async function loadData(){
-  const res = await fetch(SHEET_API + "?data=1");
-  const raw = await res.text();
-
-  console.log("GET status:", res.status);
-  console.log("GET raw:", raw);
-
-  casesData = JSON.parse(raw);     // ✅ مهم
-  renderRows(casesData);           // ✅ اسم الدالة الصحيح
+async function loadData() {
+  try {
+    const res = await fetch(SHEET_API + "?data=1");
+    const raw = await res.text();
+    casesData = JSON.parse(raw);
+    renderRows(casesData);
+  } catch (err) {
+    console.error("خطأ في تحميل البيانات:", err);
+    showMessage("فشل تحميل البيانات", "error");
+  }
 }
 
 /* ===== رسائل ===== */
-function showMessage(msg, type="success"){
+function showMessage(msg, type = "success") {
   const box = document.getElementById("messageBox");
   if (!box) return;
-
   box.textContent = msg;
-  box.style.backgroundColor = (type==="error") ? "#dc3545" : "#28a745";
+  box.style.backgroundColor = type === "error" ? "#dc3545" : "#28a745";
   box.style.display = "block";
-
   window.scrollTo({ top: 0, behavior: "smooth" });
+  setTimeout(() => box.style.display = "none", 3000);
+}
 
-  setTimeout(()=> box.style.display="none", 3000);
+/* ===== تنسيق التاريخ → YYYY-MM-DD ===== */
+function formatDate(dateStr) {
+  if (!dateStr) return "";
+  dateStr = String(dateStr).trim();
+
+  if (dateStr.includes("T")) {
+    const d = new Date(dateStr);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  if (dateStr.includes("/")) {
+    const [day, month, year] = dateStr.split("/");
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  return dateStr;
+}
+
+/* ===== عرض التاريخ DD/MM/YYYY في الجدول ===== */
+function displayDate(value) {
+  if (!value) return "";
+  const datePart = formatDate(String(value).trim());
+  if (!datePart) return "";
+  const [year, month, day] = datePart.split("-");
+  return `${day}/${month}/${year}`;
+}
+
+/* ===== تحويل التاريخ للمقارنة ===== */
+function parseDateForCompare(str) {
+  if (!str) return null;
+  const clean = formatDate(str);
+  const parts = clean.split("-");
+  if (parts.length === 3) {
+    const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+  return null;
 }
 
 /* ===== عرض الجدول ===== */
-function renderRows(data){
-  const tbody = document.getElementById("tbody"); // ✅ id الصحيح
+function renderRows(data) {
+  const tbody = document.getElementById("tbody");
   if (!tbody) return;
-
   tbody.innerHTML = "";
 
   let sumCases = 0, sumFines = 0, sumComp = 0, sumMinutes = 0;
 
   data.forEach((row, idx) => {
-    const casesToProsecution = Number(row.casesToProsecution || 0);
-    const finesValue = Number(row.finesValue || 0);
+    const casesToProsecution      = Number(row.casesToProsecution || 0);
+    const finesValue              = Number(row.finesValue || 0);
     const compensationsAndRecovered = Number(row.compensationsAndRecovered || 0);
-    const questionMinutesCount = Number(row.questionMinutesCount || 0);
+    const questionMinutesCount    = Number(row.questionMinutesCount || 0);
 
-    sumCases += casesToProsecution;
-    sumFines += finesValue;
-    sumComp += compensationsAndRecovered;
+    sumCases   += casesToProsecution;
+    sumFines   += finesValue;
+    sumComp    += compensationsAndRecovered;
     sumMinutes += questionMinutesCount;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${idx + 1}</td>
+      <td>${displayDate(row.date)}</td>
       <td>${casesToProsecution}</td>
       <td>${finesValue}</td>
       <td>${compensationsAndRecovered}</td>
       <td>${questionMinutesCount}</td>
-      <td class="action-col">
-        <button type="button" class="action-btn edit-btn"
-          onclick="startEditByRowIndex(${row.rowIndex})">تعديل</button>
-        <button type="button" class="action-btn delete-btn"
-          onclick="deleteRowByRowIndex(${row.rowIndex})">حذف</button>
+      <td class="action-col no-print">
+        <button type="button" class="action-btn edit-btn" onclick="startEditByRowIndex(${row.rowIndex})">تعديل</button>
+        <button type="button" class="action-btn delete-btn" onclick="deleteRowByRowIndex(${row.rowIndex})">حذف</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 
-  document.getElementById("sumCases").textContent = sumCases;
-  document.getElementById("sumFines").textContent = sumFines;
-  document.getElementById("sumComp").textContent = sumComp;
+  document.getElementById("sumCases").textContent   = sumCases;
+  document.getElementById("sumFines").textContent   = sumFines;
+  document.getElementById("sumComp").textContent    = sumComp;
   document.getElementById("sumMinutes").textContent = sumMinutes;
 }
 
-/* ===== حفظ/تحديث ===== */
-async function onSubmitForm(e){
+/* ===== حفظ / تحديث ===== */
+async function onSubmitForm(e) {
   e.preventDefault();
 
   const payload = {
-    action: editRowIndex ? "update" : "add",
-    rowIndex: editRowIndex || "",                      // ✅ rowIndex
-    casesToProsecution: document.getElementById("casesToProsecution").value || 0,
-    finesValue: document.getElementById("finesValue").value || 0,
-    compensationsAndRecovered: document.getElementById("compensationsAndRecovered").value || 0,
-    questionMinutesCount: document.getElementById("questionMinutesCount").value || 0
+    action:                     editRowIndex ? "update" : "add",
+    rowIndex:                   editRowIndex || "",
+    date:                       document.getElementById("date").value || "",
+    casesToProsecution:         document.getElementById("casesToProsecution").value || 0,
+    finesValue:                 document.getElementById("finesValue").value || 0,
+    compensationsAndRecovered:  document.getElementById("compensationsAndRecovered").value || 0,
+    questionMinutesCount:       document.getElementById("questionMinutesCount").value || 0
   };
 
   try {
@@ -606,19 +668,12 @@ async function onSubmitForm(e){
       body: new URLSearchParams(payload)
     });
 
-    const text = await res.text();
-    console.log("POST status:", res.status);
-    console.log("POST response:", text);
-
     if (!res.ok) throw new Error("فشل الاتصال");
 
-    showMessage("تم الحفظ بنجاح");
+    showMessage(editRowIndex ? "تم التعديل بنجاح" : "تم الحفظ بنجاح");
     document.getElementById("legalForm").reset();
-
     editRowIndex = null;
-    const cancelBtn = document.getElementById("cancelEdit");
-    if (cancelBtn) cancelBtn.style.display = "none";
-
+    document.getElementById("cancelEdit").style.display = "none";
     await loadData();
   } catch (err) {
     console.error(err);
@@ -627,39 +682,30 @@ async function onSubmitForm(e){
 }
 
 /* ===== تعديل ===== */
-window.startEditByRowIndex = function(rowIndex){
+window.startEditByRowIndex = function (rowIndex) {
   const row = casesData.find(r => Number(r.rowIndex) === Number(rowIndex));
   if (!row) return;
 
   editRowIndex = Number(row.rowIndex);
-
-  document.getElementById("casesToProsecution").value = Number(row.casesToProsecution || 0);
-  document.getElementById("finesValue").value = Number(row.finesValue || 0);
+  document.getElementById("date").value                     = formatDate(row.date);
+  document.getElementById("casesToProsecution").value       = Number(row.casesToProsecution || 0);
+  document.getElementById("finesValue").value               = Number(row.finesValue || 0);
   document.getElementById("compensationsAndRecovered").value = Number(row.compensationsAndRecovered || 0);
-  document.getElementById("questionMinutesCount").value = Number(row.questionMinutesCount || 0);
+  document.getElementById("questionMinutesCount").value     = Number(row.questionMinutesCount || 0);
 
-  const cancelBtn = document.getElementById("cancelEdit");
-  if (cancelBtn) cancelBtn.style.display = "inline-block";
-
+  document.getElementById("cancelEdit").style.display = "inline-block";
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 /* ===== حذف ===== */
-window.deleteRowByRowIndex = async function(rowIndex){
-  if(!confirm("هل تريد حذف السطر؟")) return;
+window.deleteRowByRowIndex = async function (rowIndex) {
+  if (!confirm("هل تريد حذف السطر؟")) return;
 
   try {
     const res = await fetch(SHEET_API, {
       method: "POST",
-      body: new URLSearchParams({
-        action: "delete",
-        rowIndex: String(rowIndex)   // ✅ rowIndex
-      })
+      body: new URLSearchParams({ action: "delete", rowIndex: String(rowIndex) })
     });
-
-    const text = await res.text();
-    console.log("DELETE status:", res.status);
-    console.log("DELETE response:", text);
 
     if (!res.ok) throw new Error("فشل الحذف");
 
@@ -671,13 +717,43 @@ window.deleteRowByRowIndex = async function(rowIndex){
   }
 };
 
-/* ===== Excel ===== */
-window.exportToExcel = function(){
+/* ===== الفلترة والبحث ===== */
+function applyFiltersAndRender() {
+  const q    = document.getElementById("searchInput").value.toLowerCase().trim();
+  const from = document.getElementById("fromDate").value;
+  const to   = document.getElementById("toDate").value;
+
+  const filtered = casesData.filter(row => {
+    const matchText = !q || Object.values(row).some(v =>
+      String(v ?? "").toLowerCase().includes(q)
+    );
+
+    const rowDate  = parseDateForCompare(row.date);
+    const fromDate = from ? parseDateForCompare(from) : null;
+    const toDate   = to   ? parseDateForCompare(to)   : null;
+
+    const matchFrom = !fromDate || (rowDate && rowDate >= fromDate);
+    const matchTo   = !toDate   || (rowDate && rowDate <= toDate);
+
+    return matchText && matchFrom && matchTo;
+  });
+
+  renderRows(filtered);
+}
+
+function clearFilters() {
+  document.getElementById("fromDate").value   = "";
+  document.getElementById("toDate").value     = "";
+  document.getElementById("searchInput").value = "";
+  renderRows(casesData);
+}
+
+/* ===== تصدير Excel ===== */
+window.exportToExcel = function () {
   const table = document.getElementById("legalTable");
   const wb = XLSX.utils.table_to_book(table, { sheet: "legalReport" });
   XLSX.writeFile(wb, "تقرير_القضايا.xlsx");
 };
 </script>
-
 </body>
 </html>

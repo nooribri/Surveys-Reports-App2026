@@ -342,6 +342,79 @@
     display: none !important;
   }
 }
+
+/* ===== فلترة التاريخ ===== */
+.filters{
+  max-width:1100px;
+  margin: 10px auto 20px;
+  display:flex;
+  align-items:flex-end;
+  gap:16px;
+  background:#f5f9ff;
+  padding:12px 16px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+}
+
+.filter-item{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.filter-item label{
+  font-size:13px;
+  font-weight:700;
+  color:#0a3d73;
+}
+
+.filter-item input[type="date"]{
+  width:160px;           /* 🔹 تصغير الحقل */
+  height:34px;
+  font-size:13px;
+  border-radius:8px;
+  border:1px solid #c7d8f0;
+  padding:4px 8px;
+}
+
+#filterBtn{
+  height:34px;
+  padding:0 14px;
+  border:0;
+  border-radius:8px;
+  background:#0b5ed7;
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+#filterBtn:hover{
+  background:#0949a6;
+}
+
+/* 📱 للجوال */
+@media (max-width:600px){
+  .filters{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .filter-item input[type="date"]{
+    width:100%;
+  }
+}
+
+@media print {
+
+  /* إخفاء الفلترة */
+  .filters {
+    display: none !important;
+  }
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
   </style>
 </head>
 <body>
@@ -433,6 +506,21 @@
     <div class="tools-center">
       <input type="text" id="searchInput" placeholder="🔍 ابحث في الرقم، الشركة، السعر ...">
     </div>
+</div>
+
+ <div class="filters">
+  <div>
+    <label>من تاريخ</label>
+    <input type="date" id="fromDate">
+  </div>
+
+  <div>
+    <label>إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+
+  <button type="button" id="filterBtn">تطبيق الفلترة</button>
+  <button type="button" id="clearFilterBtn"> <i class="fa-solid fa-broom"></i> مسح</button>
 </div>
 
    
@@ -670,6 +758,75 @@ document.getElementById("searchInput").addEventListener("input", function(){
     )
   );
   renderRows(filtered);
+});
+
+ /* ========== البحث + الفلترة بالتاريخ ========== */
+   function getValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : "";
+}
+
+function setValue(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.value = value;
+}
+
+function fmtDate(value) {
+  if (!value) return "";
+
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "";
+
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function fmtNum(n) {
+  if (n === "" || n === null || n === undefined) return "";
+  const x = Number(String(n).replace(/,/g, ""));
+  return Number.isFinite(x) ? x.toLocaleString("ar") : n;
+}
+
+function applyFiltersAndRender() {
+  const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+  const from = getValue("fromDate");
+  const to = getValue("toDate");
+
+  const filtered = goodsData.filter(row => {
+    const matchText = !q || Object.values(row).some(v =>
+      String(v ?? "").toLowerCase().includes(q)
+    );
+
+    // عدّل اسم الحقل هنا إذا كان اسم التاريخ مختلفاً
+    const d = fmtDate(row.date);
+    const matchFrom = !from || (d && d >= from);
+    const matchTo = !to || (d && d <= to);
+
+    return matchText && matchFrom && matchTo;
+  });
+
+  renderTable(filtered);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const search = document.getElementById("searchInput");
+  const filterBtn = document.getElementById("filterBtn");
+  const clearBtn = document.getElementById("clearFilterBtn");
+
+  if (search) search.addEventListener("input", applyFiltersAndRender);
+  if (filterBtn) filterBtn.addEventListener("click", applyFiltersAndRender);
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      setValue("fromDate", "");
+      setValue("toDate", "");
+      if (search) search.value = "";
+      applyFiltersAndRender();
+    });
+  }
 });
 
 /* =========================

@@ -326,77 +326,108 @@
 /* الصندوق الرئيسي */
 /* ===== صندوق النموذج ===== */
 #fishForm {
-  display: flex;
-  justify-content: center;
+  max-width: 1200px;
   margin: 30px auto;
+  padding: 0 15px;
 }
 
-/* الصندوق */
 .form-box {
-  width: 420px;
-  background: #f8fbff;
-  padding: 28px 22px;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+  background: linear-gradient(
+    135deg,
+    #bbcbda 0%,
+    #c1ddf8 100%
+  );
+  border: 1px solid #bfdcff;
+  border-radius: 28px;
+  padding: 35px;
+  box-shadow: 0 15px 35px rgba(0, 90, 200, 0.12);
 }
 
-/* شبكة الحقول */
+.form-title {
+  text-align: center;
+  color: #0b5ed7;
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 35px;
+}
+
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px 16px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
 }
 
-/* كل حقل */
 .form-group {
   display: flex;
   flex-direction: column;
 }
 
-/* العناوين */
 .form-group label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #0b3c8a;
-  margin-bottom: 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0a3d73;
+  margin-bottom: 8px;
 }
 
-/* الحقول */
 .form-group input {
-  height: 42px;
-  border-radius: 12px;
-  border: 1px solid #c6d7f5;
-  padding: 8px 12px;
-  font-size: 14px;
-  transition: 0.2s;
+  width: 100%;
+  height: 52px;
+  border: 1px solid #b8d2f7;
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-size: 15px;
+  background: #ffffff;
+  transition: all .25s ease;
 }
 
 .form-group input:focus {
-  border-color: #2f6df6;
-  box-shadow: 0 0 0 3px rgba(47,109,246,0.15);
+  border-color: #9ebbe8;
+  box-shadow: 0 0 0 4px rgba(13,110,253,.15);
+  outline: none;
 }
 
-/* زر الحفظ */
 .form-actions {
-  grid-column: span 2;
-  text-align: center;
-  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
 }
 
 .form-actions button {
-  background: #0a8f44;
-  color: #fff;
+  min-width: 220px;
+  height: 55px;
   border: none;
-  padding: 12px 46px;
-  font-size: 16px;
-  border-radius: 14px;
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    #119b4b,
+    #0a8f44
+  );
+  color: white;
+  font-size: 22px;
+  font-weight: 700;
   cursor: pointer;
+  box-shadow: 0 10px 25px rgba(16,145,73,.25);
 }
 
 .form-actions button:hover {
-  background: #087a3a;
+  transform: translateY(-2px);
 }
 
+@media (max-width: 1000px) {
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-box {
+    padding: 20px;
+  }
+}
 /* زر التعديل */
 .edit-btn {
   background-color: #28a745; /* أخضر */
@@ -419,6 +450,91 @@
     display: none !important;
   }
 }
+ 
+
+    button:hover{
+      transform:translateY(-2px);
+      filter:brightness(.97);
+    }
+
+
+    .tools,
+    .filters{
+      max-width:1150px;
+      margin:0 auto 16px;
+    }
+
+    .tools-center{
+      display:flex;
+      justify-content:center;
+      width:100%;
+    }
+
+    .tools-center input{
+      width:min(560px, 100%);
+      height:48px;
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:10px 18px;
+      font-size:15px;
+      font-family:inherit;
+      background:#fff;
+      box-shadow:0 10px 28px rgba(0,0,0,.06);
+      outline:none;
+      transition:.2s ease;
+    }
+
+    .tools-center input:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 4px rgba(11,94,215,.13), 0 10px 28px rgba(0,0,0,.06);
+    }
+
+    .filters{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:flex-end;
+      justify-content:center;
+      gap:12px;
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:16px;
+      box-shadow:0 12px 30px rgba(11,94,215,.08);
+    }
+
+    .filter-item{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .filter-item label{
+      color:#0a3d73;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .filter-item input{
+      height:42px;
+      width:170px;
+      border:1px solid #c8daf8;
+      border-radius:13px;
+      padding:6px 10px;
+      font-family:inherit;
+      outline:none;
+    }
+
+    #filterBtn{ background:linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+    #clearFilterBtn{ background:linear-gradient(135deg, #64748b, #475569); }
+
+   
+    @media print {
+  .filters, .filters button {
+    display: none !important;
+  }
+}
+ 
+
 
   </style>
 
@@ -451,37 +567,53 @@
 
 <form id="fishForm">
   <div class="form-box">
+    <h2 class="form-title">بيانات مسح أسعار الأسماك</h2>
+
     <div class="form-grid">
+
       <div class="form-group">
-        <label>اسم المؤسسة التجارية</label>
+        <label for="date">التاريخ</label>
+        <input type="date" id="date" name="date">
+      </div>
+
+      <div class="form-group">
+        <label for="shopName">اسم المؤسسة التجارية</label>
         <input type="text" id="shopName" name="shopName" required>
       </div>
+
       <div class="form-group">
-        <label>رقم السجل التجاري</label>
+        <label for="commercialRegister">رقم السجل التجاري</label>
         <input type="text" id="commercialRegister" name="commercialRegister">
       </div>
+
       <div class="form-group">
-        <label>الموقع</label>
+        <label for="location">الموقع</label>
         <input type="text" id="location" name="location">
       </div>
+
       <div class="form-group">
-        <label>رقم الهاتف</label>
+        <label for="phoneNumber">رقم الهاتف</label>
         <input type="text" id="phoneNumber" name="phoneNumber">
       </div>
+
       <div class="form-group">
-        <label>نوع السمك</label>
+        <label for="fishType">نوع السمك</label>
         <input type="text" id="fishType" name="fishType">
       </div>
+
       <div class="form-group">
-        <label>سعر الكيلو (ر.ع)</label>
-        <input type="text" id="fishPrice" name="fishPrice" step="0.01">
+        <label for="fishPrice">سعر الكيلو (ر.ع)</label>
+        <input type="text" id="fishPrice" name="fishPrice">
       </div>
+
     </div>
+
     <div class="form-actions">
-      <button type="submit" id="submitBtn">حفظ</button>
+      <button type="submit" id="submitBtn" class="save">حفظ</button>
     </div>
   </div>
 </form>
+    
 
 <div class="tools">
   <div class="tools-center">
@@ -489,9 +621,26 @@
   </div>
 </div>
 
+  <div class="filters">
+    <div class="filter-item">
+      <label for="fromDate">من تاريخ</label>
+      <input type="date" id="fromDate">
+    </div>
+
+    <div class="filter-item">
+      <label for="toDate">إلى تاريخ</label>
+      <input type="date" id="toDate">
+    </div>
+
+    <button type="button" id="filterBtn"><i class="fa-solid fa-filter"></i> تطبيق الفلترة</button>
+    <button type="button" id="clearFilterBtn"><i class="fa-solid fa-broom"></i> مسح</button>
+  </div>
+
+
 <table id="fishTable">
   <thead>
     <tr>
+      <th>التاريخ</th>
       <th>اسم المؤسسة التجارية</th>
       <th>رقم السجل التجاري</th>
       <th>الموقع</th>
@@ -518,15 +667,16 @@
 <div id="messageBox"></div>
 
 <script>
-const SHEET_API = "https://script.google.com/macros/s/AKfycbz2gxMND-UOYlckc8NMNhnaZwdHLIA_d1i8QsGVYD6STPYeHm5PSdTiZ5h_S8Iq0YbpCA/exec";
+const SHEET_API = "https://script.google.com/macros/s/AKfycbxEOI8E4JWO-xh9XL1Xs_2-8oRZaaOudAPkLSkDmrICg7I-MTTmbl2L2bgOrDliguAbug/exec";
 
 let fishData = [];
 let editRowNumber = null;
 
-let fishForm, shopName, commercialRegister, shopLocation, phoneNumber, fishType, fishPrice, submitBtn;
+let date, shopName, commercialRegister, shopLocation, phoneNumber, fishType, fishPrice, submitBtn;
 
 document.addEventListener("DOMContentLoaded", () => {
   fishForm = document.getElementById("fishForm");
+  date = document.getElementById("date");
   shopName = document.getElementById("shopName");
   commercialRegister = document.getElementById("commercialRegister");
   shopLocation = document.getElementById("location");
@@ -553,6 +703,19 @@ async function loadData(){
   }
 }
 
+function fmtDate(value){
+  if(!value) return "";
+  const d = new Date(value);
+  if(isNaN(d.getTime())) {
+    // إذا كان النص يحتوي T
+    return String(value).split("T")[0];
+  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${day}/${month}/${year}`; // dd/MM/yyyy
+}
+
 /* عرض الصفوف */
 /* عرض الصفوف - تعديل بسيط لضمان دقة التعديل والحذف */
 function renderRows(data) {
@@ -562,6 +725,7 @@ function renderRows(data) {
     const tr = document.createElement("tr");
     // نستخدم row.rowNumber بدلاً من idx لضمان الوصول للسجل الصحيح في Google Sheet
     tr.innerHTML = `
+      <td>${fmtDate(row["التاريخ"])}</td>
       <td>${row["اسم المؤسسة التجارية"] || ""}</td>
       <td>${row["رقم السجل التجاري"] || ""}</td>
       <td>${row["الموقع"] || ""}</td>
@@ -592,6 +756,7 @@ async function submitForm(e) {
   const formData = new URLSearchParams();
   formData.append("action", isEdit ? "update" : "add");
   formData.append("rowNumber", editRowNumber || "");
+  formData.append("التاريخ", fmtDate(date.value));
   formData.append("اسم المؤسسة التجارية", shopName.value.trim());
   formData.append("رقم السجل التجاري", commercialRegister.value.trim());
   formData.append("الموقع", shopLocation.value.trim());
@@ -632,6 +797,7 @@ function resetForm() {
   fishForm.reset();
   editRowNumber = null;
   submitBtn.textContent = "حفظ";
+  date.value = ""; // تفريغ التاريخ أيضاً
   shopName.focus(); // تحسين بسيط
 }
 
@@ -644,7 +810,7 @@ function startEditByRowNumber(rowNumber) {
   if (!row) return;
 
   editRowNumber = row.rowNumber;
-
+  date.value = fmtDate(row["التاريخ"]) || "";
   shopName.value = row["اسم المؤسسة التجارية"] || "";
   commercialRegister.value = row["رقم السجل التجاري"] || "";
   shopLocation.value = row["الموقع"] || "";
@@ -695,12 +861,69 @@ function showMessage(text, type="success"){
   setTimeout(()=>{ box.style.display="none"; },3000);
 }
 
+function parseSheetDate(str) {
+  const parts = str.split('/');
+  let d;
+  if (parts.length === 3) {
+    d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+  } else {
+    d = new Date(str);
+  }
+  // ضبط الساعة على منتصف الليل
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function applyFiltersAndRender(){
+      const q = document.getElementById("searchInput").value.toLowerCase().trim();
+      const from = document.getElementById("fromDate").value;
+      const to = document.getElementById("toDate").value;
+
+      const filtered = fishData.filter(row => {
+        const matchText = !q || Object.values(row).some(v =>
+          String(v ?? "").toLowerCase().includes(q)
+        );
+
+        
+
+      const rowDate = new Date(row["التاريخ"]);
+     const fromDateVal = from ? new Date(from) : null;
+const toDateVal = to ? new Date(to) : null;
+
+// ضبط الساعة على منتصف الليل أيضاً
+if (fromDateVal) fromDateVal.setHours(0,0,0,0);
+if (toDateVal) toDateVal.setHours(0,0,0,0);
+
+      const matchFrom = !fromDateVal || rowDate >= fromDateVal;
+      const matchTo = !toDateVal || rowDate <= toDateVal;
+
+      return matchText && matchFrom && matchTo;
+      });
+
+      renderRows(filtered);
+    }
+
+    function clearFilters(){
+      document.getElementById("fromDate").value = "";
+      document.getElementById("toDate").value = "";
+      document.getElementById("searchInput").value = "";
+      renderRows(fishData);
+    }
+
 /* البحث المباشر */
 function searchTable(){
-  const q = this.value.toLowerCase().trim();
+ const q = document.getElementById("searchInput").value.toLowerCase().trim();
   const filtered = fishData.filter(row => Object.values(row).some(v=>String(v||"").toLowerCase().includes(q)));
   renderRows(filtered);
 }
+
+document.getElementById("filterBtn").addEventListener("click", applyFiltersAndRender);
+
+document.getElementById("clearFilterBtn").addEventListener("click", clearFilters);
+
+document.getElementById("searchInput").addEventListener("input", applyFiltersAndRender);
+document.getElementById("fromDate").addEventListener("change", applyFiltersAndRender);
+document.getElementById("toDate").addEventListener("change", applyFiltersAndRender);
 
 /* تصدير Excel */
 function exportToExcel(){

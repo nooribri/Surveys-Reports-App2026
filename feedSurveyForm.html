@@ -339,6 +339,22 @@ tbody tr:nth-child(even) {
     display: table-cell !important;
   }
 }
+ .filters { display: flex; gap: 15px; align-items: flex-end; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 10px; }
+    .filter-item { display: flex; flex-direction: column; }
+    .filter-item label { font-size: 13px; color: #666; margin-bottom: 5px; }
+    .filter-item input { padding: 8px 12px; border: 2px solid #e0e6ed; border-radius: 6px; }
+    
+    .filters button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+    #filterBtn { background: #3498db; color: white; }
+    #filterBtn:hover { background: #2980b9; }
+    #clearFilterBtn { background: #95a5a6; color: white; }
+    #clearFilterBtn:hover { background: #7f8c8d; }
+    
+     @media print {
+  .no-print {
+    display: none !important;
+  }
+}
   </style>
 </head>
 <body>
@@ -368,38 +384,37 @@ tbody tr:nth-child(even) {
   </header>
   
 
- <div class="form-box-feed">
+<div class="form-box-feed">
   <form id="feedSurveyForm">
-
     <div class="form-grid-feed">
 
       <!-- التاريخ -->
       <div class="form-group-feed">
         <label for="date">التاريخ</label>
-        <input type="date" id="date">
+        <input type="date" id="date" >
       </div>
 
       <!-- النوع -->
       <div class="form-group-feed">
         <label for="feedType">النوع</label>
-        <input type="text" id="feedType">
+        <input type="text" id="feedType" >
       </div>
 
       <!-- شركة المطاحن العمانية -->
       <div class="form-group-feed">
         <label>المطاحن العمانية – السعر من (ريال)</label>
-        <input type="text" step="0.01" id="priceFrom1">
+        <input type="text" step="0.01" id="priceFrom1" >
       </div>
 
       <div class="form-group-feed">
         <label>المطاحن العمانية – السعر إلى (ريال)</label>
-        <input type="text" step="0.01" id="priceTo1">
+        <input type="text" step="0.01" id="priceTo1" >
       </div>
 
       <!-- الشركة الوطنية للأعلاف -->
       <div class="form-group-feed">
         <label>الوطنية للأعلاف – السعر من (ريال)</label>
-        <input type="text" step="0.01" id="priceFrom2">
+        <input type="text" step="0.01" id="priceFrom2" >
       </div>
 
       <div class="form-group-feed">
@@ -410,12 +425,12 @@ tbody tr:nth-child(even) {
       <!-- مطاحن صلالة -->
       <div class="form-group-feed">
         <label>مطاحن صلالة – السعر من (ريال)</label>
-        <input type="text" step="0.01" id="priceFrom3">
+        <input type="text" step="0.01" id="priceFrom3" >
       </div>
 
       <div class="form-group-feed">
         <label>مطاحن صلالة – السعر إلى (ريال)</label>
-        <input type="text" step="0.01" id="priceTo3">
+        <input type="text" step="0.01" id="priceTo3" >
       </div>
 
       <!-- أعلاف ظفار -->
@@ -426,7 +441,7 @@ tbody tr:nth-child(even) {
 
       <div class="form-group-feed">
         <label>أعلاف ظفار – السعر إلى (ريال)</label>
-        <input type="text" step="0.01" id="priceTo4">
+        <input type="text" step="0.01" id="priceTo4" >
       </div>
 
       <!-- أعلاف الرصيد -->
@@ -442,23 +457,33 @@ tbody tr:nth-child(even) {
 
     </div>
 
-    <!-- زر الحفظ -->
     <div class="form-actions-feed">
       <button type="submit">حفظ</button>
+      <button type="button" onclick="resetForm()">جديد</button>
     </div>
-
   </form>
+</div>
+
+<div class="tools">
+  <div class="tools-center">
+    <input type="text" id="searchInput" placeholder="🔍 ابحث في التاريخ، النوع، السعر ...">
   </div>
+</div>
 
-
-  <!-- ===== أدوات البحث ===== -->
-  <div class="tools">
-    <div class="tools-center">
-      <input type="text" id="searchInput" placeholder="🔍 ابحث في الشهر، النوع، السعر ...">
-    </div>
+<div class="filters no-print">
+  <div class="filter-item">
+    <label for="fromDate">من تاريخ</label>
+    <input type="date" id="fromDate">
   </div>
+  <div class="filter-item">
+    <label for="toDate">إلى تاريخ</label>
+    <input type="date" id="toDate">
+  </div>
+  <button type="button" id="filterBtn"><i class="fa-solid fa-filter"></i> تطبيق</button>
+  <button type="button" id="clearFilterBtn"><i class="fa-solid fa-broom"></i> مسح</button>
+</div>
 
- <table id="feedSurveyTable">
+<table id="feedSurveyTable">
   <thead>
     <tr>
       <th rowspan="2">التاريخ</th>
@@ -479,109 +504,185 @@ tbody tr:nth-child(even) {
       <th>السعر إلى</th>
       <th>السعر من</th>
       <th>السعر إلى</th>
-      <th class="rsd-from">السعر من</th>
-      <th class="rsd-to">السعر إلى</th>
+      <th>السعر من</th>
+      <th>السعر إلى</th>
     </tr>
   </thead>
   <tbody id="feedSurveyTableBody"></tbody>
 </table>
 
-  <!-- أزرار الطباعة والتصدير -->
-  <div class="export-buttons">
-    <button type="button" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة</button>
-    <button type="button" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
-  </div>
+<div class="export-buttons no-print">
+  <button type="button" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة</button>
+  <button type="button" onclick="exportToExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+</div>
 
-  
-
-<a href="javascript:history.back()" class="back-button">
+<a href="javascript:history.back()" class="back-button no-print">
   <i class="fa-solid fa-arrow-left"></i> الرجوع
 </a>
 
-
 <div class="footer-note">
   الرمز : 01-107-SOP &nbsp;&nbsp;|&nbsp;&nbsp;
-   الإصدار: 02 &nbsp;&nbsp;|&nbsp;&nbsp;
-    التاريخ: سبتمبر 2024
+  الإصدار: 02 &nbsp;&nbsp;|&nbsp;&nbsp;
+  التاريخ: سبتمبر 2024
 </div>
 
-
-   
-<!-- صندوق رسالة النجاح -->
 <div id="messageBox"></div>
 
- <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxhdj4RNfh22k8Zkr7HiK9SoHmr9cg2d-cv8Q0ufBrBl19nXBNAFpC3qhYE87RgFoLS/exec";
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwrOHojX-DRpof7ljt2-sp8cAkc6-LYoGkWvJ0S-MRJQV5b0fTeCArJkJC9F6JKuxVJ/exec";
 
 let data = [];
 let editIndex = null;
 let currentSheetRow = null;
 
-// ============ تحميل البيانات ============
-async function loadData() {
-  let res = await fetch(WEB_APP_URL);
-  let rows = await res.json();
-
-  data = rows.map((r, i) => ({
-    date: r[0],
-    feedType: r[1],
-
-    priceFrom1: r[2],
-    priceTo1: r[3],
-
-    priceFrom2: r[4],
-    priceTo2: r[5],
-
-    priceFrom3: r[6],
-    priceTo3: r[7],
-
-    priceFrom4: r[8],
-    priceTo4: r[9],
-
-    priceFrom5: r[10],
-    priceTo5: r[11],
-
-    sheetRow: i + 2
-  }));
-
-  console.log("Loaded data:", data);
-  renderRows();
+/* =========================
+   تنسيق التاريخ
+========================= */
+function fmtDate(value) {
+  if (!value) return "";
+  
+  // ✅ إذا كانت القيمة رقم (سعر)، أرجعها كما هي
+  if (!isNaN(parseFloat(value)) && isFinite(value) && String(value).indexOf('/') === -1) {
+    return value;
+  }
+  
+  const d = new Date(value);
+  if (isNaN(d.getTime())) {
+    return String(value).split("T")[0];
+  }
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${day}/${month}/${year}`;
 }
 
-// ============ عرض الجدول ============
-function renderRows() {
+/* =========================
+   إصلاح التاريخ للعرض
+========================= */
+function fixDate(dateString) {
+  if (!dateString) return "";
+  if (String(dateString).includes("T")) {
+    return String(dateString).split("T")[0];
+  }
+  const parts = String(dateString).split('/');
+  if (parts.length === 3 && parts[2].length === 4) {
+    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+  }
+  const d = new Date(dateString);
+  if (!isNaN(d.getTime())) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  return String(dateString);
+}
+
+function showPrice(value) {
+  if (value === undefined || value === null || value === "") return "غ م";
+  return String(value).replace(".", ",") + " ريال عماني";
+}
+
+/* =========================
+   تحويل التاريخ للمقارنة
+========================= */
+function parseDateForCompare(str) {
+  if (!str) return null;
+  const parts = String(str).split('/');
+  if (parts.length === 3) {
+    const d = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+  const d = new Date(str);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/* =========================
+   تحميل البيانات
+========================= */
+async function loadData() {
+  try {
+    let res = await fetch(WEB_APP_URL);
+    let rows = await res.json();
+
+    data = rows.map((r, i) => ({
+      date: r[0],
+      feedType: r[1],
+      priceFrom1: r[2],
+      priceTo1: r[3],
+      priceFrom2: r[4],
+      priceTo2: r[5],
+      priceFrom3: r[6],
+      priceTo3: r[7],
+      priceFrom4: r[8],
+      priceTo4: r[9],
+      priceFrom5: r[10],
+      priceTo5: r[11],
+      sheetRow: i + 2
+    }));
+
+    console.log("Loaded data:", data);
+    renderRows(data);
+  } catch (err) {
+    console.error("Load error:", err);
+    showMessage("حدث خطأ في تحميل البيانات", "error");
+  }
+}
+
+/* =========================
+   تنسيق الأسعار للعرض
+========================= */
+function showPrice(value) {
+  if (value === undefined || value === null || value === "") return "غ م";
+  return String(value).replace(".", ",") + " ريال عماني";
+}
+
+/* =========================
+   تنظيف الأسعار قبل الإرسال
+========================= */
+function cleanPrice(value) {
+  if (value === undefined || value === null) return "";
+  return String(value).replace("ريال عماني", "").replace("ر.ع", "").trim();
+}
+
+/* =========================
+   عرض البيانات في الجدول
+========================= */
+function renderRows(rowsToRender) {
+  if (!rowsToRender) rowsToRender = data;
+  
   const tbody = document.getElementById("feedSurveyTableBody");
   tbody.innerHTML = "";
 
-  data.forEach((row, idx) => {
+  if (rowsToRender.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="13" style="text-align:center; color:#999; padding:30px;">لا توجد بيانات</td></tr>';
+    return;
+  }
+
+  rowsToRender.forEach((row) => {
     const tr = document.createElement("tr");
 
     tr.innerHTML = `
-      <td>${fixDate(row.date)}</td>
+      <td>${fmtDate(row.date)}</td>
       <td>${row.feedType ?? ""}</td>
-
-      <td>${row.priceFrom1 ?? ""}</td>
-      <td>${row.priceTo1 ?? ""}</td>
-
-      <td>${row.priceFrom2 ?? ""}</td>
-      <td>${row.priceTo2 ?? ""}</td>
-
-      <td>${row.priceFrom3 ?? ""}</td>
-      <td>${row.priceTo3 ?? ""}</td>
-
-      <td>${row.priceFrom4 ?? ""}</td>
-      <td>${row.priceTo4 ?? ""}</td>
-
-      <td>${row.priceFrom5 ?? ""}</td>
-      <td>${row.priceTo5 ?? ""}</td>
-
+      <td>${showPrice(row.priceFrom1)}</td>
+      <td>${showPrice(row.priceTo1)}</td>
+      <td>${showPrice(row.priceFrom2)}</td>
+      <td>${showPrice(row.priceTo2)}</td>
+      <td>${showPrice(row.priceFrom3)}</td>
+      <td>${showPrice(row.priceTo3)}</td>
+      <td>${showPrice(row.priceFrom4)}</td>
+      <td>${showPrice(row.priceTo4)}</td>
+      <td>${showPrice(row.priceFrom5)}</td>
+      <td>${showPrice(row.priceTo5)}</td>
       <td>
-        <button class="action-btn edit-btn" onclick="startEdit(${idx})">
-          تعديل
+        <button class="action-btn edit-btn" onclick="startEdit(${data.indexOf(row)})">
+          <i class="fa-solid fa-pen"></i> تعديل
         </button>
-
         <button class="action-btn delete-btn" onclick="deleteRow(${row.sheetRow})">
-          حذف
+          <i class="fa-solid fa-trash"></i> حذف
         </button>
       </td>
     `;
@@ -590,28 +691,53 @@ function renderRows() {
   });
 }
 
-// ============ حفظ / إضافة ============
+/* =========================
+   تعديل صف
+========================= */
+function startEdit(index) {
+  const row = data[index];
+  if (!row) return;
+
+  editIndex = index;
+  currentSheetRow = row.sheetRow;
+
+  document.getElementById("date").value = fixDate(row.date);
+  document.getElementById("feedType").value = row.feedType ?? "";
+  document.getElementById("priceFrom1").value = cleanPrice(row.priceFrom1);
+  document.getElementById("priceTo1").value   = cleanPrice(row.priceTo1);
+  document.getElementById("priceFrom2").value = cleanPrice(row.priceFrom2);
+  document.getElementById("priceTo2").value   = cleanPrice(row.priceTo2);
+  document.getElementById("priceFrom3").value = cleanPrice(row.priceFrom3);
+  document.getElementById("priceTo3").value   = cleanPrice(row.priceTo3);
+  document.getElementById("priceFrom4").value = cleanPrice(row.priceFrom4);
+  document.getElementById("priceTo4").value   = cleanPrice(row.priceTo4);
+  document.getElementById("priceFrom5").value = cleanPrice(row.priceFrom5);
+  document.getElementById("priceTo5").value   = cleanPrice(row.priceTo5);
+
+  document.querySelector('.form-actions-feed button[type="submit"]').textContent = "تحديث";
+  
+  console.log("Editing row:", currentSheetRow, row);
+}
+
+/* =========================
+   حفظ / إضافة / تعديل
+========================= */
 document.getElementById("feedSurveyForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const row = {
-    date: date.value,
-    feedType: feedType.value,
-
-    priceFrom1: priceFrom1.value,
-    priceTo1: priceTo1.value,
-
-    priceFrom2: priceFrom2.value,
-    priceTo2: priceTo2.value,
-
-    priceFrom3: priceFrom3.value,
-    priceTo3: priceTo3.value,
-
-    priceFrom4: priceFrom4.value,
-    priceTo4: priceTo4.value,
-
-    priceFrom5: priceFrom5.value,
-    priceTo5: priceTo5.value
+    date: document.getElementById("date").value,
+    feedType: document.getElementById("feedType").value,
+    priceFrom1: cleanPrice(document.getElementById("priceFrom1").value),
+    priceTo1:   cleanPrice(document.getElementById("priceTo1").value),
+    priceFrom2: cleanPrice(document.getElementById("priceFrom2").value),
+    priceTo2:   cleanPrice(document.getElementById("priceTo2").value),
+    priceFrom3: cleanPrice(document.getElementById("priceFrom3").value),
+    priceTo3:   cleanPrice(document.getElementById("priceTo3").value),
+    priceFrom4: cleanPrice(document.getElementById("priceFrom4").value),
+    priceTo4:   cleanPrice(document.getElementById("priceTo4").value),
+    priceFrom5: cleanPrice(document.getElementById("priceFrom5").value),
+    priceTo5:   cleanPrice(document.getElementById("priceTo5").value)
   };
 
   try {
@@ -620,105 +746,138 @@ document.getElementById("feedSurveyForm").addEventListener("submit", async (e) =
         method: "POST",
         body: JSON.stringify(row)
       });
-      alert("✔ تم حفظ البيانات");
+      showMessage("✔ تم حفظ البيانات بنجاح", "success");
     } else {
       if (!currentSheetRow) {
-        alert("تعذر تحديد الصف المطلوب تعديله");
+        showMessage("تعذر تحديد الصف المطلوب تعديله", "error");
         return;
       }
 
-      await fetch(WEB_APP_URL + "?action=update&row=" + currentSheetRow, {
+      const response = await fetch(WEB_APP_URL + "?action=update&row=" + currentSheetRow, {
         method: "POST",
         body: JSON.stringify(row)
       });
+      
+      const result = await response.text();
+      console.log("Update result:", result);
 
-      alert("✔ تم تعديل البيانات");
+      showMessage("✔ تم تعديل البيانات بنجاح", "success");
     }
 
-    e.target.reset();
-    editIndex = null;
-    currentSheetRow = null;
-
+    resetForm();
     await loadData();
   } catch (err) {
     console.error("Save error:", err);
-    alert("حدث خطأ أثناء الحفظ");
+    showMessage("حدث خطأ أثناء الحفظ: " + err.message, "error");
   }
 });
 
-// ==== إصلاح مشكلة التاريخ ====
-function fixDate(dateString) {
-  if (!dateString) return "";
+/* =========================
+   حذف صف
+========================= */
+async function deleteRow(row) {
+  if (!confirm("هل أنت متأكد من حذف هذا الصف؟")) return;
 
-  const dateObj = new Date(dateString);
-  dateObj.setHours(dateObj.getHours() + 24);
-  return dateObj.toISOString().split("T")[0];
-}
-
-// ============ تعديل ============
-function startEdit(index) {
-  const row = data[index];
-
-  editIndex = index;
-  currentSheetRow = row.sheetRow;
-
-  date.value = fixDate(row.date);
-  feedType.value = row.feedType ?? "";
-
-  priceFrom1.value = row.priceFrom1 ?? "";
-  priceTo1.value = row.priceTo1 ?? "";
-
-  priceFrom2.value = row.priceFrom2 ?? "";
-  priceTo2.value = row.priceTo2 ?? "";
-
-  priceFrom3.value = row.priceFrom3 ?? "";
-  priceTo3.value = row.priceTo3 ?? "";
-
-  priceFrom4.value = row.priceFrom4 ?? "";
-  priceTo4.value = row.priceTo4 ?? "";
-
-  priceFrom5.value = row.priceFrom5 ?? "";
-  priceTo5.value = row.priceTo5 ?? "";
-
-  console.log("Editing row:", currentSheetRow, row);
-}
-
-// ============ حذف ============
-async function deleteRow(sheetRow) {
-  if (!confirm("هل تريد حذف هذا السطر؟")) return;
+  console.log("Attempting to delete row:", row);
 
   try {
-    await fetch(WEB_APP_URL + "?action=delete&row=" + sheetRow, {
-      method: "POST"
+    const url = `${WEB_APP_URL}?action=delete&row=${row}`;
+
+    const response = await fetch(url, {
+      method: "GET"
     });
 
-    alert("✔ تم حذف السطر");
-    await loadData();
-  } catch (err) {
-    console.error("Delete error:", err);
+    const result = await response.text();
+    console.log("Delete result:", result);
+
+    if (result.includes("deleted")) {
+      alert("تم الحذف بنجاح");
+      await loadData();
+    } else {
+      alert("لم يتم الحذف: " + result);
+    }
+
+  } catch (error) {
+    console.error("Delete error:", error);
     alert("حدث خطأ أثناء الحذف");
   }
 }
+/* =========================
+   البحث والفلترة
+========================= */
+function applyFiltersAndRender() {
+  const q = document.getElementById("searchInput").value.toLowerCase().trim();
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
 
-// ============ البحث ============
-function searchTable() {
-  const value = document.getElementById("searchInput").value.toLowerCase();
-  const rows = document.getElementById("feedSurveyTableBody").getElementsByTagName("tr");
+  const filtered = data.filter(row => {
+    const matchText = !q || Object.values(row).some(v =>
+      String(v ?? "").toLowerCase().includes(q)
+    );
 
-  for (let row of rows) {
-    row.style.display = row.textContent.toLowerCase().includes(value) ? "" : "none";
-  }
+    const rowDate = parseDateForCompare(row.date);
+    const fromDateVal = from ? new Date(from) : null;
+    const toDateVal = to ? new Date(to) : null;
+
+    if (fromDateVal) fromDateVal.setHours(0, 0, 0, 0);
+    if (toDateVal) toDateVal.setHours(0, 0, 0, 0);
+
+    const matchFrom = !fromDateVal || (rowDate && rowDate >= fromDateVal);
+    const matchTo = !toDateVal || (rowDate && rowDate <= toDateVal);
+
+    return matchText && matchFrom && matchTo;
+  });
+
+  renderRows(filtered);
 }
 
-// ============ تصدير Excel ============
+function clearFilters() {
+  document.getElementById("fromDate").value = "";
+  document.getElementById("toDate").value = "";
+  document.getElementById("searchInput").value = "";
+  renderRows(data);
+}
+
+document.getElementById("filterBtn").addEventListener("click", applyFiltersAndRender);
+document.getElementById("clearFilterBtn").addEventListener("click", clearFilters);
+document.getElementById("searchInput").addEventListener("input", applyFiltersAndRender);
+document.getElementById("fromDate").addEventListener("change", applyFiltersAndRender);
+document.getElementById("toDate").addEventListener("change", applyFiltersAndRender);
+
+/* =========================
+   تفريغ النموذج
+========================= */
+function resetForm() {
+  document.getElementById("feedSurveyForm").reset();
+  editIndex = null;
+  currentSheetRow = null;
+  document.querySelector('.form-actions-feed button[type="submit"]').textContent = "حفظ";
+  document.getElementById("date").focus();
+}
+
+/* =========================
+   تصدير Excel
+========================= */
 function exportToExcel() {
   const table = document.getElementById("feedSurveyTable");
   const wb = XLSX.utils.table_to_book(table, { sheet: "الأعلاف" });
   XLSX.writeFile(wb, "مسوحات_الأعلاف.xlsx");
 }
 
-// تحميل البيانات عند فتح الصفحة
+/* =========================
+   رسائل التنبيه
+========================= */
+function showMessage(text, type) {
+  const box = document.getElementById("messageBox");
+  box.innerHTML = `<div class="msg-${type}">${text}</div>`;
+  setTimeout(() => { box.innerHTML = ""; }, 3000);
+}
+
+/* =========================
+   تحميل البيانات عند البدء
+========================= */
 loadData();
 </script>
+
 </body>
 </html>
