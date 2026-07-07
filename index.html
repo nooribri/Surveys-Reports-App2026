@@ -3,51 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <title>تسجيل الدخول | تطبيق المسوحات والتقارير</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --primary-color: #1d70b8;
+      --accent-color: #00a3a6;
+      --text-dark: #2d3748;
+    }
+
     body {
       font-family: 'Cairo', sans-serif;
       margin: 0;
-      background: linear-gradient(to bottom right, #e5eaee, #218cc2);
-      color: white;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
+      color: var(--text-dark);
+      background-color: #f0f4f8;
+      
+      /* إدراج رسم بياني إحصائي متطور (SVG) في الخلفية برمجياً لجعل الطابع الإحصائي بارزاً جداً */
+      background-image: 
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1440 900'><path d='M 0,700 L 200,650 L 400,680 L 600,580 L 800,620 L 1000,480 L 1200,530 L 1440,380 L 1440,900 L 0,900 Z' fill='rgba(0,163,166,0.04)'/><path d='M 0,750 L 250,680 L 500,720 L 750,550 L 1000,590 L 1250,420 L 1440,460 L 1440,900 L 0,900 Z' fill='rgba(29,112,184,0.04)'/><circle cx='1000' cy='480' r='6' fill='%2300a3a6' opacity='0.3'/><circle cx='1200' cy='530' r='6' fill='%2300a3a6' opacity='0.3'/><circle cx='1440' cy='380' r='6' fill='%2300a3a6' opacity='0.3'/><circle cx='750' cy='550' r='6' fill='%231d70b8' opacity='0.3'/><circle cx='1250' cy='420' r='6' fill='%231d70b8' opacity='0.3'/><g fill='rgba(29,112,184,0.02)'><rect x='80' y='200' width='40' height='250' rx='5'/><rect x='140' y='120' width='40' height='330' rx='5'/><rect x='200' y='280' width='40' height='170' rx='5'/></g></svg>"),
+        linear-gradient(rgba(29, 112, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29, 112, 184, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
     }
 
     /* ========== الهيدر ========== */
     header {
       width: 100%;
-      padding-top: 25px;
+      padding-top: 30px;
       position: relative;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     /* النصوص على اليمين */
     .right-text {
       position: absolute;
-      right: 25px;
-      top: 15px;
+      right: 40px;
+      top: 30px;
       text-align: right;
-      color: #000;
+      color: #333;
+      line-height: 1.6;
     }
 
-    .right-text h2, .right-text h3, .right-text h4 {
-      margin: 0;
-      font-weight: 600;
-    }
+    .right-text h2 { font-size: 1.1rem; margin: 0; font-weight: 700; color: #111; }
+    .right-text h3 { font-size: 0.95rem; margin: 2px 0; font-weight: 600; color: #444; }
+    .right-text h4 { font-size: 0.85rem; margin: 0; font-weight: 400; color: #666; }
 
     /* الشعار */
     .logo-container {
       margin-top: 10px;
-      display: flex;
-      justify-content: center;
+      z-index: 2;
     }
 
     .logo {
-      width: 130px;
+      width: 120px;
       height: auto;
       display: block;
     }
@@ -55,106 +70,138 @@
     /* النصوص تحت الشعار */
     .center-title {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 20px;
+      z-index: 2;
     }
 
     .center-title h1 {
-      font-size: 2rem;
-      margin: 10px 0 0;
+      font-size: 2.2rem;
+      margin: 0;
       font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .center-title h2 {
-      margin: 5px 0;
-      opacity: 0.9;
+      margin: 8px 0 0;
+      color: #555;
       font-size: 1.2rem;
+      font-weight: 600;
     }
 
     /* ========== صندوق تسجيل الدخول ========== */
     .login-box {
-      background: rgba(255, 255, 255, 0.12);
-      padding: 35px 45px;
-      border-radius: 15px;
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.85);
+      padding: 40px 50px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       text-align: center;
       margin-top: auto;
       margin-bottom: auto;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      box-shadow: 0 15px 35px rgba(29, 112, 184, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      width: 320px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 3;
+    }
+
+    .login-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(29, 112, 184, 0.15);
     }
 
     .login-box h2 {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
+      font-size: 1.15rem;
+      margin-bottom: 25px;
+      color: var(--text-dark);
+      font-weight: 600;
     }
 
     .login-box input {
-      width: 230px;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(29, 112, 184, 0.2);
       text-align: center;
       outline: none;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .login-box input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(29, 112, 184, 0.1);
     }
 
     .login-box button {
-      background: #fff;
-      color: #eaedef;
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary-color), #155a96);
+      color: #fff;
       border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
+      padding: 12px;
+      border-radius: 10px;
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s;
+      font-size: 1.05rem;
+      font-family: 'Cairo', sans-serif;
+      box-shadow: 0 4px 12px rgba(29, 112, 184, 0.2);
     }
 
     .login-box button:hover {
-      background: #e6e6e6;
+      background: linear-gradient(135deg, #155a96, #0f4475);
     }
 
+    /* ========== الفوتر ========== */
     footer {
-      margin-bottom: 20px;
-      font-size: 14px;
-      opacity: 0.9;
+      margin-bottom: 25px;
+      font-size: 0.85rem;
+      color: #778899;
+      font-weight: 600;
+      z-index: 2;
+    }
+
+    @media (max-width: 768px) {
+      header { padding-top: 140px; }
+      .right-text { position: absolute; top: 20px; right: 0; left: 0; text-align: center; }
+      .login-box { width: 85%; padding: 30px 20px; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ========== الهيدر ========== -->
   <header>
-
-    <!-- نصوص اليمين -->
     <div class="right-text">
       <h2>سلطنة عمان</h2>
       <h3>هيئة حماية المستهلك</h3>
       <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
     </div>
 
-    <!-- الشعار -->
     <div class="logo-container">
       <img src="image1.png" alt="شعار سلطنة عمان" class="logo">
     </div>
-
   </header>
 
-  <!-- النصوص الرئيسية تحت الشعار -->
   <div class="center-title">
     <h1>تطبيق المسوحات والتقارير</h1>
     <h2>قسم الدراسات والتطوير</h2>
   </div>
 
-  <!-- ========== صندوق تسجيل الدخول ========== -->
   <div class="login-box">
     <h2>الرجاء إدخال الرقم الوظيفي</h2>
-    <input type="text" id="empID" placeholder="الرقم الوظيفي">
-    <br>
+    <input type="text" id="empID" placeholder="الرقم الوظيفي" autocomplete="off">
     <button onclick="login()">دخول</button>
   </div>
 
   <footer>
-    &copy; 2025 قسم الدراسات والتطوير – جميع الحقوق محفوظة
+    &copy; 2026 قسم الدراسات والتطوير – جميع الحقوق محفوظة
   </footer>
 
 <script>
@@ -165,7 +212,7 @@
 
     if (allowedIDs.includes(id)) {
       sessionStorage.setItem('authenticated', 'true');
-      window.location.href = 'firstpage.html';  // الانتقال لصفحة البطاقات
+      window.location.href = 'firstpage.html'; 
     } else {
       alert('الرقم الوظيفي غير مصرح به.');
     }
