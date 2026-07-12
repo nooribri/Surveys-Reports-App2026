@@ -847,7 +847,13 @@ function resetForm() {
       const wb = XLSX.utils.table_to_book(table, { sheet: "طلب رفع سعر" });
       XLSX.writeFile(wb, "طلب رفع سعر.xlsx");
     }
-  
+  // (اختياري) منع كليك يمين + اختصارات
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
+  });
 </script>
 </body>
 </html>
