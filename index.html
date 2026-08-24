@@ -2,688 +2,230 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بوابة حِمى | نظام العمل عن بعد ومهمة عمل</title>
-  
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#5a86be">
-
-  <!-- الخطوط والأيقونات -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <title>تسجيل الدخول | تطبيق المسوحات والتقارير</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      /* تدرج لوني أزرق سماوي فاتح ومضيء */
-      --bg-gradient: radial-gradient(circle at 50% 30%, #76a0d0 0%, #527eb5 50%, #3a6296 100%);
-      --sidebar-bg: #345885;
-      --sidebar-card: rgba(255, 255, 255, 0.18);
-      --card-bg: rgba(255, 255, 255, 0.22);
-      --card-border: rgba(255, 255, 255, 0.45);
-      --gold-accent: #ffd15c;
-      --cyan-bright: #00f0ff;
-      --btn-blue: #284c80;
-      --btn-hover: #1c3860;
-      --text-white: #ffffff;
-      --navy-heading: #10223d; /* لون كحلي داكن وبارز */
-    }
-
-    * {
-      box-sizing: border-box;
-      font-family: 'Tajawal', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    html, body {
-      max-width: 100vw;
-      overflow-x: hidden;
+      --primary-color: #1d70b8;
+      --accent-color: #00a3a6;
+      --text-dark: #2d3748;
     }
 
     body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
       min-height: 100vh;
-      color: var(--text-white);
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-gradient);
-    }
-
-    /* ================= شريط الرأس والشعار ================= */
-    .top-header {
-      width: 100%;
-      padding: 28px 65px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 30;
-    }
-
-    .brand-logo-container {
-      display: flex;
-      align-items: center;
-    }
-
-    .brand-logo {
-      height: 85px;
-      object-fit: contain;
-      filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(20, 45, 80, 0.35));
-    }
-
-    .lang-switch {
-      display: flex;
-      gap: 16px;
-      font-weight: 800;
-      font-size: 18px;
-      color: #ffffff;
-      direction: ltr;
-      letter-spacing: 0.5px;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.2);
-    }
-
-    .lang-switch span.active {
-      color: #ffffff;
-      border-bottom: 3px solid var(--gold-accent);
-      padding-bottom: 2px;
-    }
-
-    /* ================= واجهة تسجيل الدخول ================= */
-    .login-wrapper {
-      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 130px 20px 40px;
-      position: relative;
+      color: var(--text-dark);
+      background-color: #f0f4f8;
+      
+      /* إدراج رسم بياني إحصائي متطور (SVG) في الخلفية برمجياً لجعل الطابع الإحصائي بارزاً جداً */
+      background-image: 
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 1440 900'><path d='M 0,700 L 200,650 L 400,680 L 600,580 L 800,620 L 1000,480 L 1200,530 L 1440,380 L 1440,900 L 0,900 Z' fill='rgba(0,163,166,0.04)'/><path d='M 0,750 L 250,680 L 500,720 L 750,550 L 1000,590 L 1250,420 L 1440,460 L 1440,900 L 0,900 Z' fill='rgba(29,112,184,0.04)'/><circle cx='1000' cy='480' r='6' fill='%2300a3a6' opacity='0.3'/><circle cx='1200' cy='530' r='6' fill='%2300a3a6' opacity='0.3'/><circle cx='1440' cy='380' r='6' fill='%2300a3a6' opacity='0.3'/><circle cx='750' cy='550' r='6' fill='%231d70b8' opacity='0.3'/><circle cx='1250' cy='420' r='6' fill='%231d70b8' opacity='0.3'/><g fill='rgba(29,112,184,0.02)'><rect x='80' y='200' width='40' height='250' rx='5'/><rect x='140' y='120' width='40' height='330' rx='5'/><rect x='200' y='280' width='40' height='170' rx='5'/></g></svg>"),
+        linear-gradient(rgba(29, 112, 184, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(29, 112, 184, 0.03) 1px, transparent 1px);
+      background-size: 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
     }
 
-    .login-wrapper::before {
-      content: '';
-      position: absolute;
-      width: 850px;
-      height: 850px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0.08) 45%, rgba(0,0,0,0) 70%);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    /* العنوان الرئيسي المضاف فوق الكرت */
-    .main-system-title {
-      color: var(--navy-heading);
-      font-size: 32px;
-      font-weight: 900;
-      margin-bottom: 24px;
-      text-align: center;
-      letter-spacing: 1px;
-      text-shadow: 0 2px 10px rgba(255, 255, 255, 0.35);
-      position: relative;
-      z-index: 2;
-    }
-
-    .login-box {
+    /* ========== الهيدر ========== */
+    header {
       width: 100%;
-      max-width: 530px;
-      text-align: center;
+      padding-top: 30px;
       position: relative;
-      z-index: 2;
-      background: var(--card-bg);
-      padding: 42px 38px;
-      border-radius: 28px;
-      border: 1.5px solid var(--card-border);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 20px 45px rgba(20, 50, 90, 0.22);
-    }
-
-    .login-indicators {
       display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-bottom: 14px;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .indicator-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--cyan-bright);
-      border-radius: 50%;
-      opacity: 0.8;
-    }
-
-    .indicator-dot.active {
-      opacity: 1;
-      transform: scale(1.35);
-      box-shadow: 0 0 12px var(--cyan-bright);
-    }
-
-    .vision-title {
-      font-size: 30px;
-      font-weight: 900;
-      color: var(--gold-accent);
-      letter-spacing: 1.5px;
-      margin-bottom: 8px;
-      text-shadow: 0 2px 14px rgba(255, 209, 92, 0.5);
-    }
-
-    .vision-subtext {
-      font-size: 14.5px;
-      color: #ffffff;
+    /* النصوص على اليمين */
+    .right-text {
+      position: absolute;
+      right: 40px;
+      top: 30px;
+      text-align: right;
+      color: #333;
       line-height: 1.6;
-      margin-bottom: 24px;
+    }
+
+    .right-text h2 { font-size: 1.1rem; margin: 0; font-weight: 700; color: #111; }
+    .right-text h3 { font-size: 0.95rem; margin: 2px 0; font-weight: 600; color: #444; }
+    .right-text h4 { font-size: 0.85rem; margin: 0; font-weight: 400; color: #666; }
+
+    /* الشعار */
+    .logo-container {
+      margin-top: 10px;
+      z-index: 2;
+    }
+
+    .logo {
+      width: 120px;
+      height: auto;
+      display: block;
+    }
+
+    /* النصوص تحت الشعار */
+    .center-title {
+      text-align: center;
+      margin-top: 20px;
+      z-index: 2;
+    }
+
+    .center-title h1 {
+      font-size: 2.2rem;
+      margin: 0;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .center-title h2 {
+      margin: 8px 0 0;
+      color: #555;
+      font-size: 1.2rem;
       font-weight: 600;
-      text-shadow: 0 1px 4px rgba(0,0,0,0.25);
     }
 
-    .instruction-text {
-      font-size: 16px;
-      margin-bottom: 18px;
-      color: #ffffff;
-      font-weight: 800;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.25);
-    }
-
-    .input-field-group {
-      margin-bottom: 15px;
-    }
-
-    .input-field-group input {
-      width: 100%;
-      padding: 15px 22px;
-      border-radius: 12px;
-      border: 1.5px solid rgba(255, 255, 255, 0.9);
-      background: #ffffff;
-      font-size: 16px;
-      font-weight: 800;
-      color: #1b3860;
-      outline: none;
-      transition: all 0.25s ease;
+    /* ========== صندوق تسجيل الدخول ========== */
+    .login-box {
+      background: rgba(255, 255, 255, 0.85);
+      padding: 40px 50px;
+      border-radius: 20px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
       text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-
-    .input-field-group input:focus {
-      border-color: var(--cyan-bright);
-      box-shadow: 0 0 16px rgba(0, 240, 255, 0.7);
-      transform: scale(1.01);
-    }
-
-    .form-extras {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 14.5px;
-      margin: 16px 8px 24px;
-      color: #ffffff;
-      font-weight: 700;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-
-    .form-extras label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-    }
-
-    .forgot-link {
-      color: var(--cyan-bright);
-      text-decoration: none;
-      font-weight: 800;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    .sign-in-btn {
-      width: 175px;
-      padding: 13px 0;
-      border-radius: 14px;
-      border: none;
-      background: var(--btn-blue);
-      color: #ffffff;
-      font-size: 17px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 6px 20px rgba(25, 55, 95, 0.35);
-      transition: all 0.25s ease;
-    }
-
-    .sign-in-btn:hover {
-      background: var(--btn-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(25, 55, 95, 0.5);
-    }
-
-    /* ================= لوحة التحكم الجانبية ================= */
-    .dashboard-layout {
-      display: none;
-      min-height: 100vh;
-      width: 100%;
-      flex-direction: row;
-      overflow-x: hidden;
-    }
-
-    .sidebar {
-      width: 310px;
-      min-width: 310px;
-      max-width: 310px;
-      background: var(--sidebar-bg);
-      border-left: 1px solid rgba(255, 255, 255, 0.2);
-      display: flex;
-      flex-direction: column;
-      padding: 24px 18px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      box-shadow: -5px 0 25px rgba(20, 45, 80, 0.15);
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    .sidebar-header {
-      text-align: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      margin-bottom: 20px;
-    }
-
-    .sidebar-logo {
-      height: 70px;
-      object-fit: contain;
-      filter: brightness(0) invert(1);
-      margin-bottom: 8px;
-    }
-
-    .user-profile-badge {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--sidebar-card);
-      padding: 12px 16px;
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      margin-top: 14px;
-    }
-
-    .user-avatar {
-      width: 44px;
-      height: 44px;
-      background: linear-gradient(135deg, #ffd15c, #e09e19);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      color: #fff;
-    }
-
-    .sidebar-nav {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      overflow-x: hidden;
-    }
-
-    .nav-category {
-      font-size: 12px;
-      font-weight: 800;
-      color: rgba(255, 255, 255, 0.7);
-      margin: 14px 8px 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 13px 18px;
-      color: #ffffff;
-      text-decoration: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 15px;
-      transition: all 0.2s ease;
-      width: 100%;
-    }
-
-    .nav-item i {
-      font-size: 18px;
-      width: 24px;
-      text-align: center;
-      color: var(--cyan-bright);
-    }
-
-    .nav-item:hover, .nav-item.active {
-      background: rgba(255, 255, 255, 0.22);
-      color: #ffffff;
-      transform: translateX(-4px);
-    }
-
-    .nav-item.active i {
-      color: var(--gold-accent);
-    }
-
-    .logout-nav {
       margin-top: auto;
-      margin-bottom: 0;
-      background: rgba(239, 68, 68, 0.22);
-      color: #ffb8b8;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-    .logout-nav i { color: #ffb8b8; }
-    .logout-nav:hover {
-      background: rgba(239, 68, 68, 0.35);
-      color: #ffffff;
+      margin-bottom: auto;
+      box-shadow: 0 15px 35px rgba(29, 112, 184, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      width: 320px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 3;
     }
 
-    .main-content {
-      flex: 1;
-      padding: 40px 45px;
-      overflow-y: auto;
-      overflow-x: hidden;
+    .login-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 40px rgba(29, 112, 184, 0.15);
     }
 
-    .dashboard-title-box {
-      margin-bottom: 32px;
-    }
-
-    .dashboard-title-box h1 {
-      font-size: 28px;
-      font-weight: 800;
-      color: #ffffff;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.15);
-    }
-
-    .dashboard-title-box p {
-      color: #eaf4ff;
-      font-size: 15px;
-      margin-top: 6px;
+    .login-box h2 {
+      font-size: 1.15rem;
+      margin-bottom: 25px;
+      color: var(--text-dark);
       font-weight: 600;
     }
 
-    .dashboard-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 22px;
+    .login-box input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1.5px solid rgba(29, 112, 184, 0.2);
+      text-align: center;
+      outline: none;
+      margin-bottom: 20px;
+      font-size: 1rem;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.9);
     }
 
-    .action-card {
-      background: var(--card-bg);
-      border: 1.5px solid var(--card-border);
-      border-radius: 18px;
-      padding: 26px 22px;
-      text-decoration: none;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 16px;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 10px 25px rgba(20, 50, 90, 0.15);
+    .login-box input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(29, 112, 184, 0.1);
     }
 
-    .action-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 16px 32px rgba(15, 45, 80, 0.25);
-      background: rgba(255, 255, 255, 0.28);
+    .login-box button {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary-color), #155a96);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.05rem;
+      font-family: 'Cairo', sans-serif;
+      box-shadow: 0 4px 12px rgba(29, 112, 184, 0.2);
     }
 
-    .card-icon-wrapper {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    .login-box button:hover {
+      background: linear-gradient(135deg, #155a96, #0f4475);
     }
 
-    .icon-remote { background: rgba(0, 240, 255, 0.3); color: #ffffff; }
-    .icon-task { background: rgba(82, 227, 116, 0.3); color: #ffffff; }
-    .icon-report1 { background: rgba(255, 209, 92, 0.3); color: #ffffff; }
-    .icon-report2 { background: rgba(255, 169, 77, 0.3); color: #ffffff; }
-
-    .action-card h3 {
-      font-size: 19px;
-      font-weight: 800;
-      color: #ffffff;
+    /* ========== الفوتر ========== */
+    footer {
+      margin-bottom: 25px;
+      font-size: 0.85rem;
+      color: #778899;
+      font-weight: 600;
+      z-index: 2;
     }
 
-    .action-card p {
-      font-size: 14px;
-      color: #edf6ff;
-      line-height: 1.55;
-      font-weight: 500;
-    }
-
-    @media (max-width: 900px) {
-      .top-header { padding: 20px 24px; }
-      .brand-logo { height: 65px; }
-      .main-system-title { font-size: 26px; }
-      .vision-title { font-size: 24px; }
-      .dashboard-layout { flex-direction: column; }
-      .sidebar { width: 100%; min-width: 100%; max-width: 100%; height: auto; position: static; }
-      .main-content { padding: 20px; }
+    @media (max-width: 768px) {
+      header { padding-top: 140px; }
+      .right-text { position: absolute; top: 20px; right: 0; left: 0; text-align: center; }
+      .login-box { width: 85%; padding: 30px 20px; }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- شريط الرأس -->
-  <header class="top-header">
-    <div class="brand-logo-container">
-      <img src="HEMA.png" alt="هيئة حماية المستهلك - HEMA" class="brand-logo">
+  <header>
+    <div class="right-text">
+      <h2>سلطنة عمان</h2>
+      <h3>هيئة حماية المستهلك</h3>
+      <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
     </div>
 
-    <div class="lang-switch">
-      <span class="active">AR</span>
-      <span>|</span>
-      <span>EN</span>
+    <div class="logo-container">
+      <img src="image1.png" alt="شعار سلطنة عمان" class="logo">
     </div>
   </header>
 
-  <!-- واجهة تسجيل الدخول مع العنوان الكحلي في المنتصف -->
-  <div id="loginSection" class="login-wrapper">
-    <h1 class="main-system-title">نظام العمل عن بعد</h1>
-
-    <div class="login-box">
-      <div class="login-indicators">
-        <div class="indicator-dot active"></div>
-        <div class="indicator-dot"></div>
-        <div class="indicator-dot"></div>
-      </div>
-
-      <div class="vision-title">THE VISION OF CPA OMAN</div>
-      <div class="vision-subtext">
-        The trusted voice of consumers for sustainable protection in a market governed by competition and sound governance
-      </div>
-
-      <div class="instruction-text">
-        Dear User, enter your valid credentials to continue
-      </div>
-
-      <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
-        <div class="input-field-group">
-          <input type="text" id="loginId" placeholder="الرقم الوظيفي" required autocomplete="off">
-        </div>
-        <div class="input-field-group">
-          <input type="password" id="loginPassword" placeholder="••••••••" value="123456">
-        </div>
-
-        <div class="form-extras">
-          <label>
-            <input type="checkbox" checked> Remember Password
-          </label>
-          <a href="#" class="forgot-link">Forgot Password</a>
-        </div>
-
-        <button type="submit" class="sign-in-btn">Sign In</button>
-      </form>
-    </div>
+  <div class="center-title">
+    <h1>تطبيق المسوحات والتقارير</h1>
+    <h2>قسم الدراسات والتطوير</h2>
   </div>
 
-  <!-- لوحة التحكم الجانبية -->
-  <div id="dashboardSection" class="dashboard-layout">
-    
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <img src="HEMA.png" alt="HEMA" class="sidebar-logo">
-        <div class="user-profile-badge">
-          <div class="user-avatar">
-            <i class="fas fa-user-tie"></i>
-          </div>
-          <div style="text-align: right;">
-            <div style="font-size: 12px; color: #eaf4ff;">مرحباً بك</div>
-            <div style="font-weight: 800; font-size: 15px;" id="dispEmpId">الموظف</div>
-          </div>
-        </div>
-      </div>
-
-      <nav class="sidebar-nav">
-        <div class="nav-category">النماذج والطلبات</div>
-        <a href="form.html" class="nav-item active">
-          <i class="fas fa-laptop-house"></i>
-          <span>العمل عن بعد</span>
-        </a>
-        <a href="form1.html" class="nav-item">
-          <i class="fas fa-briefcase"></i>
-          <span>مهمة عمل</span>
-        </a>
-
-        <div class="nav-category">سجلات وتقارير</div>
-        <a href="report.html" class="nav-item">
-          <i class="fas fa-file-invoice"></i>
-          <span>تقارير العمل عن بعد</span>
-        </a>
-        <a href="report1.html" class="nav-item">
-          <i class="fas fa-chart-line"></i>
-          <span>تقارير مهام العمل</span>
-        </a>
-
-        <div class="nav-category">النظام</div>
-        <button onclick="logout()" class="nav-item logout-nav">
-          <i class="fas fa-sign-out-alt"></i>
-          <span>تسجيل الخروج</span>
-        </button>
-      </nav>
-    </aside>
-
-    <main class="main-content">
-      <div class="dashboard-title-box">
-        <h1>لوحة تحكم الخدمات السريعة</h1>
-        <p>اختر الخدمة أو النموذج المطلوب تعبئته أو استعراض التقارير</p>
-      </div>
-
-      <div class="dashboard-cards-grid">
-        <a href="form.html" class="action-card">
-          <div class="card-icon-wrapper icon-remote">
-            <i class="fas fa-laptop-house"></i>
-          </div>
-          <div>
-            <h3>نموذج العمل عن بعد</h3>
-            <p>تقديم إنجازات وتفاصيل ساعات العمل المنجزة عن بعد وإرسالها للمسؤول المباشر.</p>
-          </div>
-        </a>
-
-        <a href="form1.html" class="action-card">
-          <div class="card-icon-wrapper icon-task">
-            <i class="fas fa-briefcase"></i>
-          </div>
-          <div>
-            <h3>نموذج مهمة عمل</h3>
-            <p>تسجيل الخروج الميداني، الجولات الرقابية، وحضور الفعاليات الخارجية.</p>
-          </div>
-        </a>
-
-        <a href="report.html" class="action-card">
-          <div class="card-icon-wrapper icon-report1">
-            <i class="fas fa-file-contract"></i>
-          </div>
-          <div>
-            <h3>سجل العمل عن بعد</h3>
-            <p>متابعة وتصدير تقارير وبيانات العمل عن بعد والفلترة حسب القسم.</p>
-          </div>
-        </a>
-
-        <a href="report1.html" class="action-card">
-          <div class="card-icon-wrapper icon-report2">
-            <i class="fas fa-folder-open"></i>
-          </div>
-          <div>
-            <h3>سجل مهام العمل</h3>
-            <p>استعراض وطباعة جميع تقارير المهام الميدانية والمستندات المرفقة.</p>
-          </div>
-        </a>
-      </div>
-    </main>
-
+  <div class="login-box">
+    <h2>الرجاء إدخال الرقم الوظيفي</h2>
+    <input type="text" id="empID" placeholder="الرقم الوظيفي" autocomplete="off">
+    <button onclick="login()">دخول</button>
   </div>
 
-  <script>
-    const allowedIDs = ['376', '373','5011','2271', '5010','575','79','37','366','5014','525','358','350','356','364',
-    '367','578','731','783','375','361','369','370','875','876','1043','38','501','555','560','825','865','751','1024',
-    '300','2130','1089','351','353','354','355','360','362','363','365','368','374','654','732','757','803','815','957',
-    '418','372','804','2169','1112','2231','923','1033','673','1116','2157','832','945','548','974','357','76','1157'];
+  <footer>
+    &copy; 2026 قسم الدراسات والتطوير – جميع الحقوق محفوظة
+  </footer>
 
-    function handleLogin() {
-      const empInput = document.getElementById('loginId');
-      const id = empInput.value.trim();
+<script>
+  const allowedIDs = ['375', '361', '369', '370', '875', '876', '1043'];
 
-      if (allowedIDs.includes(id)) {
-        sessionStorage.setItem('authenticatedUser', id);
-        showDashboard(id);
-      } else {
-        alert('الرقم الوظيفي غير مصرح له بالدخول.');
-      }
+  function login() {
+    const id = document.getElementById('empID').value.trim();
+
+    if (allowedIDs.includes(id)) {
+      sessionStorage.setItem('authenticated', 'true');
+      window.location.href = 'firstpage.html'; 
+    } else {
+      alert('الرقم الوظيفي غير مصرح به.');
     }
+  }
+  
+ // (اختياري) منع كليك يمين + اختصارات
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'F12') e.preventDefault();
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
+  });
+</script>
 
-    function showDashboard(id) {
-      document.querySelector('.top-header').style.display = 'none';
-      document.getElementById('loginSection').style.display = 'none';
-      document.getElementById('dashboardSection').style.display = 'flex';
-      document.getElementById('dispEmpId').textContent = 'الرقم الوظيفي: ' + id;
-    }
-
-    function logout() {
-      sessionStorage.removeItem('authenticatedUser');
-      document.querySelector('.top-header').style.display = 'flex';
-      document.getElementById('loginSection').style.display = 'flex';
-      document.getElementById('dashboardSection').style.display = 'none';
-      document.getElementById('loginId').value = '';
-    }
-
-    window.onload = function() {
-      const user = sessionStorage.getItem('authenticatedUser');
-      if (user && allowedIDs.includes(user)) {
-        showDashboard(user);
-      }
-    };
-
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'F12') e.preventDefault();
-      if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
-      if (e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
-    });
-
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        navigator.serviceWorker.register("service-worker.js").catch(()=>{});
-      });
-    }
-  </script>
 </body>
 </html>
