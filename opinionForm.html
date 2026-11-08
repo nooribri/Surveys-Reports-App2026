@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تقرير استطلاعات الرأي</title>
+
+  <!-- أيقونات و Excel -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&display=swap');
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background:#ffffff;
+      margin:0;
+      padding:16px;
+    }
+
+    /* ===== الهيدر أعلى الصفحة ===== */
+    .main-header {
+      max-width: 1100px;
+      margin: 0 auto 20px;
+      background:#ffffff;
+      border-radius: 12px;
+      padding: 16px 20px 20px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+      position: relative;
+      text-align: center;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .logo-box img {
+      width: 100px;
+      height: auto;
+    }
+
+    .gov-info {
+      position: absolute;
+      right: 0;
+      text-align: right;
+      line-height: 1.5;
+      color: #0a66c2;
+      font-weight: 600;
+    }
+
+    .gov-info h2,
+    .gov-info h3,
+    .gov-info h4 {
+      margin: 0;
+      padding: 2px 0;
+      line-height: 1.2;
+    }
+
+    .main-title {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .main-title h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0d47a1;
+      margin: 0;
+    }
+
+    /* ===== نموذج الإدخال ===== */
+    #lessonsForm {
+      max-width: 1100px;
+      margin: 0 auto 18px;
+      background: #f3f8ff;
+      border-radius: 12px;
+      padding: 18px 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: grid;
+      grid-template-columns: 150px 1fr 150px 1fr;
+      column-gap: 16px;
+      row-gap: 10px;
+      align-items: center;
+    }
+    #lessonsForm label {
+      font-weight: 600;
+      justify-self: end;
+      color: #0a3d73;
+    }
+    #lessonsForm input, #lessonsForm select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #c7d8f0;
+      font-size: 14px;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .form-actions button {
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #fff;
+    }
+    .form-actions .save { background: #0b8c4a; }
+    .form-actions .cancel { background: #6c757d; display: none; }
+
+    /* ===== أدوات أعلى الجدول ===== */
+    .tools {
+      max-width: 1100px;
+      margin: 0 auto 14px;
+      display: flex;
+      justify-content: center;
+    }
+    .tools-center {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .tools-center input {
+      width: 40%;
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      font-family: 'Cairo', sans-serif;
+    }
+
+    /* ===== الجدول ===== */
+    table {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #d0d7e2;
+      padding: 8px 6px;
+      text-align: center;
+      font-size: 13px;
+    }
+    th {
+      background: #0b5ed7;
+      color: #fff;
+    }
+    tbody tr:nth-child(even){ background: #f9fbff; }
+
+    .action-btn {
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      color: #fff;
+      margin: 0 2px;
+    }
+    .edit-btn { background: #17a2b8; }
+    .delete-btn { background: #dc3545; }
+
+    .export-buttons{
+      max-width: 1100px;
+      margin: 18px auto 8px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+    .export-buttons button{
+      padding: 9px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #6f42c1;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .export-buttons button:hover { background: #5a35a0; }
+
+    .back-button{
+      display: block;
+      text-align: center;
+      margin: 10px auto 0;
+      text-decoration: none;
+      color: #0d6efd;
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      font-size: 12px;
+      text-align: center;
+      color: #666;
+    }
+
+    /* رسالة علوية صغيرة */
+    #messageBox{
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #28a745;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 14px;
+      display: none;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-weight: bold;
+    }
+
+    @media print {
+      #lessonsForm,
+      .tools,
+      .export-buttons,
+      .back-button,
+      .action-col {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 768px){
+      .header-top{
+        flex-direction: column-reverse;
+        align-items: flex-start;
+      }
+      .gov-info{ text-align: right; }
+      #lessonsForm{
+        grid-template-columns: 1fr;
+      }
+      #lessonsForm label {
+        justify-self: start;
+      }
+      .tools-center input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== الهيدر ===== -->
+  <header class="main-header">
+    <div class="header-top">
+      <div class="logo-box">
+        <img src="image.png" alt="شعار سلطنة عمان" class="logo">
+      </div>
+      <div class="gov-info">
+        <h2>سلطنة عمان</h2>
+        <h3>هيئة حماية المستهلك</h3>
+        <h4>إدارة حماية المستهلك بمحافظة الظاهرة</h4>
+        <h4>قسم الدراسات والتطوير</h4>
+      </div>
+    </div>
+    <div class="main-title">
+      <h1>تقرير استطلاعات الرأي</h1>
+    </div>
+  </header>
+
+  <!-- صندوق الرسائل -->
+  <div id="messageBox"></div>
+
+  <!-- نموذج إضافة/تعديل -->
+  <form id="lessonsForm">
+    <label for="reportDate">التاريخ</label>
+    <input type="date" id="reportDate" required>
+
+    <label for="studyTitle">عنوان الدراسة</label>
+    <input type="text" id="studyTitle" required>
+
+    <label for="studyGoals">الهدف من الدراسة</label>
+    <input type="text" id="studyGoals" required>
+
+    <label for="studySource">نوع الإستطلاع</label>
+    <select id="studySource" required>
+      <option value="">اختر نوع الإستطلاع</option>
+      <option value="داخلي">داخلي</option>
+      <option value="خارجي">خارجي</option>
+    </select>
+
+    <label for="notes">ملاحظات</label>
+    <input type="text" id="notes">
+
+    <div class="form-actions">
+      <button type="submit" id="submitBtn" class="save"><i class="fa-solid fa-floppy-disk"></i> حفظ</button>
+      <button type="button" id="cancelEdit" class="cancel">إلغاء التعديل</button>
+    </div>
+  </form>
+
+  <!-- أدوات البحث -->
+  <div class="tools">
+    <div class="tools-center">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث في كل الحقول...">
+    </div>
+  </div>
+
+  <!-- جدول عرض البيانات (متطابق مع الحقول الجديدة) -->
+  <table>
+    <thead>
+      <tr>
+        <th>رقم</th>
+        <th>التاريخ</th>
+        <th>عنوان الدراسة</th>
+        <th>الهدف من الدراسة</th>
+        <th>نوع الإستطلاع</th>
+        <th>ملاحظات</th>
+        <th class="action-col">إجراء</th>
+      </tr>
+    </thead>
+    <tbody id="lessonsBody"></tbody>
+  </table>
+
+  <!-- أزرار الطباعة والتصدير -->
+  <div class="export-buttons">
+    <button type="button" id="printBtn">
+      <i class="fa-solid fa-print"></i> طباعة
+    </button>
+    <button type="button" id="exportBtn">
+      <i class="fa-solid fa-file-excel"></i> Excel
+    </button>
+  </div>
+
+  <!-- زر الرجوع -->
+  <a href="javascript:history.back()" class="back-button">
+    <i class="fa-solid fa-arrow-right"></i> الرجوع
+  </a>
+
+ 
+  <!-- ================== JavaScript ================== -->
+  <script>
+    const SHEET_API = "https://script.google.com/macros/s/AKfycbw_Ux88EQlyevxacaELQH68to1-vhabaMeOU6HF8bHdL59fQy45mD16xQqW1s_aldYN/exec";
+
+    let tableData = [];
+    let editRowNumber = null;
+
+    // رسائل التنبيه
+    function showMessage(msg, type="success") {
+      const box = document.getElementById("messageBox");
+      box.textContent = msg;
+      box.style.background = type === "error" ? "#dc3545" : "#28a745";
+      box.style.display = "block";
+      setTimeout(() => box.style.display = "none", 3000);
+    }
+
+    // تنسيق التاريخ للعامود
+    function formatDate(dateStr) {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString("en-CA");
+    }
+
+    // تحميل البيانات
+    async function loadData() {
+      try {
+        const res = await fetch(SHEET_API);
+        tableData = await res.json();
+        renderTable(tableData);
+      } catch (err) {
+        showMessage("فشل تحميل البيانات", "error");
+        console.error(err);
+      }
+    }
+
+    // رسم الجدول
+    function renderTable(data) {
+      const tbody = document.getElementById("lessonsBody");
+      tbody.innerHTML = "";
+
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">لا توجد بيانات متاحة</td></tr>`;
+        return;
+      }
+
+      data.forEach((row, i) => {
+        tbody.innerHTML += `
+          <tr>
+           <td>${i + 1}</td>
+            <td>${formatDate(row.reportDate)}</td>
+            <td>${row.studyTitle || ''}</td>
+            <td>${row.studyGoals || ''}</td>
+            <td>${row.studySource || ''}</td>
+            <td>${row.notes || ''}</td>
+            <td class="action-col">
+              <button class="action-btn edit-btn" onclick="startEdit(${i})">تعديل</button>
+              <button class="action-btn delete-btn" onclick="deleteRow(${i})">حذف</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // بدء التعديل
+    function startEdit(index) {
+      const row = tableData[index];
+      editRowNumber = row.rowNumber;
+
+      document.getElementById("reportDate").value = row.reportDate ? row.reportDate.split("T")[0] : "";
+      document.getElementById("studyTitle").value = row.studyTitle || "";
+      document.getElementById("studyGoals").value = row.studyGoals || "";
+      document.getElementById("studySource").value = row.studySource || "";
+      document.getElementById("notes").value = row.notes || "";
+
+      document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> تحديث';
+      document.getElementById("cancelEdit").style.display = "inline-block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // حذف صف
+    async function deleteRow(index) {
+      if (!confirm("هل تريد الحذف؟")) return;
+      const row = tableData[index];
+      try {
+        const res = await fetch(SHEET_API, {
+          method: "POST",
+          body: new URLSearchParams({ action: "delete", rowNumber: row.rowNumber })
+        });
+        if (res.ok) {
+          showMessage("تم الحذف بنجاح");
+          await loadData();
+        } else {
+          showMessage("خطأ أثناء الحذف", "error");
+        }
+      } catch (err) {
+        console.error(err);
+        showMessage("فشل الاتصال بالخادم", "error");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("lessonsForm");
+      const cancelBtn = document.getElementById("cancelEdit");
+
+      // إلغاء التعديل
+      cancelBtn.addEventListener("click", () => {
+        editRowNumber = null;
+        cancelBtn.style.display = "none";
+        form.reset();
+        document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ';
+      });
+
+      // حفظ أو تحديث البيانات
+      form.addEventListener("submit", async e => {
+        e.preventDefault();
+        const data = {
+          action: editRowNumber ? "update" : "add",
+          rowNumber: editRowNumber || "",
+          reportDate: document.getElementById("reportDate").value,
+          studyTitle: document.getElementById("studyTitle").value.trim(),
+          studyGoals: document.getElementById("studyGoals").value.trim(),
+          studySource: document.getElementById("studySource").value.trim(),
+          notes: document.getElementById("notes").value.trim()
+        };
+
+        try {
+          const res = await fetch(SHEET_API, {
+            method: "POST",
+            body: new URLSearchParams(data)
+          });
+          if (res.ok) {
+            form.reset();
+            editRowNumber = null;
+            document.getElementById("submitBtn").innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ';
+            cancelBtn.style.display = "none";
+            await loadData();
+            showMessage("تم الحفظ بنجاح");
+          } else {
+            showMessage("فشل الحفظ", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          showMessage("فشل الاتصال بالخادم", "error");
+        }
+      });
+
+      // البحث المباشر
+      document.getElementById("searchInput").addEventListener("input", e => {
+        const q = e.target.value.toLowerCase().trim();
+        const filtered = tableData.filter(row =>
+          Object.values(row).some(v => String(v ?? "").toLowerCase().includes(q))
+        );
+        renderTable(filtered);
+      });
+
+      // تصدير Excel باستخدام SheetJS
+      document.getElementById("exportBtn").addEventListener("click", () => {
+        const table = document.querySelector("table");
+        const wb = XLSX.utils.table_to_book(table, { sheet: "تقرير استطلاعات الرأي" });
+        XLSX.writeFile(wb, "تقرير_استطلاعات_الرأي.xlsx");
+      });
+
+      // الطباعة
+      document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+      loadData();
+    });
+
+    // حماية (اختياري)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'F12') e.preventDefault();
+      if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) e.preventDefault();
+      if (e.ctrlKey && e.key.toUpperCase() === 'U') e.preventDefault();
+    });
+  </script>
+</body>
+</html>
